@@ -6,13 +6,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 //Different components for front-end website
 import HeadBar from "./Components/Navbar";
+import SignUp from "./Components/SignUp";
+
 import About from "./Pages/About";
 import Competitions from "./Pages/Competitions";
 import Home from "./Pages/Home";
 import Information from "./Pages/Information";
 import Login from "./Pages/Login";
 import Resources from "./Pages/Resources";
-import SignUp from "./Components/SignUp";
+
 
 function App() {
   return (
