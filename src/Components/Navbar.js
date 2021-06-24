@@ -1,30 +1,188 @@
-import React from "react";
-import { Navbar, NavbarBrand, Nav, NavDropdown } from "react-bootstrap";
+import React, { useState, useRef, useEffect } from "react";
+import { AppBar, Toolbar, Button, Typography, MenuItem, MenuList, Popper, Grow, ClickAwayListener } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 function HeadBar() {
+  const [about, setAbout] = useState(false);
+  const aboutRef = useRef(null);
+  const [info, setInfo] = useState(false);
+  const infoRef = useRef(null);
+  const [resource, setResource] = useState(false);
+  const resourceRef = useRef(null);
+
+
+  //Event handling for the About Us tab
+  const aboutClick = () => {
+    setAbout((prevAbout) => !prevAbout);
+  };
+
+  const aboutClose = (event) => {
+    if (aboutRef.current && aboutRef.current.contains(event.target)) {
+      return;
+    }
+
+    setAbout(false);
+  };
+
+  const prevAbout = useRef(about);
+  useEffect(() => {
+    if (prevAbout.current === true && about === false) {
+      aboutRef.current.focus();
+    }
+
+    prevAbout.current = about;
+  }, [about]);
+
+
+  //Event handling for the Information tab
+  const infoClick = () => {
+    setInfo((prevInfo) => !prevInfo);
+  };
+
+  const infoClose = (event) => {
+    if (infoRef.current && infoRef.current.contains(event.target)) {
+      return;
+    }
+
+    setInfo(false);
+  };
+
+  const prevInfo = useRef(info);
+  useEffect(() => {
+    if (prevInfo.current === true && info === false) {
+      infoRef.current.focus();
+    }
+
+    prevInfo.current = info;
+  }, [info]);
+
+  
+  //Event handling for the Resources tab
+  const resourceClick = (event) => {
+    setResource((prevResource) => !prevResource);
+  };
+
+  const resourceClose = (event) => {
+    if (resourceRef.current && resourceRef.current.contains(event.target)) {
+      return;
+    }
+
+    setResource(false);
+  };
+
+  const prevResource = useRef(info);
+  useEffect(() => {
+    if (prevResource.current === true && resource === false) {
+      resourceRef.current.focus();
+    }
+
+    prevResource.current = resource;
+  }, [resource]);
+
+
   return (
-    <Navbar bg="dark" variant="dark" sticky="top">
-        <NavbarBrand>Math Is Cool</NavbarBrand>
-        <Nav className="mr-auto">
-            <Nav.Link href="/">Home</Nav.Link>
-            <NavDropdown title="About Us" id="nav-dropdown">
-              <NavDropdown.Item href="/about/history">History</NavDropdown.Item>
-              <NavDropdown.Item href="/about/contacts">Contacts</NavDropdown.Item>
-              <NavDropdown.Item href="/about/locations">Locations</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="Information" id="nav-dropdown">
-              <NavDropdown.Item href="/information/rules">Rules</NavDropdown.Item>
-              <NavDropdown.Item href="/information/fees">Fees</NavDropdown.Item>
-              <NavDropdown.Item href="/information/faq">FAQ</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="Resources" id="nav-dropdown">
-              <NavDropdown.Item href="/resources/rules">Rules</NavDropdown.Item>
-              <NavDropdown.Item href="/resources/past-tests">Past Tests</NavDropdown.Item>
-            </NavDropdown>
-            <Nav.Link href="/competitions">Competitions</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
-        </Nav>
-    </Navbar>
+    <AppBar position="static">
+
+      <Typography 
+        style={{fontFamily:"cursive", 
+                fontSize:"40px", 
+                fontStyle:"italic", 
+                marginLeft:"20px", 
+                marginTop:"10px"}}
+      >
+              Math Is Cool
+      </Typography>
+
+      <Toolbar>
+        <Button color="inherit" href="/">Home</Button>
+      
+        <div>
+          <Button 
+            ref={aboutRef}
+            aria-controls="fade-menu"
+            aria-haspopup="true"
+            color="inherit" 
+            onClick={aboutClick}
+          >
+            About Us
+          </Button>
+          <Popper open={about} anchorEl={aboutRef.current} role={undefined} transition disablePortal>
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
+                    >
+                      <ClickAwayListener onClickAway={aboutClose}>
+                        <MenuList style={{backgroundColor:"white", borderRadius:"5px", borderStyle:"outset"}} autoFocusItem={about} id="fade-menu">
+                          <MenuItem style={{color:"black"}} component={Link} to="/about/history" onClick={aboutClose}>History</MenuItem>
+                          <MenuItem style={{color:"black"}} component={Link} to="/about/contacts" onClick={aboutClose}>Contacts</MenuItem>
+                          <MenuItem style={{color:"black"}} component={Link} to="/about/locations" onClick={aboutClose}>Locations</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Grow>
+                  )}
+          </Popper>
+        </div>
+
+        <div>
+          <Button 
+            ref={infoRef}
+            aria-controls="fade-menu"
+            aria-haspopup="true"
+            color="inherit" 
+            onClick={infoClick}
+          >
+            Information
+          </Button>
+          <Popper open={info} anchorEl={infoRef.current} role={undefined} transition disablePortal>
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
+                    >
+                      <ClickAwayListener onClickAway={infoClose}>
+                        <MenuList style={{backgroundColor:"white", borderRadius:"5px", borderStyle:"outset"}} autoFocusItem={info} id="fade-menu">
+                          <MenuItem style={{color:"black"}} component={Link} to="/information/rules" onClick={infoClose}>Rules</MenuItem>
+                          <MenuItem style={{color:"black"}} component={Link} to="/information/fees" onClick={infoClose}>Fees</MenuItem>
+                          <MenuItem style={{color:"black"}} component={Link} to="/information/faq" onClick={infoClose}>FAQ</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Grow>
+                  )}
+          </Popper>
+        </div>
+
+        <div>
+          <Button 
+            ref={resourceRef}
+            aria-controls="fade-menu"
+            aria-haspopup="true"
+            color="inherit" 
+            onClick={resourceClick}
+          >
+            Resources
+          </Button>
+          <Popper open={resource} anchorEl={resourceRef.current} role={undefined} transition disablePortal>
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
+                    >
+                      <ClickAwayListener onClickAway={resourceClose}>
+                        <MenuList style={{backgroundColor:"white", borderRadius:"5px", borderStyle:"outset"}} autoFocusItem={resource} id="fade-menu">
+                          <MenuItem style={{color:"black"}} component={Link} to="/resources/rules" onClick={resourceClose}>Rules</MenuItem>
+                          <MenuItem style={{color:"black"}} component={Link} to="/resources/past-tests" onClick={resourceClose}>Past Tests</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Grow>
+                  )}
+          </Popper>
+        </div>
+
+        <Button color="inherit" href="/competitions">Competitions</Button>
+        <Button color="inherit" href="/login">Login</Button>
+      </Toolbar>
+    </AppBar>
   );
 }
 
