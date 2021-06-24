@@ -99,7 +99,7 @@ function HeadBar() {
         <div>
           <Button 
             ref={aboutRef}
-            aria-controls="fade-menu"
+            aria-controls={about ? 'menu-list-grow' : undefined}
             aria-haspopup="true"
             color="inherit" 
             onClick={aboutClick}
@@ -113,7 +113,15 @@ function HeadBar() {
                       style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
                     >
                       <ClickAwayListener onClickAway={aboutClose}>
-                        <MenuList style={{backgroundColor:"white", borderRadius:"5px", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}} autoFocusItem={about} id="fade-menu">
+                        <MenuList 
+                          style={{backgroundColor:"white", 
+                                  borderRadius:"5px", 
+                                  boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), \
+                                             0 2px 2px 0 rgb(0 0 0 / 14%), \
+                                             0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
+                          autoFocusItem={about} 
+                          id="fade-menu"
+                        >
                           <MenuItem style={{color:"black"}} component={Link} to="/about/history" onClick={aboutClose}>History</MenuItem>
                           <MenuItem style={{color:"black"}} component={Link} to="/about/contacts" onClick={aboutClose}>Contacts</MenuItem>
                           <MenuItem style={{color:"black"}} component={Link} to="/about/locations" onClick={aboutClose}>Locations</MenuItem>
@@ -127,7 +135,7 @@ function HeadBar() {
         <div>
           <Button 
             ref={infoRef}
-            aria-controls="fade-menu"
+            aria-controls={info ? 'menu-list-grow' : undefined}
             aria-haspopup="true"
             color="inherit" 
             onClick={infoClick}
@@ -141,7 +149,15 @@ function HeadBar() {
                       style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
                     >
                       <ClickAwayListener onClickAway={infoClose}>
-                        <MenuList style={{backgroundColor:"white", borderRadius:"5px", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}} autoFocusItem={info} id="fade-menu">
+                        <MenuList 
+                          style={{backgroundColor:"white", 
+                                  borderRadius:"5px", 
+                                  boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), \
+                                             0 2px 2px 0 rgb(0 0 0 / 14%), \
+                                             0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
+                          autoFocusItem={info} 
+                          id="fade-menu"
+                        >
                           <MenuItem style={{color:"black"}} component={Link} to="/information/rules" onClick={infoClose}>Rules</MenuItem>
                           <MenuItem style={{color:"black"}} component={Link} to="/information/fees" onClick={infoClose}>Fees</MenuItem>
                           <MenuItem style={{color:"black"}} component={Link} to="/information/faq" onClick={infoClose}>FAQ</MenuItem>
@@ -155,7 +171,7 @@ function HeadBar() {
         <div>
           <Button 
             ref={resourceRef}
-            aria-controls="fade-menu"
+            aria-controls={resource ? 'menu-list-grow' : undefined}
             aria-haspopup="true"
             color="inherit" 
             onClick={resourceClick}
@@ -169,7 +185,15 @@ function HeadBar() {
                       style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
                     >
                       <ClickAwayListener onClickAway={resourceClose}>
-                        <MenuList style={{backgroundColor:"white", borderRadius:"5px", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}} autoFocusItem={resource} id="fade-menu">
+                        <MenuList 
+                          style={{backgroundColor:"white", 
+                                  borderRadius:"5px", 
+                                  boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), \
+                                             0 2px 2px 0 rgb(0 0 0 / 14%), \
+                                             0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
+                          autoFocusItem={resource} 
+                          id="fade-menu"
+                        >
                           <MenuItem style={{color:"black"}} component={Link} to="/resources/rules" onClick={resourceClose}>Rules</MenuItem>
                           <MenuItem style={{color:"black"}} component={Link} to="/resources/past-tests" onClick={resourceClose}>Past Tests</MenuItem>
                         </MenuList>
