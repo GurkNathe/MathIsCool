@@ -4,6 +4,7 @@ import math from "../assets/math1.jpg";
 import lake from "../assets/moseslake.jpg";
 import train from "../assets/mtrainier.jpg";
 import wp from "../assets/WP_20140307_009.jpg"
+import donate from "../assets/btn_donate_LG.webp"
 
 function Home() {
   return (
@@ -56,11 +57,12 @@ function Home() {
           </p>
         </div>
       </div>
-      <div style={{marginLeft:"2%", marginRight:"2%", marginTop:"2%", marginBottom:"2%", width:"30%"}}>
-        <img src={math} style={{width:"100%", borderRadius:"5px"}}/>
-        <img src={lake} style={{width:"100%", borderRadius:"5px"}}/>
-        <img src={train} style={{width:"100%", borderRadius:"5px"}}/>
-        <img src={wp} style={{width:"100%", borderRadius:"5px"}}/>
+      <div style={{marginLeft:"2%", marginRight:"2%", marginTop:"2%", marginBottom:"2%", width:"30%", textAlign:"center"}}>
+        <a href="https://www.paypal.com/us/home" target="_blank"><img src={donate} style={{width:"50%", borderRadius:"5px", marginBottom:"1%"}}/></a>
+        <img src={math} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <img src={lake} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <img src={train} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <img src={wp} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
       </div>
     </div>
   );
