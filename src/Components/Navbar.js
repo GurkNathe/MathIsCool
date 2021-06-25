@@ -1,8 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
-import { AppBar, Toolbar, Button, Typography, MenuItem, MenuList, Popper, Grow, ClickAwayListener } from "@material-ui/core";
+import { AppBar, Toolbar, Button, Typography, MenuItem, MenuList, Popper, Grow, ClickAwayListener, makeStyles } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
+import image from "../assets/logo.5a82c15d88ad2d074447.png"
+
+const useStyles = makeStyles((theme) => ({
+  button:{
+    color:"inherit",
+    borderRadius:"5px",
+    '&:hover':{
+      backgroundColor:"white",
+    }
+  }
+}));
+
 function HeadBar() {
+  const classes = useStyles();
   const [about, setAbout] = useState(false);
   const aboutRef = useRef(null);
   const [info, setInfo] = useState(false);
@@ -79,10 +92,10 @@ function HeadBar() {
     prevResource.current = resource;
   }, [resource]);
 
-
+  //Do we want to make navigation bar sticky or fixed?
   return (
-    <AppBar position="static">
-
+    <AppBar position="static" style={{display:"flex"}}>
+      
       <Typography 
         style={{fontFamily:"cursive", 
                 fontSize:"40px", 
@@ -94,15 +107,15 @@ function HeadBar() {
       </Typography>
 
       <Toolbar>
-        <Button color="inherit" href="/">Home</Button>
+        <Button style={{color:"inherit"}} href="/">Home</Button>
       
         <div>
           <Button 
             ref={aboutRef}
             aria-controls={about ? 'menu-list-grow' : undefined}
             aria-haspopup="true"
-            color="inherit" 
             onClick={aboutClick}
+            color="inherit"
           >
             About Us
           </Button>
@@ -203,8 +216,9 @@ function HeadBar() {
           </Popper>
         </div>
 
-        <Button color="inherit" href="/competitions">Competitions</Button>
-        <Button color="inherit" href="/login">Login</Button>
+        <Button style={{color:"inherit"}} href="/competitions">Competitions</Button>
+        <Button style={{color:"inherit"}} href="/login">Login</Button>
+        <img src={image} style={{width:"125px", height:"125px", position:"absolute", right:"0", bottom:"10%"}}/>
       </Toolbar>
     </AppBar>
   );
