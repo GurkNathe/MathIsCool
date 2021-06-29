@@ -9,6 +9,7 @@
 
 # production
 /build
+/node_modules/.cache
 
 # misc
 .env
