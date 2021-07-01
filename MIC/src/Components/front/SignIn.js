@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import fire from "./fire";
+import fire from "../fire";
 
 //Taken from material-ui templates page
 
@@ -71,8 +71,10 @@ export default function SignIn() {
 
     if(!email){
       //changes email text field to an error and ends submit
+      return;
     } else if (!password){
       //changes password text field to an error and ends submit
+      return;
     }
 
     fire.auth().signInWithEmailAndPassword(email, password)
@@ -81,8 +83,9 @@ export default function SignIn() {
       })
       .catch((e) => {
         console.log(e);
-      })
-    console.log(user);
+      });
+    
+    //add a loading wheel here or while the sign in is being checked
   };
 
   return (

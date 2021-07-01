@@ -1,10 +1,10 @@
 import React from "react";
 
-import math from "../assets/math1.jpg";
-import lake from "../assets/moseslake.jpg";
-import train from "../assets/mtrainier.jpg";
-import wp from "../assets/WP_20140307_009.jpg"
-import donate from "../assets/btn_donate_LG.webp"
+import math from "../../assets/math1.jpg";
+import lake from "../../assets/moseslake.jpg";
+import train from "../../assets/mtrainier.jpg";
+import wp from "../../assets/WP_20140307_009.jpg"
+import donate from "../../assets/btn_donate_LG.webp"
 
 function Home() {
   return (
@@ -15,9 +15,9 @@ function Home() {
           <p>
             <b>2021 Masters Registration:</b> Masters Registration for 
             grades 4 through 8 is Open. The process to register 
-            is different so there is a short 
-            <a href="http://www.academicsarecool.com/assets/docs/MastersRegistration.mp4" target="_blank"> video </a> 
-            to describe it.
+            is different so there is a short&nbsp;
+            <a href="http://www.academicsarecool.com/assets/docs/MastersRegistration.mp4" target="_blank">video</a> 
+            &nbsp;to describe it.
           </p>
           <p>
             <b>Online Contests for 2020-2021:</b> The contests for 2020-2021 

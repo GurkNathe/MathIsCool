@@ -2,18 +2,18 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
-import HeadBar from "./components/Navbar";
-import SignUp from "./components/SignUp";
-import Competitions from "./components/Competitions";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import PastTests from "./components/PastTests";
-import History from "./components/History";
-import Contacts from "./components/Contacts";
-import Locations from "./components/Locations";
-import Rules from "./components/Rules";
-import Fees from "./components/Fees";
-import FAQ from "./components/FAQ";
+import HeadBar from "./components/front/Navbar";
+import SignUp from "./components/front/SignUp";
+import Competitions from "./components/front/Competitions";
+import Home from "./components/front/Home";
+import Login from "./components/front/Login";
+import PastTests from "./components/front/PastTests";
+import History from "./components/front/History";
+import Contacts from "./components/front/Contacts";
+import Locations from "./components/front/Locations";
+import Rules from "./components/front/Rules";
+import Fees from "./components/front/Fees";
+import FAQ from "./components/front/FAQ";
 
 
 function App() {

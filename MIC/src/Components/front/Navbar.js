@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { AppBar, Toolbar, Button, Typography, MenuItem, MenuList, Popper, Grow, ClickAwayListener, makeStyles } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
-import image from "../assets/logo.5a82c15d88ad2d074447.png"
+import image from "../../assets/logo.5a82c15d88ad2d074447.png"
 //test
 const useStyles = makeStyles((theme) => ({
   button:{
