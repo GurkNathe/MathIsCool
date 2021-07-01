@@ -1,22 +1,19 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-// React-Bootstrap Components
-import "bootstrap/dist/css/bootstrap.min.css";
-
 //Different components for front-end website
-import HeadBar from "./Components/Navbar";
-import SignUp from "./Components/SignUp";
-import Competitions from "./Components/Competitions";
-import Home from "./Components/Home";
-import Login from "./Components/Login";
-import PastTests from "./Components/PastTests";
-import History from "./Components/History";
-import Contacts from "./Components/Contacts";
-import Locations from "./Components/Locations";
-import Rules from "./Components/Rules";
-import Fees from "./Components/Fees";
-import FAQ from "./Components/FAQ";
+import HeadBar from "./components/Navbar";
+import SignUp from "./components/SignUp";
+import Competitions from "./components/Competitions";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import PastTests from "./components/PastTests";
+import History from "./components/History";
+import Contacts from "./components/Contacts";
+import Locations from "./components/Locations";
+import Rules from "./components/Rules";
+import Fees from "./components/Fees";
+import FAQ from "./components/FAQ";
 
 
 function App() {

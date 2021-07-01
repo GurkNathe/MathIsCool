@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import fire from "./fire";
 
 //Taken from material-ui templates page
 
@@ -50,6 +51,38 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+  //gets current input email
+  const onEmail = (event) => {
+    setEmail(event.target.value);
+  }
+
+  //gets current input password
+  const onPass = (event) => {
+    setPassword(event.target.value);
+  }
+
+  //will handle sending info to firebase and changing to loggedin page
+  const onSubmit = () => {
+    const user = {email: email, password: password};
+
+    if(!email){
+      //changes email text field to an error and ends submit
+    } else if (!password){
+      //changes password text field to an error and ends submit
+    }
+
+    fire.auth().createUserWithEmailAndPassword(email, password)
+      .then((u) => {
+        console.log("Success");
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+    console.log(user);
+  };
 
   return (
     <Container component="main" maxWidth="xs" style={{marginBottom:"40px"}}>
@@ -63,29 +96,6 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
-            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -95,6 +105,7 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onChange={onEmail}
               />
             </Grid>
             <Grid item xs={12}>
@@ -107,6 +118,7 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onChange={onPass}
               />
             </Grid>
             <Grid item xs={12}>
@@ -117,11 +129,11 @@ export default function SignUp() {
             </Grid>
           </Grid>
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={onSubmit}
           >
             Sign Up
           </Button>

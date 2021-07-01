@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,9 +12,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import fire from "./fire";
 
 //Taken from material-ui templates page
 
+//Don't know if the copyright is necessary
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '100%',
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -50,6 +52,38 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+  //gets current input email
+  const onEmail = (event) => {
+    setEmail(event.target.value);
+  }
+
+  //gets current input password
+  const onPass = (event) => {
+    setPassword(event.target.value);
+  }
+
+  //will handle sending info to firebase and changing to loggedin page
+  const onSubmit = () => {
+    const user = {email: email, password: password};
+
+    if(!email){
+      //changes email text field to an error and ends submit
+    } else if (!password){
+      //changes password text field to an error and ends submit
+    }
+
+    fire.auth().signInWithEmailAndPassword(email, password)
+      .then((u) => {
+        console.log("Success");
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+    console.log(user);
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -61,7 +95,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form id="user" className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -72,6 +106,7 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            onChange={onEmail}
           />
           <TextField
             variant="outlined"
@@ -83,17 +118,19 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            autoFocus
+            onChange={onPass}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={onSubmit}
           >
             Sign In
           </Button>
