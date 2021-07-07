@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
@@ -14,7 +14,9 @@ import Locations from "./components/front/Locations";
 import Rules from "./components/front/Rules";
 import Fees from "./components/front/Fees";
 import FAQ from "./components/front/FAQ";
+import LoginHome from "./components/back/LoginHome";
 
+//need to make context for authorization of login
 
 function App() {
   return (
@@ -33,6 +35,7 @@ function App() {
           <Route path="/competitions" exact component={Competitions}/>
           <Route path="/login" exact component={Login}/>
           <Route path="/login/signup" exact component={SignUp}/>
+          <Route path="/home" exact component={LoginHome}/>
         </Switch>
     </Router>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import fire from "../fire";
+import { useHistory } from "react-router-dom";
+import Context from "../../context/loginContext";
 
 //Taken from material-ui templates page
 
@@ -51,9 +53,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignIn() {
+  const history = useHistory();
   const classes = useStyles();
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+
+  const {state, actions} = useContext(Context);
 
   //gets current input email
   const onEmail = (event) => {
@@ -80,9 +85,16 @@ export default function SignIn() {
     fire.auth().signInWithEmailAndPassword(email, password)
       .then((u) => {
         console.log("Success");
+        //if console log check authorized it will always say the same thing here
+        //(i.e. if originally false, will always be false using console.log here)
+        actions({type:'setState', payload:{...state, authorized: true }});
+        history.push("/home");
       })
       .catch((e) => {
+        setEmail('');
+        setPassword('');
         console.log(e);
+        return;
       });
     
     //add a loading wheel here or while the sign in is being checked
