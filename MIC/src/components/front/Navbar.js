@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AppBar, Toolbar, Button, Typography, MenuItem, MenuList, Popper, Grow, ClickAwayListener, makeStyles } from "@material-ui/core";
+
 import { Link } from "react-router-dom";
 
 import image from "../../assets/logo.5a82c15d88ad2d074447.png"
 
 const useStyles = makeStyles((theme) => ({
   button:{
+    position:"relative",
+    overflow:"hidden",
     display:"flex",
     flexDirection:"column",
     justifyContent:"center",
@@ -121,7 +124,10 @@ function HeadBar() {
 
       <Toolbar>
         <div style={{display:"flex", flexDisplay:"row", justifyContent:"space-around",}}>
-          <Button class={classes.button} href="/">Home</Button>
+          <Button class={classes.button} href="/">
+            Home
+            
+          </Button>
         
           <div style={{display:"flex", flexDisplay:"row", justifyContent:"center",}}>
             <Button 
