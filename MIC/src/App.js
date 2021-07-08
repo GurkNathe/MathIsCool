@@ -35,6 +35,8 @@ function App() {
           <Route path="/competitions" exact component={Competitions}/>
           <Route path="/login" exact component={Login}/>
           <Route path="/login/signup" exact component={SignUp}/>
+        </Switch>
+        <Switch>
           <Route path="/home" exact component={LoginHome}/>
         </Switch>
     </Router>
