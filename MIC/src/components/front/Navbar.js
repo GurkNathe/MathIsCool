@@ -235,7 +235,9 @@ function HeadBar() {
           </div>
 
           <Button class={classes.button} href="/competitions">Competitions</Button>
-          <Button class={classes.button} href="/login">Login</Button>
+          {!localStorage.getItem("authorized") ? <Button class={classes.button} href="/login">Login</Button> :
+                                                 <Button class={classes.button} href="/home">HomePage</Button>}
+          {localStorage.getItem("authorized") ? <Button class={classes.button} href="/login" onClick={() => {localStorage.removeItem("authorized")}}>Logout</Button> : null}
         </div>
       </Toolbar>
     </AppBar>

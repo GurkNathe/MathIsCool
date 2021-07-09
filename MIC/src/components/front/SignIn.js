@@ -84,9 +84,11 @@ export default function SignIn() {
     fire.auth().signInWithEmailAndPassword(email, password)
       .then((u) => {
         console.log("Success");
+        localStorage.setItem("authorized", true);
         //if console log check authorized it will always say the same thing here
         //(i.e. if originally false, will always be false using console.log here)
         actions({type:'setState', payload:{...state, authorized: true }});
+
         history.push("/home");
       })
       .catch((e) => {
