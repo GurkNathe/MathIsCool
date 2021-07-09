@@ -55,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const history = useHistory();
   const classes = useStyles();
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState(" ");
+  const [password, setPassword] = useState(" ");
 
   const {state, actions} = useContext(Context);
 
@@ -72,8 +72,7 @@ export default function SignIn() {
 
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
-    const user = {email: email, password: password};
-
+    
     if(!email){
       //changes email text field to an error and ends submit
       return;
@@ -91,8 +90,8 @@ export default function SignIn() {
         history.push("/home");
       })
       .catch((e) => {
-        setEmail('');
-        setPassword('');
+        setEmail(null);
+        setPassword(null);
         console.log(e);
         return;
       });
@@ -111,35 +110,10 @@ export default function SignIn() {
           Sign in
         </Typography>
         <form id="user" className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            onChange={onEmail}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            autoFocus
-            onChange={onPass}
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
+          {(email) ? <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus onChange={onEmail}/> : 
+                     <TextField error variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus onChange={onEmail}/>}
+          {(password) ? <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" autoFocus onChange={onPass}/> :
+                        <TextField error variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" helperText="Inncorrect email address or password." autoFocus onChange={onPass}/>}
           <Button
             fullWidth
             variant="contained"
