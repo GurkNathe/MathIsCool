@@ -22,5 +22,5 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-MIC/node_modules/.cache/babel-loader
-MIC/node_modules/.cache/.eslintcache
+'MIC/node_modules/.cache/'
+
