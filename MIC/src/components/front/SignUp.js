@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import fire from "../fire";
+import { useHistory } from "react-router-dom";
 
 //Taken from material-ui templates page
 
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUp() {
+  const history = useHistory();
   const classes = useStyles();
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
@@ -79,8 +81,15 @@ export default function SignUp() {
     fire.auth().createUserWithEmailAndPassword(email, password)
       .then((u) => {
         console.log("Success");
+        localStorage.setItem("authorized", true);
+        history.push("/home") //need to find a cleaner way to do this
+        setTimeout(() => {
+          window.location.reload();
+        }, 0);
       })
       .catch((e) => {
+        setEmail(null);
+        setPassword(null);
         console.log(e);
       })
     console.log(user);
