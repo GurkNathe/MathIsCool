@@ -16,6 +16,8 @@ import fire from "../fire";
 import { useHistory } from "react-router-dom";
 import Context from "../../context/loginContext";
 
+
+console.log(fire)
 //Taken from material-ui templates page
 
 //Don't know if the copyright is necessary

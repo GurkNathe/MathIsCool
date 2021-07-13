@@ -8,12 +8,10 @@ import Context from "../../context/loginContext";
 //this is just a placeholder
 
 function LoginHome() {
-  //const {state, actions} = useContext(Context);
-  /*if(!state.authorized){
-    return <Redirect to="/login" />;
-  }*/
 
   //Don't know if it is safe to store this in local storage
+  //Can be accessed by anyone with console commands, maybe other ways
+  //need a more secure login method.
   if(!localStorage.getItem("authorized")){
     return <Redirect to="/login" />;
   }

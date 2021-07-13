@@ -126,7 +126,6 @@ function HeadBar() {
         <div style={{display:"flex", flexDisplay:"row", justifyContent:"space-around",}}>
           <Button class={classes.button} href="/">
             Home
-            
           </Button>
         
           <div style={{display:"flex", flexDisplay:"row", justifyContent:"center",}}>

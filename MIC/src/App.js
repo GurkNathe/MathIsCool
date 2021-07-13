@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
-import HeadBar from "./components/front/Navbar";
+import HeadBar from "./components/navigation/Navbar";
 import SignUp from "./components/front/SignUp";
 import Competitions from "./components/front/Competitions";
 import Home from "./components/front/Home";
@@ -15,14 +15,16 @@ import Rules from "./components/front/Rules";
 import Fees from "./components/front/Fees";
 import FAQ from "./components/front/FAQ";
 import LoginHome from "./components/back/LoginHome";
+import SideBar from "./components/navigation/SideBar";
 
 //need to make context for authorization of login
+//!localStorage.getItem("authorized")
 
 function App() {
   return (
     <div>
       <Router>
-          {true ? <HeadBar/> : null}
+          {!localStorage.getItem("authorized") ? <HeadBar/> : <SideBar/>}
           <Switch>
             <Route path="/" exact component={Home}/>
             <Route path="/about/history" exact component={History}/>

@@ -2,7 +2,7 @@ import firebase from "firebase"
 
 //firebase config stuff
 
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config({ path: "../../.env" });
 
 var config = {
     apiKey: process.env.REACT_APP_apiKey,
@@ -10,7 +10,9 @@ var config = {
     databaseURL: process.env.REACT_APP_databaseURL,
     projectId: process.env.REACT_APP_projectId,
     storageBucket: process.env.REACT_APP_storageBucket,
-    messagingSenderId: process.env.REACT_APP_messagingSenderId
+    messagingSenderId: process.env.REACT_APP_messagingSenderId,
+    appId: process.env.REACT_APP_appId,
+    measurementId: process.env.REACT_APP_measurementId
 };
 const fire = firebase.initializeApp(config);
 export default fire;
