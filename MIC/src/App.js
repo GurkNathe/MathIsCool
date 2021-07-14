@@ -18,6 +18,7 @@ import FAQ from "./components/front/FAQ";
 //Different components for logged-in website
 import SideBar from "./components/navigation/SideBar";
 import LoginHome from "./components/back/LoginHome";
+import TeamRegister from "./components/back/TeamRegister";
 
 //!localStorage.getItem("authorized") need to change this for something more secure
 
@@ -40,6 +41,7 @@ function App() {
             <Route path="/login" exact component={Login}/>
             <Route path="/login/signup" exact component={SignUp}/>
             <Route path="/home" exact component={LoginHome}/>
+            <Route path="/team-register" exact component={TeamRegister}/>
           </Switch>
       </Router>
     </div>

@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
    closed:{
       transition: "margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)",
       background: `url(${image}) right center/contain no-repeat #3f51b5`,
+      '&::-webkit-scrollbar':{
+         display:"none"
+      }
    },
    button:{
       position:"relative",
