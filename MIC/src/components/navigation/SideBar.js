@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { makeStyles, Drawer, Button, ClickAwayListener } from "@material-ui/core";
+import { makeStyles, Drawer, Button, ClickAwayListener, Divider } from "@material-ui/core";
 
-import FrontBack from "../back/FrontBack"
+import FrontBack from "../back/FrontBack";
+import CoachTools from "../back/CoachTools";
 
-import { Menu } from "@material-ui/icons"
+import { Menu } from "@material-ui/icons";
 
-import image from "../../assets/logo.5a82c15d88ad2d074447.png"
+import image from "../../assets/logo.5a82c15d88ad2d074447.png";
 
 const drawerWidth = "128px";
 
@@ -54,13 +55,15 @@ function SideBar() {
                      <Button onClick={() => setOpen(false)} style={{color:"white"}}>X</Button>
                   </div>
                   <FrontBack/>
+                  <CoachTools/>
+                  <Divider/>
                   <Button class={classes.button} href="/login" onClick={() => {localStorage.removeItem("authorized")}}>Logout</Button>
                </div>
             </ClickAwayListener>
          </Drawer>
          <div class={classes.closed}>
             <Button onClick={() => setOpen(true)}>
-               <Menu/>
+               <Menu style={{color:"white"}}/>
             </Button>
          </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
@@ -14,11 +14,12 @@ import Locations from "./components/front/Locations";
 import Rules from "./components/front/Rules";
 import Fees from "./components/front/Fees";
 import FAQ from "./components/front/FAQ";
-import LoginHome from "./components/back/LoginHome";
-import SideBar from "./components/navigation/SideBar";
 
-//need to make context for authorization of login
-//!localStorage.getItem("authorized")
+//Different components for logged-in website
+import SideBar from "./components/navigation/SideBar";
+import LoginHome from "./components/back/LoginHome";
+
+//!localStorage.getItem("authorized") need to change this for something more secure
 
 function App() {
   return (

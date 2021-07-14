@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { Redirect } from "react-router-dom";
 
-import fire from "../fire";
+// import fire from "../fire";
 
-import Context from "../../context/loginContext";
+// import Context from "../../context/loginContext";
 
 //this is just a placeholder
 
@@ -18,7 +18,7 @@ function LoginHome() {
 
   return (
     <div>
-      <h1>LoginHome</h1>
+      
     </div>
   );
 }
