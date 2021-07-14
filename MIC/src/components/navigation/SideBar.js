@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { makeStyles, Drawer, Button, ClickAwayListener, Accordion, AccordionSummary, AccordionDetails, MenuList, MenuItem, ButtonGroup } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { makeStyles, Drawer, Button, ClickAwayListener } from "@material-ui/core";
+
+import FrontBack from "../back/FrontBack"
 
 import { Menu } from "@material-ui/icons"
 
@@ -25,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
       color:"white",
       borderRadius:"5px",
       textDecoration:"none",
-      textTransform:"uppercase",
       background:"transparent",
       border:"currentColor",
       fontSize:"15px",
@@ -49,49 +49,11 @@ function SideBar() {
       <div>
          <Drawer open={open}>
             <ClickAwayListener onClickAway={() => setOpen(false)}>
-               <div style={{background:`url(${image}) right center/contain no-repeat #3f51b5`}}>
+               <div style={{background:`url(${image}) right center/contain no-repeat #3f51b5`, height:"100%", overflow:"auto"}}>
                   <div style={{marginLeft:drawerWidth}}>
                      <Button onClick={() => setOpen(false)} style={{color:"white"}}>X</Button>
                   </div>
-                  <Button class={classes.button} href="/">
-                     Home
-                  </Button>
-                  <Accordion style={{background:"transparent", color:"white"}}>
-                     <AccordionSummary class={classes.button}>
-                        About Us
-                     </AccordionSummary>
-                     <AccordionDetails>
-                        <ButtonGroup orientation="vertical"> 
-                           <Button class={classes.button} component={Link} to="/about/history">History</Button>
-                           <Button class={classes.button} component={Link} to="/about/contacts">Contacts</Button>
-                           <Button class={classes.button} component={Link} to="/about/locations">Locations</Button>
-                        </ButtonGroup>
-                     </AccordionDetails>
-                  </Accordion>
-                  <Accordion style={{background:"transparent", color:"white"}}>
-                     <AccordionSummary class={classes.button}>
-                        Information
-                     </AccordionSummary>
-                     <AccordionDetails>
-                        <ButtonGroup orientation="vertical"> 
-                           <Button class={classes.button} component={Link} to="/information/rules">Rules</Button>
-                           <Button class={classes.button} component={Link} to="/information/fees">Fees</Button>
-                           <Button class={classes.button} component={Link} to="/information/faq">FAQ</Button>
-                        </ButtonGroup>
-                     </AccordionDetails>
-                  </Accordion>
-                  <Accordion style={{background:"transparent", color:"white"}}>
-                     <AccordionSummary class={classes.button}>
-                        Resources
-                     </AccordionSummary>
-                     <AccordionDetails>
-                        <ButtonGroup orientation="vertical"> 
-                           <Button class={classes.button} component={Link} to="/resources/rules">Rules</Button>
-                           <Button class={classes.button} component={Link} to="/resources/past-tests">Past Tests</Button>
-                        </ButtonGroup>
-                     </AccordionDetails>
-                  </Accordion>
-                  <Button class={classes.button} href="/competitions">Competitions</Button>
+                  <FrontBack/>
                   <Button class={classes.button} href="/login" onClick={() => {localStorage.removeItem("authorized")}}>Logout</Button>
                </div>
             </ClickAwayListener>
