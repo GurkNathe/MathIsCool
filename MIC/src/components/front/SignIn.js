@@ -16,23 +16,21 @@ import fire from "../fire";
 import { useHistory } from "react-router-dom";
 import Context from "../../context/loginContext";
 
-
-console.log(fire)
 //Taken from material-ui templates page
 
 //Don't know if the copyright is necessary
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://academicsarecool.com" target="/">
-        Math Is Cool
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+// function Copyright() {
+//   return (
+//     <Typography variant="body2" color="textSecondary" align="center">
+//       {'Copyright © '}
+//       <Link color="inherit" href="https://academicsarecool.com" target="/">
+//         Math Is Cool
+//       </Link>{' '}
+//       {new Date().getFullYear()}
+//       {'.'}
+//     </Typography>
+//   );
+// }
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -74,33 +72,26 @@ export default function SignIn() {
 
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
-    
-    if(!email){
-      //changes email text field to an error and ends submit
-      return;
-    } else if (!password){
-      //changes password text field to an error and ends submit
-      return;
-    }
 
-    fire.auth().signInWithEmailAndPassword(email, password)
-      .then((u) => {
-        console.log("Success");
-        localStorage.setItem("authorized", true);
-        //if console log check authorized it will always say the same thing here
-        //(i.e. if originally false, will always be false using console.log here)
-        actions({type:'setState', payload:{...state, authorized: true }});
-
-        history.push("/home");
+    fire.firestore().collection('users').onSnapshot((snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      data.forEach(user => {
+        if(user.email == email && user.password == password){
+          localStorage.setItem("authorized", true);
+          actions({type:'setState', payload:{...state, authorized: true }});
+          history.push("/home");
+          return;
+        }
       })
-      .catch((e) => {
-        setEmail(null);
-        setPassword(null);
-        console.log(e);
-        return;
-      });
-    
-    //add a loading wheel here or while the sign in is being checked
+      setEmail(null);
+      setPassword(null);
+      return;
+    })
+
+    //add a loading wheel here or while the sign in is being checked?
   };
 
   return (
@@ -114,10 +105,67 @@ export default function SignIn() {
           Sign in
         </Typography>
         <form id="user" className={classes.form} noValidate>
-          {(email) ? <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus onChange={onEmail}/> : 
-                     <TextField error variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus onChange={onEmail}/>}
-          {(password) ? <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" autoFocus onChange={onPass}/> :
-                        <TextField error variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" helperText="Inncorrect email address or password." autoFocus onChange={onPass}/>}
+          <Grid item xs={12}>
+            {(email) ? 
+              <TextField 
+                variant="outlined" 
+                margin="normal" 
+                required 
+                fullWidth 
+                id="email" 
+                label="Email Address" 
+                name="email" 
+                autoComplete="email" 
+                autoFocus 
+                onChange={onEmail}
+              /> : 
+              <TextField  
+                error 
+                variant="outlined" 
+                margin="normal" 
+                required 
+                fullWidth 
+                id="email" 
+                label="Email Address" 
+                name="email" 
+                autoComplete="email" 
+                autoFocus 
+                onChange={onEmail}
+              />
+            }
+          </Grid>
+          <Grid item xs={12}>
+            {(password) ? 
+              <TextField  
+                variant="outlined" 
+                margin="normal" 
+                required 
+                fullWidth 
+                name="password" 
+                label="Password" 
+                type="password" 
+                id="password" 
+                autoComplete="current-password" 
+                autoFocus 
+                onChange={onPass}
+              /> :
+              <TextField  
+                error 
+                variant="outlined" 
+                margin="normal" 
+                required 
+                fullWidth 
+                name="password" 
+                label="Password" 
+                type="password" 
+                id="password" 
+                autoComplete="current-password" 
+                helperText="Inncorrect email address or password." 
+                autoFocus 
+                onChange={onPass}
+              />
+            }
+          </Grid>
           <Button
             fullWidth
             variant="contained"
@@ -141,9 +189,11 @@ export default function SignIn() {
           </Grid>
         </form>
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
+      
     </Container>
   );
 }
+
+//<Box mt={8}>
+//  <Copyright />
+//</Box>

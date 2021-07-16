@@ -9,13 +9,13 @@ const useStyles = makeStyles((theme) => ({
       fontSize:"15px",
       padding:"10px",
       '&:hover':{
-      backgroundColor:"#2a3576",
-      opacity:"0.5",
-      transition:"background-color 250ms \
-                  cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
-                  250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
-                  250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-    }
+         backgroundColor:"#2a3576",
+         opacity:"0.5",
+         transition:"background-color 250ms \
+                     cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
+                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
+                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      }
    },
    all:{
       '& .MuiPaper-root':{
@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
       },
       '& .MuiAccordionSummary-root':{
          color:"white",
-         borderRadius:"5px",
          background:"transparent",
          fontSize:"15px",
          padding:"10px",

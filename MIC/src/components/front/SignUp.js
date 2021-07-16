@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,8 +13,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+
 import fire from "../fire";
 import { useHistory } from "react-router-dom";
+import Context from "../../context/loginContext"
 
 //Taken from material-ui templates page
 
@@ -53,22 +56,46 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const history = useHistory();
   const classes = useStyles();
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState(" ");
+  const [password, setPassword] = useState(" ");
+  const [confirm, setConfirm] = useState(" ");
+
+  const [error, setError] = useState(" ");
+
+  const {state, actions} = useContext(Context);
 
   //gets current input email
   const onEmail = (event) => {
     setEmail(event.target.value);
   }
 
+  /**
+   * Need to implement a way to make one password field change while keeping the other 
+   */
+
+
   //gets current input password
   const onPass = (event) => {
     setPassword(event.target.value);
   }
 
+  const onConfirm = (event) => {
+    setConfirm(event.target.value);
+  }
+
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
-    const user = {email: email, password: password};
+    //const user = {email: email, password: password, confirm: confirm};
+
+    if(password != confirm){
+      setError("NoMatch");
+      return;
+    }
+
+    if(password.length < 8){
+      setError("TooSmall");
+      return;
+    }
 
     if(!email){
       //changes email text field to an error and ends submit
@@ -78,21 +105,22 @@ export default function SignUp() {
       return;
     }
 
-    fire.auth().createUserWithEmailAndPassword(email, password)
-      .then((u) => {
-        console.log("Success");
-        localStorage.setItem("authorized", true);
-        history.push("/home") //need to find a cleaner way to do this
-        setTimeout(() => {
-          window.location.reload();
-        }, 0);
-      })
-      .catch((e) => {
-        setEmail(null);
-        setPassword(null);
-        console.log(e);
-      })
-    console.log(user);
+    fire.firestore().collection('users').add({
+      auth:true,
+      email:email,
+      password:password,
+      admin:false
+    }).then((ref) => {
+      console.log(ref);
+      localStorage.setItem("authorized", true);
+      actions({type:'setState', payload:{...state, authorized: true }});
+      history.push("/home");
+    }).catch((e) => {
+      setPassword(null);
+      setConfirm(null);
+      console.log(e);
+      return;
+    })
   };
 
   return (
@@ -107,6 +135,7 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
+            
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -119,19 +148,62 @@ export default function SignUp() {
                 onChange={onEmail}
               />
             </Grid>
+
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={onPass}
-              />
+              {(password) ? 
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={onPass}
+                /> :
+                <TextField
+                  error
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={onPass}
+                />
+              }
             </Grid>
+
+            <Grid item xs={12}>
+              {(confirm) ? 
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="confirm-pass"
+                  label="Confirm Password"
+                  type="password"
+                  id="confirm-pass"
+                  onChange={onConfirm}
+                /> : 
+                <TextField
+                  error
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="confirm-pass"
+                  label="Confirm Password"
+                  type="password"
+                  id="confirm-pass"
+                  helperText={error == "NoMatch" ? "Passwords did not match." : "Password needs to be more than 8 characters."}
+                  onChange={onConfirm}
+                />
+              }
+            </Grid>
+            
             <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}

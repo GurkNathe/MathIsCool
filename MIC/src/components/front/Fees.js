@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
+
+import Page from "./Page";
+
+import fire from "../fire";
 
 function Fees() {
+  const [page, setPage] = useState("");
+
+  fire.firestore().collection('pages').onSnapshot((snapshot) => {
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setPage(data[0].fees.value);
+  })
+
   return (
-    <div className="Fees">
-      <h1>Fees</h1>
-    </div>
+    <Page title="Fees" page={page}/>
   );
 }
 
 export default Fees;
+
