@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { makeStyles, Drawer, Button, ClickAwayListener, Divider } from "@material-ui/core";
 
 import FrontBack from "../back/FrontBack";
 import CoachTools from "../back/CoachTools";
+import Context from "../../context/loginContext";
 
 import { Menu } from "@material-ui/icons";
 
@@ -48,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
 function SideBar() {
    const classes = useStyles();
    const [open, setOpen] = useState(false);
+   const {state, actions} = useContext(Context);
    
    return(
       <div>
@@ -60,11 +62,17 @@ function SideBar() {
                   <FrontBack/>
                   <CoachTools/>
                   <Divider/>
-                  <Button class={classes.button} href="/login" onClick={() => {localStorage.removeItem("authorized")}}>Logout</Button>
+                  <Button className={classes.button} href="/login" onClick={() => {
+                           localStorage.removeItem("id");
+                        }
+                     }
+                  >
+                     Logout
+                  </Button>
                </div>
             </ClickAwayListener>
          </Drawer>
-         <div class={classes.closed}>
+         <div className={classes.closed}>
             <Button onClick={() => setOpen(true)}>
                <Menu style={{color:"white"}}/>
             </Button>

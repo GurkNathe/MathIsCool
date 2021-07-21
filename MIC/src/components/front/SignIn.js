@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,25 +13,12 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+
 import fire from "../fire";
 import { useHistory } from "react-router-dom";
 import Context from "../../context/loginContext";
 
 //Taken from material-ui templates page
-
-//Don't know if the copyright is necessary
-// function Copyright() {
-//   return (
-//     <Typography variant="body2" color="textSecondary" align="center">
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://academicsarecool.com" target="/">
-//         Math Is Cool
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   );
-// }
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -80,10 +68,8 @@ export default function SignIn() {
       }));
       data.forEach(user => {
         if(user.email == email && user.password == password){
-          localStorage.setItem("authorized", true);
-          actions({type:'setState', payload:{...state, authorized: true }});
+          localStorage.setItem("id", user.id);
           history.push("/home");
-          return;
         }
       })
       setEmail(null);

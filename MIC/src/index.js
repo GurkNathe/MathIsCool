@@ -9,6 +9,7 @@ import useLoginState from "./context/useLoginState";
 
 const Index = () => {
   const store = useLoginState();
+
   return(
     <Context.Provider value={store}>
       <App />

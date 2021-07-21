@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
@@ -20,13 +20,16 @@ import SideBar from "./components/navigation/SideBar";
 import LoginHome from "./components/back/LoginHome";
 import TeamRegister from "./components/back/TeamRegister";
 
+//test
+import ProtectedRoute from "./components/ProtectedRoute";
+
 //!localStorage.getItem("authorized") need to change this for something more secure
 
 function App() {
   return (
     <div>
       <Router>
-          {!localStorage.getItem("authorized") ? <HeadBar/> : <SideBar/>}
+          {!localStorage.getItem("id") ? <HeadBar/> : <SideBar/>}
           <Switch>
             <Route path="/" exact component={Home}/>
             <Route path="/about/history" exact component={History}/>
