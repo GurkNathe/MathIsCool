@@ -5,8 +5,6 @@ import React, { useState } from "react";
 
 let options = require("./options");
 
-console.log(options)
-
 const useStyles = makeStyles((theme) => ({
    root: {
      '& .MuiTextField-root': {
