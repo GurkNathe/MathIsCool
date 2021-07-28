@@ -4,11 +4,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -45,37 +42,53 @@ export default function SignIn() {
   const classes = useStyles();
   const [email, setEmail] = useState(" ");
   const [password, setPassword] = useState(" ");
+  const [error, setError] = useState(null);
 
   const {state, actions} = useContext(Context);
 
   //gets current input email
   const onEmail = (event) => {
     setEmail(event.target.value);
+    setError(null);
   }
 
   //gets current input password
   const onPass = (event) => {
     setPassword(event.target.value);
+    setError(null);
   }
 
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
 
-    fire.firestore().collection('users').onSnapshot((snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      data.forEach(user => {
-        if(user.email == email && user.password == password){
-          localStorage.setItem("id", user.id);
-          history.push("/home");
-        }
+    // fire.firestore().collection('users').onSnapshot((snapshot) => {
+    //   const data = snapshot.docs.map((doc) => ({
+    //     id: doc.id,
+    //     ...doc.data(),
+    //   }));
+    //   data.forEach(user => {
+    //     if(user.email == email && user.password == password){
+    //       localStorage.setItem("id", user.id);
+    //       history.push("/home");
+    //     }
+    //   })
+    //   setEmail(null);
+    //   setPassword(null);
+    //   return;
+    // })
+
+    fire.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        console.log(userCredential.user)
+        history.push("/")
       })
-      setEmail(null);
-      setPassword(null);
-      return;
-    })
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        setError(error)
+        console.log(errorCode);
+        console.log(errorMessage);
+      })
 
     //add a loading wheel here or while the sign in is being checked?
   };
@@ -92,8 +105,9 @@ export default function SignIn() {
         </Typography>
         <form id="user" className={classes.form} noValidate>
           <Grid item xs={12}>
-            {(email) ? 
+            {(error) ? 
               <TextField 
+                error
                 variant="outlined" 
                 margin="normal" 
                 required 
@@ -106,7 +120,6 @@ export default function SignIn() {
                 onChange={onEmail}
               /> : 
               <TextField  
-                error 
                 variant="outlined" 
                 margin="normal" 
                 required 
@@ -121,20 +134,7 @@ export default function SignIn() {
             }
           </Grid>
           <Grid item xs={12}>
-            {(password) ? 
-              <TextField  
-                variant="outlined" 
-                margin="normal" 
-                required 
-                fullWidth 
-                name="password" 
-                label="Password" 
-                type="password" 
-                id="password" 
-                autoComplete="current-password" 
-                autoFocus 
-                onChange={onPass}
-              /> :
+            {(error) ? 
               <TextField  
                 error 
                 variant="outlined" 
@@ -147,6 +147,19 @@ export default function SignIn() {
                 id="password" 
                 autoComplete="current-password" 
                 helperText="Inncorrect email address or password." 
+                autoFocus 
+                onChange={onPass}
+              /> :
+              <TextField  
+                variant="outlined" 
+                margin="normal" 
+                required 
+                fullWidth 
+                name="password" 
+                label="Password" 
+                type="password" 
+                id="password" 
+                autoComplete="current-password" 
                 autoFocus 
                 onChange={onPass}
               />
@@ -179,7 +192,3 @@ export default function SignIn() {
     </Container>
   );
 }
-
-//<Box mt={8}>
-//  <Copyright />
-//</Box>

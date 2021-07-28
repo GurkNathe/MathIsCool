@@ -1,18 +1,17 @@
 import React, { useState, useContext } from "react";
 import { makeStyles, Drawer, Button, ClickAwayListener, Divider } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
 import FrontBack from "../back/FrontBack";
 import CoachTools from "../back/CoachTools";
-import Context from "../../context/loginContext";
+
+import fire from "../fire";
 
 import { Menu } from "@material-ui/icons";
 
 import image from "../../assets/logo.5a82c15d88ad2d074447.png";
 
 const drawerWidth = "128px";
-
-//put all the front stuff under on accordion or like it currently is?
-
 
 const useStyles = makeStyles((theme) => ({
    closed:{
@@ -23,33 +22,48 @@ const useStyles = makeStyles((theme) => ({
       }
    },
    button:{
-      position:"relative",
-      overflow:"hidden",
-      display:"flex",
-      flexDirection:"column",
       justifyContent:"left",
+      textTransform:"capitalize",
       color:"white",
-      borderRadius:"5px",
-      textDecoration:"none",
-      background:"transparent",
-      border:"currentColor",
+      width:"auto",
+      borderRadius:"0",
+      width:"100%",
       fontSize:"15px",
       padding:"10px",
+      '-webkit-text-stroke': "0.5px",
+      '-webkit-text-stroke-color': "black",
       '&:hover':{
-      backgroundColor:"#2a3576",
-      opacity:"0.5",
-      transition:"background-color 250ms \
-                  cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
-                  250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
-                  250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-    }
+         backgroundColor:"#2a3576",
+         opacity:"0.9",
+         transition:"background-color 250ms \
+                     cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
+                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
+                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      },
+      '& .MuiButton-root':{
+         fontWeight:"inherit",
+      }
+   },
+   x:{
+      color:"white",
+      '&:hover':{
+         color:"#101010",
+         backgroundColor:"transparent",
+         transition:"background-color 250ms \
+                     cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
+                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
+                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      },
+      '& .MuiButton-root':{
+         fontWeight:"inherit",
+      }
    }
 }));
 
 function SideBar() {
+   const history = useHistory();
    const classes = useStyles();
    const [open, setOpen] = useState(false);
-   const {state, actions} = useContext(Context);
    
    return(
       <div>
@@ -57,18 +71,32 @@ function SideBar() {
             <ClickAwayListener onClickAway={() => setOpen(false)}>
                <div style={{background:`url(${image}) right center/contain no-repeat #3f51b5`, height:"100%", overflow:"auto"}}>
                   <div style={{marginLeft:drawerWidth}}>
-                     <Button onClick={() => setOpen(false)} style={{color:"white"}}>X</Button>
+                     <Button onClick={() => setOpen(false)} className={classes.x}>X</Button>
                   </div>
                   <FrontBack/>
-                  <CoachTools/>
+                  { fire.auth().currentUser ? <CoachTools/> : null }
                   <Divider/>
-                  <Button className={classes.button} href="/login" onClick={() => {
-                           localStorage.removeItem("id");
+                  
+                  { fire.auth().currentUser ?
+                     <Button className={classes.button} onClick={() => {
+                              fire.auth().signOut()
+                                 .then((user) => {
+                                    setOpen(false);
+                                    history.push("/login")
+                                 })
+                                 .catch((error) => {
+                                    console.log("An error occured ", error)
+                                 })
+                           }
                         }
-                     }
-                  >
-                     Logout
-                  </Button>
+                     >
+                        Logout
+                     </Button> :
+                     <Button className={classes.button} href="/login">
+                        Login
+                     </Button>
+                  }
+
                </div>
             </ClickAwayListener>
          </Drawer>

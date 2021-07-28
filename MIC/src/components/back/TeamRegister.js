@@ -77,7 +77,7 @@ function Auto(props){
 
 function TeamRegister(){
    const classes = useStyles();
-   const [choice, setChoice] = useState({loc: "", lev: "", school: "", coach: ""});
+   const [choice, setChoice] = useState({loc: null, lev: null, school: null, coach: ""});
 
    let longest = 0;
 
@@ -103,10 +103,9 @@ function TeamRegister(){
             } else {
                setChoice((prevState) => ({
                   ...prevState,
-                  loc: "",
+                  loc: null,
                }));
             }
-            console.log(choice)
             break;
          case "level":
             if(newValue != null){
@@ -117,10 +116,9 @@ function TeamRegister(){
             } else {
                setChoice((prevState) => ({
                   ...prevState,
-                  lev: "",
+                  lev: null,
                }));
             }
-            console.log(choice)
             break;
          case "school":
             if(newValue != null){
@@ -131,16 +129,9 @@ function TeamRegister(){
             } else {
                setChoice((prevState) => ({
                   ...prevState,
-                  school: "",
+                  school: null,
                }));
             }
-            console.log(choice)
-            break;
-         case "coach":
-            setChoice((prevState) => ({
-               ...prevState,
-               coach: newValue.target.value,
-            }));
             break;
          default:
             console.log(newValue, type)
@@ -150,7 +141,7 @@ function TeamRegister(){
    return(
       <div style={{display: "flex", flexDirection:"row"}}>
          <div style={{borderRadius: "4px", margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
-            <div style={{marginLeft:"1%", marginRight:"1%"}}>
+            <div style={{marginLeft:"1%", marginRight:"1%",}}>
                <p>
                   <b>Rules for Individuals:</b> Any student may compete as an individual 
                   in their grade level or any higher grade; however, a student may 

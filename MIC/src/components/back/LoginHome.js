@@ -61,6 +61,10 @@ function LoginHome() {
     //   }));
     //   console.log("This is the data", data);
     // })
+    console.log( fire.auth().currentUser )
+    //fire.auth().signOut();
+    console.log( fire.auth().currentUser )
+
   }
   
   return (

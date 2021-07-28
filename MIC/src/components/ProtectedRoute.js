@@ -1,14 +1,19 @@
-import React, { Component } from "react";
+import React from "react";
 import { Route, Redirect } from "react-router-dom";
+import fire from "./fire";
 
-function PrivateRoute({ component: Component, ...rest }) {
+function PrivateRoute(props) {
+
   return(
-    <Route 
-      {...rest} 
-      render={(props) => {
-        return(localStorage.getItem("id") ? (<Component {...props} />) : (<Redirect to={{pathname: "/login"}}/>));
-      }}
-    />
+    // { (fire.auth().currentUser.emailVerified) ?
+    //   <Route 
+    //     component={props.component}
+    //     exact
+    //     path={props.path}
+    //   /> :
+    //   <Redirect to="/login"/>
+    // }
+    <div/>
   );
 }
 

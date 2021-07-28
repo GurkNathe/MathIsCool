@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
-import HeadBar from "./components/navigation/Navbar";
+// import HeadBar from "./components/navigation/Navbar";
 import SignUp from "./components/front/SignUp";
 import Competitions from "./components/front/Competitions";
 import Home from "./components/front/Home";
@@ -23,13 +23,11 @@ import TeamRegister from "./components/back/TeamRegister";
 //test
 import ProtectedRoute from "./components/ProtectedRoute";
 
-//!localStorage.getItem("authorized") need to change this for something more secure
-
 function App() {
   return (
     <div>
       <Router>
-          {false ? <HeadBar/> : <SideBar/>}
+          <SideBar/>
           <Switch>
             <Route path="/" exact component={Home}/>
             <Route path="/about/history" exact component={History}/>

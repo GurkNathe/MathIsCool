@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { Accordion, Button, AccordionSummary, ButtonGroup, AccordionDetails, ClickAwayListener } from "@material-ui/core";
 import useStyles from "./style";
 
@@ -8,29 +8,29 @@ function CoachTools(){
    const classes = useStyles();
 
    return(
-      <div class={classes.all}>
+      <div className={classes.all}>
          <Accordion>
-            <AccordionSummary class={classes.button}>
+            <AccordionSummary>
                Coach Tools
             </AccordionSummary>
             <div style={{paddingLeft:"20px"}}>
                <ButtonGroup orientation="vertical">
-                  <Button class={classes.button} href="/team-register">
+                  <Button className={classes.button} href="/team-register">
                      Register Team
                   </Button>
-                  <Button class={classes.button} href="/masters-register">
+                  <Button className={classes.button} href="/masters-register">
                      Register for Masters
                   </Button>
-                  <Button class={classes.button} href="/edit-registers">
-                     Edit Registration(s)
+                  <Button className={classes.button} href="/edit-registers">
+                     Edit Registrations
                   </Button>
-                  <Button class={classes.button} href="/individual">
+                  <Button className={classes.button} href="/individual">
                      Register an Individual
                   </Button>
-                  <Button class={classes.button} href="/names">
+                  <Button className={classes.button} href="/names">
                      Enter Names
                   </Button>
-                  <Button class={classes.button} href="/invoices">
+                  <Button className={classes.button} href="/invoices">
                      View Invoices
                   </Button>
                </ButtonGroup>
