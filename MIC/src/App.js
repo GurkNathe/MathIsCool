@@ -29,7 +29,7 @@ function App() {
   return (
     <div>
       <Router>
-          {!localStorage.getItem("id") ? <HeadBar/> : <SideBar/>}
+          {false ? <HeadBar/> : <SideBar/>}
           <Switch>
             <Route path="/" exact component={Home}/>
             <Route path="/about/history" exact component={History}/>

@@ -16,7 +16,7 @@ function Home() {
             <b>2021 Masters Registration:</b> Masters Registration for 
             grades 4 through 8 is Open. The process to register 
             is different so there is a short&nbsp;
-            <a href="http://www.academicsarecool.com/assets/docs/MastersRegistration.mp4" target="_blank">video</a> 
+            <a href="http://www.academicsarecool.com/assets/docs/MastersRegistration.mp4" target="_blank" rel="noreferrer">video</a> 
             &nbsp;to describe it.
           </p>
           <p>
@@ -42,10 +42,10 @@ function Home() {
           <p>
             <b>2019 Divisions:</b> The divisions are assigned according to how 
             the schools have done in past competitions 
-            (<a href="http://www.academicsarecool.com/assets/docs/division_algorithm.pdf" target="_blank">see method</a>).
+            (<a href="http://www.academicsarecool.com/assets/docs/division_algorithm.pdf" target="_blank" rel="noreferrer">see method</a>).
             New schools will be assigned to a division by the regional director. 
             The 2019-20 assignments can be found at&nbsp;
-            <a href="http://www.academicsarecool.com/assets/docs/divisions.pdf" target="_blank">2019-20 Divisions</a>
+            <a href="http://www.academicsarecool.com/assets/docs/divisions.pdf" target="_blank" rel="noreferrer">2019-20 Divisions</a>
             . The 2020-21 Divisions will be posted by the end of the month.
           </p>
           <p>
@@ -58,11 +58,11 @@ function Home() {
         </div>
       </div>
       <div style={{marginLeft:"2%", marginRight:"2%", marginTop:"2%", marginBottom:"2%", width:"30%", textAlign:"center"}}>
-        <a href="https://www.paypal.com/us/home" target="_blank"><img src={donate} style={{width:"50%", borderRadius:"5px", marginBottom:"1%"}}/></a>
-        <img src={math} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
-        <img src={lake} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
-        <img src={train} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
-        <img src={wp} style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <a href="https://www.paypal.com/us/home" target="_blank" rel="noreferrer"><img src={donate} alt="PayPal" style={{width:"50%", borderRadius:"5px", marginBottom:"1%"}}/></a>
+        <img src={math} alt="math" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <img src={lake} alt="lake" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <img src={train} alt="train" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <img src={wp} alt="wp" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
       </div>
     </div>
   );

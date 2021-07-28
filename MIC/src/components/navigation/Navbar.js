@@ -124,7 +124,7 @@ function HeadBar() {
 
       <Toolbar>
         <div style={{display:"flex", flexDisplay:"row", justifyContent:"space-around",}}>
-          <Button class={classes.button} href="/">
+          <Button className={classes.button} href="/">
             Home
           </Button>
         
@@ -134,7 +134,7 @@ function HeadBar() {
               aria-controls={about ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={aboutClick}
-              class={classes.button}
+              className={classes.button}
             >
               About Us
             </Button>
@@ -169,7 +169,7 @@ function HeadBar() {
               aria-controls={info ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={infoClick}
-              class={classes.button}
+              className={classes.button}
             >
               Information
             </Button>
@@ -205,7 +205,7 @@ function HeadBar() {
               aria-controls={resource ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={resourceClick}
-              class={classes.button}
+              className={classes.button}
             >
               Resources
             </Button>
@@ -233,10 +233,10 @@ function HeadBar() {
             </Popper>
           </div>
 
-          <Button class={classes.button} href="/competitions">Competitions</Button>
-          {!localStorage.getItem("authorized") ? <Button class={classes.button} href="/login">Login</Button> :
-                                                 <Button class={classes.button} href="/home">HomePage</Button>}
-          {localStorage.getItem("authorized") ? <Button class={classes.button} href="/login" onClick={() => {localStorage.removeItem("authorized")}}>Logout</Button> : null}
+          <Button className={classes.button} href="/competitions">Competitions</Button>
+          {!localStorage.getItem("authorized") ? <Button className={classes.button} href="/login">Login</Button> :
+                                                 <Button className={classes.button} href="/home">HomePage</Button>}
+          {localStorage.getItem("authorized") ? <Button className={classes.button} href="/login" onClick={() => {localStorage.removeItem("authorized")}}>Logout</Button> : null}
         </div>
       </Toolbar>
     </AppBar>

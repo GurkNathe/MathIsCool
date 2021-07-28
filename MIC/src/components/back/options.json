@@ -21,11 +21,17 @@
           {"value": "9-12", "label": "9-12"}
         ],
 "school":[
-          {"value": "4", "label": "4"},
-          {"value": "5", "label": "5"},
-          {"value": "6", "label": "6"},
-          {"value": "7-8", "label": "7-8"},
-          {"value": "9-12", "label": "9-12"}
+          {"value": "Online", "label": "Online"},
+          {"value": "Carmichael MS", "label": "Carmichael MS"},
+          {"value": "Clovis Point MS", "label": "Clovis Point MS"},
+          {"value": "Columbia Basin College", "label": "Columbia Basin College"},
+          {"value": "Foothills MS", "label": "Foothills MS"},
+          {"value": "Lake City HS", "label": "Lake City HS"},
+          {"value": "Mead HS", "label": "Mead HS"},
+          {"value": "Mount Spokane HS", "label": "Mount Spokane HS"},
+          {"value": "Seattle Region", "label": "Seattle Region"},
+          {"value": "Skyview High School", "label": "Skyview High School"},
+          {"value": "Spokane Falls Community College", "label": "Spokane Falls Community College"}
         ]
 
 }
