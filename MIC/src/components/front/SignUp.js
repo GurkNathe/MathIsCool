@@ -16,7 +16,6 @@ import Container from '@material-ui/core/Container';
 
 import fire from "../fire";
 import { useHistory } from "react-router-dom";
-import Context from "../../context/loginContext"
 
 //Taken from material-ui templates page
 
@@ -56,53 +55,57 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const history = useHistory();
   const classes = useStyles();
-  const [email, setEmail] = useState(" ");
-  const [password, setPassword] = useState(" ");
-  const [confirm, setConfirm] = useState(" ");
+  const [up, setUp] = useState({email: " ", password: " ", confirm: " ", error: null});
 
-  const [error, setError] = useState(null);
-
-  const {state, actions} = useContext(Context);
-
-  //gets current input email
-  const onEmail = (event) => {
-    setEmail(event.target.value);
+  const onChange = (event, type) => {
+    switch (type) {
+      case "email":
+        setUp((prevState) => ({
+          ...prevState,
+          email: event.target.value,
+        }));
+        console.log(up);
+        break;
+      case "password":
+        setUp((prevState) => ({
+          ...prevState,
+          password: event.target.value,
+        }));
+        console.log(up);
+        break;
+      case "confirm":
+        setUp((prevState) => ({
+          ...prevState,
+          confirm: event.target.value,
+        }));
+        console.log(up);
+        break;
+      default:
+        console.log(up);
+    }
   }
 
-  /**
-   * Need to implement a way to make one password field change while keeping the other 
-   */
-
-
-  //gets current input password
-  const onPass = (event) => {
-    setPassword(event.target.value);
-  }
-
-  const onConfirm = (event) => {
-    setConfirm(event.target.value);
+  const setError = (error) => {
+    setUp((prevState) => ({
+      ...prevState,
+      error: error
+    }))
   }
 
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
     //const user = {email: email, password: password, confirm: confirm};
 
-    if(password != confirm){
+    if(up.password !== up.confirm){
       setError("NoMatch");
       return;
-    }
-
-    if(password.length < 8){
+    } else if(up.password.length < 8){
       setError("TooSmall");
       return;
-    }
-
-    if(!email){
-      //changes email text field to an error and ends submit
-      setError(true)
+    } else if(!up.email){
+      setError(true);
       return;
-    } else if (!password){
-      //changes password text field to an error and ends submit
+    } else if (!up.password){
       setError(true);
       return;
     }
@@ -141,58 +144,62 @@ export default function SignUp() {
           <Grid container spacing={2}>
             
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={onEmail}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              {(password) ? 
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={onPass}
-                /> :
+              {(up.error) ? 
                 <TextField
                   error
                   variant="outlined"
                   required
                   fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={onPass}
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  helperText={up.error == "Email" ? "Email already registered." : null}
+                  onChange={(event) => onChange(event, "email")}
+                /> :
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  onChange={(event) => onChange(event, "email")}
                 />
               }
             </Grid>
 
             <Grid item xs={12}>
-              {(confirm) ? 
+              {(up.error) ? 
+                <TextField
+                  error
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={(event) => onChange(event, "password")}
+                /> :
                 <TextField
                   variant="outlined"
                   required
                   fullWidth
-                  name="confirm-pass"
-                  label="Confirm Password"
+                  name="password"
+                  label="Password"
                   type="password"
-                  id="confirm-pass"
-                  onChange={onConfirm}
-                /> : 
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={(event) => onChange(event, "password")}
+                />
+              }
+            </Grid>
+
+            <Grid item xs={12}>
+              {(up.error) ? 
                 <TextField
                   error
                   variant="outlined"
@@ -202,8 +209,18 @@ export default function SignUp() {
                   label="Confirm Password"
                   type="password"
                   id="confirm-pass"
-                  helperText={error == "NoMatch" ? "Passwords did not match." : "Password needs to be more than 8 characters."}
-                  onChange={onConfirm}
+                  helperText={up.error == "NoMatch" ? "Passwords did not match." : "Password needs to be more than 8 characters."}
+                  onChange={(event) => onChange(event, "confirm")}
+                /> : 
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  name="confirm-pass"
+                  label="Confirm Password"
+                  type="password"
+                  id="confirm-pass"
+                  onChange={(event) => onChange(event, "confirm")}
                 />
               }
             </Grid>

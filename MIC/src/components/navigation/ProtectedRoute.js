@@ -9,7 +9,7 @@ function PrivateRoute(props) {
 
   useEffect(() => {
     setTimeout(() => {setUser(fire.auth().currentUser);}, 2000)
-    if(user != 1)
+    if(user !== 1)
       setLoading(false);
   }, [user]);
 
