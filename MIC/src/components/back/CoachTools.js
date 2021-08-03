@@ -9,7 +9,7 @@ function CoachTools(){
 
    return(
       <div className={classes.all}>
-         <Accordion>
+         <Accordion defaultExpanded>
             <AccordionSummary>
                Coach Tools
             </AccordionSummary>

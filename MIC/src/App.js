@@ -21,7 +21,7 @@ import LoginHome from "./components/back/LoginHome";
 import TeamRegister from "./components/back/TeamRegister";
 
 //test
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/navigation/ProtectedRoute";
 
 function App() {
   return (
@@ -41,8 +41,8 @@ function App() {
             <Route path="/competitions" exact component={Competitions}/>
             <Route path="/login" exact component={Login}/>
             <Route path="/login/signup" exact component={SignUp}/>
-            <Route path="/home" exact component={LoginHome}/>
-            <Route path="/team-register" exact component={TeamRegister}/>
+            <ProtectedRoute path="/home" exact component={LoginHome}/>
+            <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
           </Switch>
       </Router>
     </div>

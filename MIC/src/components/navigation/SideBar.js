@@ -57,6 +57,19 @@ const useStyles = makeStyles((theme) => ({
       '& .MuiButton-root':{
          fontWeight:"inherit",
       }
+   },
+   inner:{
+      background:`url(${image}) right center/contain no-repeat #3f51b5`,
+      height:"100%", 
+      overflowX:"hidden",
+      overflowY:"scroll",
+      display:"flex",
+      '&::-webkit-scrollbar':{
+         display:"none"
+      }
+   },
+   outer:{
+      overflow:"hidden",
    }
 }));
 
@@ -66,11 +79,11 @@ function SideBar() {
    const [open, setOpen] = useState(false);
    
    return(
-      <div>
-         <Drawer open={open}>
+      <div className={classes.outer}>
+         <Drawer open={open} anchor="top">
             <ClickAwayListener onClickAway={() => setOpen(false)}>
-               <div style={{background:`url(${image}) right center/contain no-repeat #3f51b5`, height:"100%", overflow:"auto"}}>
-                  <div style={{marginLeft:drawerWidth}}>
+               <div className={classes.inner}>
+                  <div style={{alignContent:"left"}}>
                      <Button onClick={() => setOpen(false)} className={classes.x}>X</Button>
                   </div>
                   <FrontBack/>

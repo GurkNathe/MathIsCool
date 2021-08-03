@@ -61,7 +61,7 @@ function LoginHome() {
     //   }));
     //   console.log("This is the data", data);
     // })
-    console.log( fire.auth().currentUser )
+    console.log( fire.auth().onAuthStateChanged )
     //fire.auth().signOut();
     console.log( fire.auth().currentUser )
 

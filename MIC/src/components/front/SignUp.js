@@ -60,7 +60,7 @@ export default function SignUp() {
   const [password, setPassword] = useState(" ");
   const [confirm, setConfirm] = useState(" ");
 
-  const [error, setError] = useState(" ");
+  const [error, setError] = useState(null);
 
   const {state, actions} = useContext(Context);
 
@@ -99,28 +99,32 @@ export default function SignUp() {
 
     if(!email){
       //changes email text field to an error and ends submit
+      setError(true)
       return;
     } else if (!password){
       //changes password text field to an error and ends submit
+      setError(true);
       return;
     }
 
-    fire.firestore().collection('users').add({
-      auth:true,
-      email:email,
-      password:password,
-      admin:false
-    }).then((ref) => {
-      console.log(ref);
-      localStorage.setItem("authorized", true);
-      actions({type:'setState', payload:{...state, authorized: true }});
-      history.push("/home");
-    }).catch((e) => {
-      setPassword(null);
-      setConfirm(null);
-      console.log(e);
-      return;
-    })
+    // fire.firestore().collection('users').add({
+    //   auth:true,
+    //   email:email,
+    //   password:password,
+    //   admin:false
+    // }).then((ref) => {
+    //   console.log(ref);
+    //   localStorage.setItem("authorized", true);
+    //   actions({type:'setState', payload:{...state, authorized: true }});
+    //   history.push("/home");
+    // }).catch((e) => {
+    //   setPassword(null);
+    //   setConfirm(null);
+    //   console.log(e);
+    //   return;
+    // })
+
+
   };
 
   return (
