@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -13,7 +13,6 @@ import Container from '@material-ui/core/Container';
 
 import fire from "../fire";
 import { useHistory } from "react-router-dom";
-import Context from "../../context/loginContext";
 
 //Taken from material-ui templates page
 
@@ -44,8 +43,6 @@ export default function SignIn() {
   const [password, setPassword] = useState(" ");
   const [error, setError] = useState(null);
 
-  const {state, actions} = useContext(Context);
-
   //gets current input email
   const onEmail = (event) => {
     setEmail(event.target.value);
@@ -61,6 +58,8 @@ export default function SignIn() {
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
 
+    //leaving this in here for when admins/editors are added to the site
+    
     // fire.firestore().collection('users').onSnapshot((snapshot) => {
     //   const data = snapshot.docs.map((doc) => ({
     //     id: doc.id,
@@ -89,8 +88,6 @@ export default function SignIn() {
         console.log(errorCode);
         console.log(errorMessage);
       })
-
-    //add a loading wheel here or while the sign in is being checked?
   };
 
   return (

@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -63,22 +63,22 @@ export default function SignUp() {
         setUp((prevState) => ({
           ...prevState,
           email: event.target.value,
+          error: null,
         }));
-        console.log(up);
         break;
       case "password":
         setUp((prevState) => ({
           ...prevState,
           password: event.target.value,
+          error: null,
         }));
-        console.log(up);
         break;
       case "confirm":
         setUp((prevState) => ({
           ...prevState,
           confirm: event.target.value,
+          error: null,
         }));
-        console.log(up);
         break;
       default:
         console.log(up);
@@ -93,22 +93,15 @@ export default function SignUp() {
   }
 
   //will handle sending info to firebase and changing to loggedin page
-  const onSubmit = () => {
-    //const user = {email: email, password: password, confirm: confirm};
+  const onSubmit = (event) => {
 
+    //Checks if password and confirmation password are the same.
     if(up.password !== up.confirm){
+      setError(null)
       setError("NoMatch");
-      return;
-    } else if(up.password.length < 8){
-      setError("TooSmall");
-      return;
-    } else if(!up.email){
-      setError(true);
-      return;
-    } else if (!up.password){
-      setError(true);
-      return;
     }
+
+    //leaving this in here for when admins/editors are added to the site
 
     // fire.firestore().collection('users').add({
     //   auth:true,
@@ -127,6 +120,17 @@ export default function SignUp() {
     //   return;
     // })
 
+    //Sign's a person up using an email and password.
+    fire.auth().createUserWithEmailAndPassword(up.email, up.password)
+      .then((userCreds) => {
+        console.log(userCreds)
+        history.push("/");
+      })
+      .catch((error) => {
+        console.log(error);
+        if(up.error === null)
+          setError(error.code)
+      });
 
   };
 
@@ -154,7 +158,12 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  helperText={up.error == "Email" ? "Email already registered." : null}
+                  helperText={up.error === "auth/invalid-email" ? 
+                                "Please enter a valid email address." : 
+                                up.error === "auth/email-already-in-use" ? 
+                                  "Email already taken." : 
+                                  null
+                              }
                   onChange={(event) => onChange(event, "email")}
                 /> :
                 <TextField
@@ -209,7 +218,12 @@ export default function SignUp() {
                   label="Confirm Password"
                   type="password"
                   id="confirm-pass"
-                  helperText={up.error == "NoMatch" ? "Passwords did not match." : "Password needs to be more than 8 characters."}
+                  helperText={up.error === "NoMatch" ? 
+                                "Passwords did not match." : 
+                                up.error === "auth/weak-password" ? 
+                                  "Password should be at least 6 characters" : 
+                                  null
+                              }
                   onChange={(event) => onChange(event, "confirm")}
                 /> : 
                 <TextField
@@ -225,12 +239,6 @@ export default function SignUp() {
               }
             </Grid>
             
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
-            </Grid>
           </Grid>
           <Button
             fullWidth

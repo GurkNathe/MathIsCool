@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Redirect } from "react-router-dom";
 import { Button } from "@material-ui/core"
 
-import fire from "../fire";
-import firebase from "firebase/firebase"
+// import fire from "../fire";
+// import firebase from "firebase/firebase"
 
-import Context from "../../context/loginContext";
+// import Context from "../../context/loginContext";
 
 //this is just a testing page
 
@@ -61,9 +61,9 @@ function LoginHome() {
     //   }));
     //   console.log("This is the data", data);
     // })
-    console.log( fire.auth().onAuthStateChanged )
-    //fire.auth().signOut();
-    console.log( fire.auth().currentUser )
+    // console.log( fire.auth().onAuthStateChanged )
+    // //fire.auth().signOut();
+    // console.log( fire.auth().currentUser )
 
   }
   

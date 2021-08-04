@@ -22,10 +22,7 @@ const useStyles = makeStyles((theme) => ({
     padding:"5px",
     '&:hover':{
       backgroundColor:"#2a3576",
-      transition:"background-color 250ms \
-                  cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
-                  250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
-                  250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     }
   }
 }));
@@ -148,9 +145,7 @@ function HeadBar() {
                           <MenuList 
                             style={{backgroundColor:"white", 
                                     borderRadius:"5px", 
-                                    boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), \
-                                              0 2px 2px 0 rgb(0 0 0 / 14%), \
-                                              0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
+                                    boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
                             autoFocusItem={about}
                           >
                             <MenuItem style={{color:"black"}} component={Link} to="/about/history" onClick={aboutClose}>History</MenuItem>
@@ -183,9 +178,7 @@ function HeadBar() {
                           <MenuList 
                             style={{backgroundColor:"white", 
                                     borderRadius:"5px", 
-                                    boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), \
-                                              0 2px 2px 0 rgb(0 0 0 / 14%), \
-                                              0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
+                                    boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
                             autoFocusItem={info} 
                             id="fade-menu"
                           >
@@ -219,9 +212,7 @@ function HeadBar() {
                           <MenuList 
                             style={{backgroundColor:"white", 
                                     borderRadius:"5px", 
-                                    boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), \
-                                              0 2px 2px 0 rgb(0 0 0 / 14%), \
-                                              0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
+                                    boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}} 
                             autoFocusItem={resource}
                           >
                             <MenuItem style={{color:"black"}} component={Link} to="/resources/rules" onClick={resourceClose}>Rules</MenuItem>

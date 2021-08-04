@@ -1,22 +1,17 @@
 import React from "react";
 
-import { makeStyles } from "@material-ui/core";
-import image from "../../assets/MIC_Regions.png";
+// import { makeStyles } from "@material-ui/core";
+// // import image from "../../assets/MIC_Regions.png";
 
-const useStyles = makeStyles((theme) => ({
-  td:{
-    border:"1px solid", 
-    width:"50%", 
-    borderRadius:"5px"
-  }
-}));
+// const useStyles = makeStyles((theme) => ({
+//   td:{
+//     border:"1px solid", 
+//     width:"50%", 
+//     borderRadius:"5px"
+//   }
+// }));
 
-function Contacts() {
-  const classes = useStyles();
-  return (
-    <div style={{display: "flex", flexDirection:"column",}}>
-      <div style={{margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
-        <div style={{marginLeft:"1%", marginRight:"1%"}}>
+/* <div style={{marginLeft:"1%", marginRight:"1%"}}>
           <h1 style={{fontStyle:"italic"}}>Contacts</h1>
           <table>
             <td>
@@ -70,7 +65,15 @@ function Contacts() {
               <td></td>
             </tr>
           </table>
-        </div>
+        </div> */
+
+
+function Contacts() {
+  //const classes = useStyles();
+  return (
+    <div style={{display: "flex", flexDirection:"column",}}>
+      <div style={{margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
+        
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { TextField, MenuItem, makeStyles, Grid } from "@material-ui/core";
+import { TextField, Button, makeStyles, Grid } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import React, { useState } from "react";
 
@@ -14,37 +14,6 @@ const useStyles = makeStyles((theme) => ({
      },
    },
  }));
-
-// <TextField
-// select
-// variant="outlined"
-// label="Please Select Grade Level"
-// value={choice.lev}
-// onChange={(event) => onChange(event, "level")}
-// >
-// {options.level.map((option) => (
-//    <MenuItem key={option.value} value={option.value}>
-//       {option.label}
-//    </MenuItem>
-// ))}
-// </TextField>
-
-{/* <div style={{display:"flex"}}>
-   <Grid item sm={3}>
-      <p>Coach</p>
-   </Grid>
-   <TextField
-      variant="outlined" 
-      margin="normal" 
-      required
-      label="Coach"
-      value={choice.coach}
-      onChange={(event) => onChange(event, "coach")}
-      style={{ width: longest }}
-   >
-
-   </TextField>
-</div> */}
 
 //json
 //value
@@ -67,6 +36,7 @@ function Auto(props){
                               {...params} 
                               label={props.text} 
                               variant="outlined"
+                              required
                               style={{ width: props.width }}
                            />
                         }
@@ -77,7 +47,14 @@ function Auto(props){
 
 function TeamRegister(){
    const classes = useStyles();
-   const [choice, setChoice] = useState({loc: null, lev: null, school: null, coach: ""});
+   const [choice, setChoice] = useState({ loc: null, 
+                                          lev: null, 
+                                          school: null,
+                                          team1: null,
+                                          team2: null,
+                                          coach: "",
+                                          error: null,
+                                       });
 
    let longest = 0;
 
@@ -133,10 +110,60 @@ function TeamRegister(){
                }));
             }
             break;
+         case "team1":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  team1: newValue,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  team1: null,
+               }));
+            }
+            break;
+         case "team2":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  team2: newValue,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  team2: null,
+               }));
+            }
+            break;
+         case "coach":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  coach: newValue.target.value,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  coach: "",
+               }));
+            }
+            break;
          default:
             console.log(newValue, type)
       }
    };
+
+
+   //NEED TO ADD SUBMISSION TO STORAGE
+   const onSubmit = (event) => {
+      for (const item in choice){
+         if(choice[item] === null || choice[item] === "")
+            console.log("ERROR :", item)
+      }
+      console.log(event)
+      console.log(choice)
+   }
 
    return(
       <div style={{display: "flex", flexDirection:"row"}}>
@@ -154,6 +181,7 @@ function TeamRegister(){
                   These students don't need to be registered as individuals separately.
                </p>
                <form className={classes.root} noValidate autoComplete="off">
+
                   <Auto
                      title="Competition Location"
                      options={options.locations}
@@ -162,6 +190,7 @@ function TeamRegister(){
                      width={longest}
                      value={choice.loc}
                   />
+                  
                   <Auto
                      title="Competition Level"
                      options={options.level}
@@ -170,6 +199,7 @@ function TeamRegister(){
                      width={longest}
                      value={choice.lev}
                   />
+
                   <Auto
                      title="School Registering"
                      options={options.school}
@@ -178,6 +208,55 @@ function TeamRegister(){
                      width={longest}
                      value={choice.school}
                   />
+
+                  <Auto
+                     title="Number of 4, 5, 6, 7, or 9-10th Teams"
+                     options={options.numteam}
+                     text="Select Number of Teams"
+                     onChange={(event, newValue) => onChange(newValue, "team1")}
+                     width={longest}
+                     value={choice.team1}
+                  />
+
+                  <Auto
+                     title="Number of 8 or 11-12th Teams"
+                     options={options.numteam}
+                     text="Select Number of Teams"
+                     onChange={(event, newValue) => onChange(newValue, "team2")}
+                     width={longest}
+                     value={choice.team2}
+                  />
+                  
+                  <div style={{display:"flex"}}>
+                        <Grid item sm={3}>
+                           <p>Person Bringing Students to Event</p>
+                        </Grid>
+                        <TextField
+                           variant="outlined" 
+                           margin="normal" 
+                           required
+                           label="Coach"
+                           value={choice.coach}
+                           onChange={(event) => onChange(event, "coach")}
+                           style={{ width: longest }}
+                        >
+                        </TextField>
+                     </div>
+
+                  <Grid container>
+                     <Grid item sm={3}></Grid>
+                     <Grid item sm={3} width={longest}>
+                        <Button
+                           fullWidth
+                           variant="contained"
+                           color="primary"
+                           onClick={onSubmit}
+                        >
+                           Submit
+                        </Button>
+                     </Grid>
+                  </Grid>
+                  
                </form>
                <p>
                   A school's division level is assigned based on past performance at 

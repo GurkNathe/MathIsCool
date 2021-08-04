@@ -3,10 +3,6 @@ import { Link } from "react-router-dom";
 import { Accordion, Button, AccordionSummary, ButtonGroup, AccordionDetails, ClickAwayListener } from "@material-ui/core";
 import useStyles from "./style";
 
-import fire from "../fire";
-
-//Add ClickAwayListeners for each Accordion so that they close when you click to another one.
-
 function FrontBack(){
    const classes = useStyles();
    const [open, setOpen] = useState(false);
@@ -28,7 +24,7 @@ function FrontBack(){
                   Homepage
                </Button>
                <ClickAwayListener onClickAway={() => setAway({...away, p1: false})}>
-                  <Accordion expanded={open == 'panel1' && away.p1} onChange={handleChange('panel1')}>
+                  <Accordion expanded={open === 'panel1' && away.p1} onChange={handleChange('panel1')}>
                      <AccordionSummary className={classes.button}>
                         About Us
                      </AccordionSummary>
@@ -42,7 +38,7 @@ function FrontBack(){
                   </Accordion>
                </ClickAwayListener>
                <ClickAwayListener onClickAway={() => setAway({...away, p2: false})}>
-                  <Accordion expanded={open == 'panel2' && away.p2} onChange={handleChange('panel2')}>
+                  <Accordion expanded={open === 'panel2' && away.p2} onChange={handleChange('panel2')}>
                      <AccordionSummary className={classes.button}>
                         Information
                      </AccordionSummary>
@@ -56,7 +52,7 @@ function FrontBack(){
                   </Accordion>
                </ClickAwayListener>
                <ClickAwayListener onClickAway={() => setAway({...away, p3: false})}>
-                  <Accordion expanded={open == 'panel3' && away.p3} onChange={handleChange('panel3')}>
+                  <Accordion expanded={open === 'panel3' && away.p3} onChange={handleChange('panel3')}>
                      <AccordionSummary className={classes.button}>
                         Resources
                      </AccordionSummary>

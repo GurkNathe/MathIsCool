@@ -1,6 +1,5 @@
 import React from "react";
-// import { Link } from "react-router-dom";
-import { Accordion, Button, AccordionSummary, ButtonGroup, AccordionDetails, ClickAwayListener } from "@material-ui/core";
+import { Accordion, Button, AccordionSummary, ButtonGroup } from "@material-ui/core";
 import useStyles from "./style";
 
 function CoachTools(){

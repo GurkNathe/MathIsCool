@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
-// import HeadBar from "./components/navigation/Navbar";
 import SignUp from "./components/front/SignUp";
 import Competitions from "./components/front/Competitions";
 import Home from "./components/front/Home";
@@ -19,6 +18,7 @@ import FAQ from "./components/front/FAQ";
 import SideBar from "./components/navigation/SideBar";
 import LoginHome from "./components/back/LoginHome";
 import TeamRegister from "./components/back/TeamRegister";
+import Schools from "./components/back/Schools";
 
 //test
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
@@ -43,6 +43,7 @@ function App() {
             <Route path="/login/signup" exact component={SignUp}/>
             <ProtectedRoute path="/home" exact component={LoginHome}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
+            <ProtectedRoute path="/schools" exact component={Schools}/>
           </Switch>
       </Router>
     </div>

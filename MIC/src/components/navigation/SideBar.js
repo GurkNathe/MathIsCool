@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { makeStyles, Drawer, Button, ClickAwayListener, Divider } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import { Menu } from "@material-ui/icons";
 
 import image from "../../assets/logo.5a82c15d88ad2d074447.png";
 
-const drawerWidth = "128px";
+// const drawerWidth = "128px";
 
 const useStyles = makeStyles((theme) => ({
    closed:{
@@ -25,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
       justifyContent:"left",
       textTransform:"capitalize",
       color:"white",
-      width:"auto",
       borderRadius:"0",
       width:"100%",
       fontSize:"15px",
@@ -35,10 +34,7 @@ const useStyles = makeStyles((theme) => ({
       '&:hover':{
          backgroundColor:"#2a3576",
          opacity:"0.9",
-         transition:"background-color 250ms \
-                     cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
-                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
-                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+         transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
       },
       '& .MuiButton-root':{
          fontWeight:"inherit",
@@ -49,10 +45,7 @@ const useStyles = makeStyles((theme) => ({
       '&:hover':{
          color:"#101010",
          backgroundColor:"transparent",
-         transition:"background-color 250ms \
-                     cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
-                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
-                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+         transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
       },
       '& .MuiButton-root':{
          fontWeight:"inherit",

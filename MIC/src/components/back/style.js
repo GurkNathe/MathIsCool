@@ -8,7 +8,6 @@ const useStyles = makeStyles((theme) => ({
       background:"transparent",
       border:"currentColor",
       color:"white",
-      width:"auto",
       borderRadius:"0",
       width:"100%",
       fontSize:"15px",
@@ -19,10 +18,7 @@ const useStyles = makeStyles((theme) => ({
       '&:hover':{
          backgroundColor:"#2a3576",
          opacity:"0.9",
-         transition:"background-color 250ms \
-                     cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
-                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
-                     250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+         transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
       }
    },
    all:{
@@ -39,10 +35,7 @@ const useStyles = makeStyles((theme) => ({
          '&:hover':{
             backgroundColor:"#2a3576",
             opacity:"0.9",
-            transition:"background-color 250ms \
-                        cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow \
-                        250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border \
-                        250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+            transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
          }
       },
       '& .MuiAccordion-root.Mui-expanded':{
