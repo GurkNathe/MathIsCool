@@ -34,6 +34,11 @@ function Auto(props){
             renderInput={(params) => 
                            <TextField 
                               {...params} 
+                              error={props.error && (props.value === null || props.value === "")}
+                              helperText={props.error && (props.value === null || props.value === "") ? 
+                                             "Please fill out to continue" : 
+                                             null
+                                          }
                               label={props.text} 
                               variant="outlined"
                               required
@@ -50,10 +55,11 @@ function TeamRegister(){
    const [choice, setChoice] = useState({ loc: null, 
                                           lev: null, 
                                           school: null,
+                                          schoolData: null,
                                           team1: null,
                                           team2: null,
                                           coach: "",
-                                          error: null,
+                                          error: false,
                                        });
 
    let longest = 0;
@@ -67,7 +73,7 @@ function TeamRegister(){
    }
 
    //don't know if there is a good way to do this, couldn't find anything
-   longest *= 11;
+   longest *= 10;
 
    const onChange = (newValue, type) => {
       switch (type) {
@@ -76,11 +82,13 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   loc: newValue,
+                  error: false,
                }));
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   loc: null,
+                  error: false,
                }));
             }
             break;
@@ -89,11 +97,13 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   lev: newValue,
+                  error: false,
                }));
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   lev: null,
+                  error: false,
                }));
             }
             break;
@@ -102,11 +112,13 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   school: newValue,
+                  error: false,
                }));
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   school: null,
+                  error: false,
                }));
             }
             break;
@@ -115,11 +127,13 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   team1: newValue,
+                  error: false,
                }));
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   team1: null,
+                  error: false,
                }));
             }
             break;
@@ -128,11 +142,13 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   team2: newValue,
+                  error: false,
                }));
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   team2: null,
+                  error: false,
                }));
             }
             break;
@@ -141,11 +157,13 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   coach: newValue.target.value,
+                  error: false,
                }));
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   coach: "",
+                  error: false,
                }));
             }
             break;
@@ -157,10 +175,31 @@ function TeamRegister(){
 
    //NEED TO ADD SUBMISSION TO STORAGE
    const onSubmit = (event) => {
+      
+      //Setting error if something is not filled out.
       for (const item in choice){
-         if(choice[item] === null || choice[item] === "")
+         if(choice[item] === null || choice[item] === ""){
             console.log("ERROR :", item)
+            setChoice((prevState) => ({
+               ...prevState,
+               error: true,
+            }));
+            break;
+         }
       }
+
+      //Getting all the data for that school
+      for(option in options.school){
+         if(options.school[option].label === choice.school){
+            setChoice((prevState) => ({
+               ...prevState,
+               schoolData: options.school[option],
+            }));
+            break;
+         }
+      }
+
+      //send data to sheets/database
       console.log(event)
       console.log(choice)
    }
@@ -189,6 +228,7 @@ function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "location")}
                      width={longest}
                      value={choice.loc}
+                     error={choice.error}
                   />
                   
                   <Auto
@@ -198,6 +238,7 @@ function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "level")}
                      width={longest}
                      value={choice.lev}
+                     error={choice.error}
                   />
 
                   <Auto
@@ -207,6 +248,7 @@ function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "school")}
                      width={longest}
                      value={choice.school}
+                     error={choice.error}
                   />
 
                   <Auto
@@ -216,6 +258,7 @@ function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "team1")}
                      width={longest}
                      value={choice.team1}
+                     error={choice.error}
                   />
 
                   <Auto
@@ -225,6 +268,7 @@ function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "team2")}
                      width={longest}
                      value={choice.team2}
+                     error={choice.error}
                   />
                   
                   <div style={{display:"flex"}}>
@@ -232,6 +276,11 @@ function TeamRegister(){
                            <p>Person Bringing Students to Event</p>
                         </Grid>
                         <TextField
+                           error={choice.error && choice.coach === ""}
+                           helperText={choice.error && choice.coach === "" ? 
+                                          "Please fill out to continue" : 
+                                          null
+                                       }
                            variant="outlined" 
                            margin="normal" 
                            required
