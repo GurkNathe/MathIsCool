@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 //width
 function Auto(props){
    return(
-      <div style={{display:"flex"}}>
+      <div style={{display:"flex"}} name={props.name}>
          <Grid item sm={3}>
             <p>{props.title}</p>
          </Grid>
@@ -55,12 +55,25 @@ function LoginHome(){
    const [choice, setChoice] = useState({ loc: null, 
                                           lev: null, 
                                           school: null,
-                                          schoolData: null,
+                                          schoolData: {
+                                            value: null,
+                                            label: null,
+                                            div: null,
+                                          },
                                           team1: null,
                                           team2: null,
                                           coach: "",
                                           error: false,
                                        });
+    var url = `https://docs.google.com/forms/d/e/1FAIpQLSeJ_fqnbSPgfrCmRAlcGN8lFCnLKw2zbvb8YUMRtYDjSTMXVQ/viewform?usp=pp_url
+                &entry.296234163=${choice.loc}
+                &entry.1262511676=${choice.lev}
+                &entry.2068664503=${choice.schoolData.label}
+                &entry.962283225=${choice.schoolData.value}
+                &entry.1420093772=${choice.schoolData.div}
+                &entry.75608970=${choice.team1}
+                &entry.2041045214=${choice.team2}
+                &entry.2062002355=${choice.coach}`
 
    let longest = 0;
 
@@ -184,7 +197,7 @@ function LoginHome(){
                ...prevState,
                error: true,
             }));
-            break;
+            return;
          }
       }
 
@@ -193,8 +206,13 @@ function LoginHome(){
          if(options.school[option].label === choice.school){
             setChoice((prevState) => ({
                ...prevState,
-               schoolData: options.school[option],
+               schoolData: {
+                value: options.school[option].value,
+                label: options.school[option].label,
+                div: options.school[option].div,
+               }
             }));
+            console.log(options.school[option])
             break;
          }
       }
@@ -203,28 +221,28 @@ function LoginHome(){
       console.log(event)
       console.log(choice)
 
-      const test = () => {
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyqAsxtd52eda6lkTty5de8jSs_XoF7NxMOq7AgMo5RI-4oHhKM0iykxzoNLYCEN6faRw/exec";
-        const form = document.forms["google-sheet"];
-        console.log(form);
-        form.addEventListener("submit", e => {
-          e.preventDefault();
-          fetch(scriptURL, { method: "POST", body: new FormData(form)})
-           .then(response => alert("STUFF IS HERE", response))
-           .catch(error => console.error(error))
-        })
-      }
-      test()
+      // document.forms['test'].submit();
+      //Supposed to send data to a Google Sheets macro that puts the data in the next available line
+      // event.preventDefault();
+      // const scriptURL = "https://script.google.com/macros/s/AKfycbxOl11cGTUBzAG_gA8AF8syE6nXBC29fcC5-BLoRCRySJz_OD1y7xUazYWd8-yavj92xw/exec";
+      // const form = document.forms["test"];
+      // var formData = new FormData(form);
+      // console.log(form)
+      // var test = formData.values()
+      // console.log(test)
+      // fetch(scriptURL, { method: "POST", body: formData})
+      //   .then(response => console.log(response))
+      //   .catch(error => console.log(error))
+  
    }
 
-   
 
    return(
       <div style={{display: "flex", flexDirection:"row"}}>
          <div style={{borderRadius: "4px", margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
             <div style={{marginLeft:"1%", marginRight:"1%",}}>
-               <form method="POST" name="google-sheet" className={classes.root}>
-
+               {!choice.schoolData.value ? <form className={classes.root}>
+                  
                   <Auto
                      title="Competition Location"
                      options={options.locations}
@@ -233,6 +251,7 @@ function LoginHome(){
                      width={longest}
                      value={choice.loc}
                      error={choice.error}
+                     name="Competition Location"
                   />
                   
                   <Auto
@@ -243,6 +262,7 @@ function LoginHome(){
                      width={longest}
                      value={choice.lev}
                      error={choice.error}
+                     name="Competition Level"
                   />
 
                   <Auto
@@ -253,6 +273,7 @@ function LoginHome(){
                      width={longest}
                      value={choice.school}
                      error={choice.error}
+                     name="School Registering"
                   />
 
                   <Auto
@@ -263,6 +284,7 @@ function LoginHome(){
                      width={longest}
                      value={choice.team1}
                      error={choice.error}
+                     name="Number of 4, 5, 6, 7, or 9-10th Teams"
                   />
 
                   <Auto
@@ -273,45 +295,57 @@ function LoginHome(){
                      width={longest}
                      value={choice.team2}
                      error={choice.error}
+                     name="Number of 8 or 11-12th Teams"
                   />
                   
-                  <div style={{display:"flex"}}>
-                        <Grid item sm={3}>
-                           <p>Person Bringing Students to Event</p>
-                        </Grid>
-                        <TextField
-                           error={choice.error && choice.coach === ""}
-                           helperText={choice.error && choice.coach === "" ? 
-                                          "Please fill out to continue" : 
-                                          null
-                                       }
-                           variant="outlined" 
-                           margin="normal" 
-                           required
-                           label="Coach"
-                           value={choice.coach}
-                           onChange={(event) => onChange(event, "coach")}
-                           style={{ width: longest }}
-                        >
-                        </TextField>
-                     </div>
+                  <div style={{display:"flex"}} name="Person Bringing Students to Event">
+                    <Grid item sm={3}>
+                        <p>Person Bringing Students to Event</p>
+                    </Grid>
+                    <TextField
+                        error={choice.error && choice.coach === ""}
+                        helperText={choice.error && choice.coach === "" ? 
+                                      "Please fill out to continue" : 
+                                      null
+                                    }
+                        variant="outlined" 
+                        margin="normal" 
+                        required
+                        label="Coach"
+                        value={choice.coach}
+                        onChange={(event) => onChange(event, "coach")}
+                        style={{ width: longest }}
+                    >
+                    </TextField>
+                  </div>
 
-                  <Grid container>
-                     <Grid item sm={3}></Grid>
-                     <Grid item sm={3} width={longest}>
-                        <Button
-                           fullWidth
-                           variant="contained"
-                           color="primary"
-                           onClick={onSubmit}
-                           name="submit"
-                        >
-                           Submit
-                        </Button>
-                     </Grid>
-                  </Grid>
-                  
-               </form>
+                  <div name="submit">
+                    <Grid container>
+                      <Grid item sm={3}></Grid>
+                      <Grid item sm={3} width={longest}>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            onClick={onSubmit}
+                            type="submit"
+                          >
+                            Submit
+                          </Button>
+                      </Grid>
+                    </Grid>
+                  </div>
+               </form> :
+               <iframe 
+                  src={url} 
+                  width="640" 
+                  height="1379" 
+                  frameBorder="0" 
+                  marginHeight="0" 
+                  marginWidth="0"
+               >
+                  Loading…
+               </iframe>}
             </div>
          </div>
       </div>
