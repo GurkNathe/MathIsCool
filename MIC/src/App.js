@@ -18,7 +18,7 @@ import FAQ from "./components/front/FAQ";
 import SideBar from "./components/navigation/SideBar";
 import LoginHome from "./components/back/LoginHome";
 import TeamRegister from "./components/back/TeamRegister";
-import Schools from "./components/back/Schools";
+import Individual from "./components/back/Individual";
 
 //test
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
@@ -43,7 +43,7 @@ function App() {
             <Route path="/login/signup" exact component={SignUp}/>
             <ProtectedRoute path="/home" exact component={LoginHome}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
-            <ProtectedRoute path="/schools" exact component={Schools}/>
+            <ProtectedRoute path="/individual" exact component={Individual}/>
           </Switch>
       </Router>
     </div>

@@ -22,11 +22,14 @@ const useStyles = makeStyles((theme) => ({
    }
  }));
 
-function TeamRegister(){
+function Individual(){
    const classes = useStyles();
    const [choice, setChoice] = useState({ loc: null, 
                                           lev: null, 
+                                          name: "",
+                                          grade: null,
                                           school: null,
+                                          stlev: null,
                                           schoolData: {
                                              value: null,
                                              label: null,
@@ -153,13 +156,56 @@ function TeamRegister(){
                }));
             }
             break;
+          case "name":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  name: newValue.target.value,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  name: "",
+                  error: false,
+               }));
+            }
+            break;
+          case "grade":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  grade: newValue,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  grade: null,
+                  error: false,
+               }));
+            }
+            break;
+          case "stlev":
+              if(newValue != null){
+                 setChoice((prevState) => ({
+                    ...prevState,
+                    stlev: newValue,
+                    error: false,
+                 }));
+              } else {
+                 setChoice((prevState) => ({
+                    ...prevState,
+                    stlev: null,
+                    error: false,
+                 }));
+              }
+              break;
          default:
             console.log(newValue, type)
       }
    };
 
-
-   //NEED TO ADD SUBMISSION TO STORAGE
    const onSubmit = (event) => {
       
       //Setting error if something is not filled out.
@@ -189,10 +235,6 @@ function TeamRegister(){
             break;
          }
       }
-
-      //send data to sheets/database
-      console.log(event)
-      console.log(choice)
    }
 
    return(
@@ -201,78 +243,91 @@ function TeamRegister(){
             <div style={{display: "flex", flexDirection:"row"}}>
                <div style={{borderRadius: "4px", margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
                   <div style={{marginLeft:"1%", marginRight:"1%",}}>
-                     <p>
-                        <b>Rules for Individuals:</b> Any student may compete as an individual 
-                        in their grade level or any higher grade; however, a student may 
-                        compete as a team at one grade level only. This applies to both 
-                        Championships and Masters.<br/><br/>
-
-                        Also note each team includes four students in addition to 
-                        two alternates per school that can compete as individuals. So 
-                        when registering n teams , you get to bring 4n+2 students along. 
-                        These students don't need to be registered as individuals separately.
-                     </p>
-                     <form className={classes.root} noValidate autoComplete="off">
+                      <p>
+                        <b>This is for registering individual competitors only, for teams go <a href="/team-register" style={{color:"black"}}>here</a>.</b>
+                      </p>
+                      <form className={classes.root} noValidate autoComplete="off">
 
                         <Auto
-                           title="Competition Location"
-                           options={options.locations}
-                           text="Select Competition Location"
-                           onChange={(event, newValue) => onChange(newValue, "location")}
-                           width={longest}
-                           value={choice.loc}
-                           error={choice.error}
+                            title="Competition Location"
+                            options={options.locations}
+                            text="Select Competition Location"
+                            onChange={(event, newValue) => onChange(newValue, "location")}
+                            width={longest}
+                            value={choice.loc}
+                            error={choice.error}
                         />
 
                         <Auto
-                           title="Competition Level"
-                           options={options.level}
-                           text="Select Your Grade Level"
-                           onChange={(event, newValue) => onChange(newValue, "level")}
-                           width={longest}
-                           value={choice.lev}
-                           error={choice.error}
-                        />
-
-                        <Auto
-                           title="School Registering"
-                           options={options.school}
-                           text="Select Your School"
-                           onChange={(event, newValue) => onChange(newValue, "school")}
-                           width={longest}
-                           value={choice.school}
-                           error={choice.error}
-                        />
-
-                        <Auto
-                           title="Number of 4, 5, 6, 7, or 9-10th Teams"
-                           options={options.numteam}
-                           text="Select Number of Teams"
-                           onChange={(event, newValue) => onChange(newValue, "team1")}
-                           width={longest}
-                           value={choice.team1}
-                           error={choice.error}
-                        />
-
-                        <Auto
-                           title="Number of 8 or 11-12th Teams"
-                           options={options.numteam}
-                           text="Select Number of Teams"
-                           onChange={(event, newValue) => onChange(newValue, "team2")}
-                           width={longest}
-                           value={choice.team2}
-                           error={choice.error}
+                            title="Competition Level"
+                            options={options.level}
+                            text="Select Your Grade Level"
+                            onChange={(event, newValue) => onChange(newValue, "level")}
+                            width={longest}
+                            value={choice.lev}
+                            error={choice.error}
                         />
 
                         <div style={{display:"flex"}}>
-                           <Grid item sm={3}>
-                              <p>Person Bringing Students to Event</p>
-                           </Grid>
-                           <TextField
+                            <Grid item sm={3}>
+                              <p>Student Name</p>
+                            </Grid>
+                            <TextField
+                              error={choice.error && choice.name === ""}
+                              helperText={choice.error && choice.name === "" ? 
+                                              "Please fill out to continue" : 
+                                              null
+                                          }
+                              variant="outlined" 
+                              margin="normal" 
+                              required
+                              label="Student"
+                              value={choice.name}
+                              onChange={(event) => onChange(event, "name")}
+                              style={{ width: longest }}
+                            >
+                            </TextField>
+                        </div>
+
+                        <Auto
+                            title="Student's Current Grade"
+                            options={options.grade}
+                            text="Select Grade Level"
+                            onChange={(event, newValue) => onChange(newValue, "grade")}
+                            width={longest}
+                            value={choice.grade}
+                            error={choice.error}
+                        />
+
+                        <Auto
+                            title="Student's Math Level for competition"
+                            options={options.stlev}
+                            text="Select Math Level"
+                            onChange={(event, newValue) => onChange(newValue, "stlev")}
+                            width={longest}
+                            value={choice.stlev}
+                            error={choice.error}
+                        />
+
+                        <Auto
+                            title="School Registering"
+                            options={options.school}
+                            text="Select Your School"
+                            onChange={(event, newValue) => onChange(newValue, "school")}
+                            width={longest}
+                            value={choice.school}
+                            error={choice.error}
+                        />
+
+                        <div style={{display:"flex"}}>
+                            <Grid item sm={3}>
+                              <p>Coach</p>
+                            </Grid>
+                            <TextField
                               error={choice.error && choice.coach === ""}
                               helperText={choice.error && choice.coach === "" ? 
-                                             "Please fill out to continue" : 
-                                             null
+                                              "Please fill out to continue" : 
+                                              null
                                           }
                               variant="outlined" 
                               margin="normal" 
@@ -281,31 +336,28 @@ function TeamRegister(){
                               value={choice.coach}
                               onChange={(event) => onChange(event, "coach")}
                               style={{ width: longest }}
-                           >
-                           </TextField>
+                            >
+                            </TextField>
                         </div>
 
                         <Grid container>
-                           <Grid item sm={3}></Grid>
-                           <Grid item sm={3} width={longest}>
+                            <Grid item sm={3}></Grid>
+                            <Grid item sm={3} width={longest}>
                               <Button
-                                 fullWidth
-                                 variant="contained"
-                                 color="primary"
-                                 onClick={onSubmit}
+                                  fullWidth
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={onSubmit}
                               >
-                                 Continue
+                                  Continue
                               </Button>
-                           </Grid>
+                            </Grid>
                         </Grid>
 
-                     </form>
-                     <p>
-                        A school's division level is assigned based on past performance at 
-                        Math is Cool contests. For more details and a current list of 
-                        schools and assignments, see&nbsp;
-                        <a href="../../../public.divisions.pdf" target="_blank" rel="noreferrer">2018-19 Divisions</a>.
-                     </p>
+                      </form>
+                      <p>
+                        Note: team registrations include 2 alternates per grade level.
+                      </p>
                   </div>
                </div>
             </div> :
@@ -320,4 +372,4 @@ function TeamRegister(){
    );
 }
 
-export default TeamRegister;
+export default Individual;
