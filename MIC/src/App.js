@@ -19,13 +19,12 @@ import SideBar from "./components/navigation/SideBar";
 import LoginHome from "./components/back/LoginHome";
 import TeamRegister from "./components/back/TeamRegister";
 import Individual from "./components/back/Individual";
-
-//test
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
+import Form from "./components/random/Form";
 
 function App() {
   return (
-    <div>
+    <div style={{overflowX:"hidden"}}>
       <Router>
           <SideBar/>
           <Switch>
@@ -44,6 +43,7 @@ function App() {
             <ProtectedRoute path="/home" exact component={LoginHome}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
             <ProtectedRoute path="/individual" exact component={Individual}/>
+            <ProtectedRoute path="/team-register/confirm/" exact component={Form} />
           </Switch>
       </Router>
     </div>
