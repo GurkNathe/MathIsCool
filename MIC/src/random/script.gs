@@ -69,7 +69,7 @@ function addEditResponseURLToSheet(params) {
   formResponseEditUrlRange.setValue(params.formResponse.getEditResponseUrl()) ;
   var invoice = Math.floor(params.sheet.getRange(params.row, 1).getValue()/1000) % 1000000000 ;
   var message = 'Hello ' + params.sheet.getRange(params.row, 3).getValue() + ',\n\nThank you for registering ' ;
-  message = message + params.sheet.getRange(params.row, 6).getValue() + '  ' + params.sheet.getRange(params.row, 8).getValue() ;
+  message = message + params.sheet.getRange(params.row, 6).getValue() + ' ' + params.sheet.getRange(params.row, 8).getValue() ;
   message = message +  'th grade teams and ' + params.sheet.getRange(params.row, 7).getValue() ;
   message = message + ' individuals, \nfrom ' + params.sheet.getRange(params.row, 4).getValue() + ' in ' ;
   message = message + params.sheet.getRange(params.row, 5).getValue() + '\n\nIf you need to change your registration, please use the link ' 

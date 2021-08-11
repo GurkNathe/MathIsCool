@@ -15,8 +15,10 @@ const useStyles = makeStyles((theme) => ({
 
 function Form(props) {
   const classes = useStyles();
+
   return(
     <iframe 
+      id="frame"
       src={props.location.state.key} 
       className={classes.gform}
     >

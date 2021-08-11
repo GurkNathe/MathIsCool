@@ -24,7 +24,7 @@ import Form from "./components/random/Form";
 
 function App() {
   return (
-    <div style={{overflowX:"hidden"}}>
+    <div style={{overflowX:"hidden"}} id="app">
       <Router>
           <SideBar/>
           <Switch>

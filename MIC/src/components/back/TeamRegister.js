@@ -144,7 +144,7 @@ function TeamRegister(){
    };
 
    const onSubmit = () => {
-      
+
       setError(choice);
       setSchoolData();
       setURL(choice, schoolData);
@@ -174,15 +174,7 @@ function TeamRegister(){
    }
 
    const setURL = (choice, schoolData) => {
-      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url
-               &entry.1015404157=${user.email}
-               &entry.1951055040=${user.name}
-               &entry.62573940=${choice.loc}
-               &entry.1929366142=${choice.lev}
-               &entry.680121242=${choice.team}
-               &entry.641937550=${choice.indiv}
-               &entry.1389254068=${schoolData.value}
-               &entry.1720714498=${choice.coach}`
+      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${user.name}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.coach}`
    }
 
    //Getting all the data for that school
@@ -268,18 +260,18 @@ function TeamRegister(){
 
                   <div style={{display:"flex"}}>
                      <Grid item sm={3}>
-                        <p>Additional Emails & Coach Names</p>
+                        <p>Additional Emails</p>
                      </Grid>
                      <TextField
                         error={choice.error && choice.coach === ""}
                         helperText={choice.error && choice.coach === "" ? 
                                        "Please fill out to continue" : 
-                                       "Example: someone@gmail.com, John Doe"
+                                       "Example: notyour@email.com, another@coach.com"
                                     }
                         variant="outlined" 
                         margin="normal" 
                         required
-                        label="Emails and Coaches"
+                        label="Other Emails"
                         value={choice.coach}
                         onChange={(event) => onChange(event, "coach")}
                         style={{ width: longest }}

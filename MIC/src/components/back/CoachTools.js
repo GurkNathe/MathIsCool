@@ -20,14 +20,14 @@ function CoachTools(){
                   <Button className={classes.button} href="/masters-register">
                      Register for Masters
                   </Button>
-                  <Button className={classes.button} href="/edit-registers">
-                     Edit Registrations
-                  </Button>
                   <Button className={classes.button} href="/individual">
                      Register an Individual
                   </Button>
                   <Button className={classes.button} href="/names">
                      Enter Names
+                  </Button>
+                  <Button className={classes.button} href="/edit-registers">
+                     Edit Registrations
                   </Button>
                   <Button className={classes.button} href="/invoices">
                      View Invoices
