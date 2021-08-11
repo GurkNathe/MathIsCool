@@ -104,58 +104,65 @@ export default function SignUp() {
 
     //Checks if password and confirmation password are the same.
     if(up.password !== up.confirm){
-      setError(null)
+      setError(null);
       setError("NoMatch");
-    }
+      return;
+    } else if(up.username === " " || up.username === ""){
+      setError(null);
+      setError("NoUser");
+      return;
+    } else {
 
-    //leaving this in here for when admins/editors are added to the site
+      
 
-    // fire.firestore().collection('users').add({
-    //   auth:true,
-    //   email:email,
-    //   password:password,
-    //   admin:false
-    // }).then((ref) => {
-    //   console.log(ref);
-    //   localStorage.setItem("authorized", true);
-    //   history.push("/home");
-    // }).catch((e) => {
-    //   setPassword(null);
-    //   setConfirm(null);
-    //   console.log(e);
-    //   return;
-    // })
+      //leaving this in here for when admins/editors are added to the site
 
-    //Sign's a person up using an email and password, and send email confirmation.
-    fire.auth().createUserWithEmailAndPassword(up.email, up.password)
-      .then((userCreds) => {
-        console.log(userCreds)
-        fire.auth().currentUser.sendEmailVerification()
-          .then(() => {
-            console.log("SUCCESS");
-          })
-        history.push("/");
-      })
-      .catch((error) => {
-        console.log(error);
-        if(up.error === null)
-          setError(error.code)
-      });
-    
-    //Adds person's username
-    fire.auth().onAuthStateChanged((user) => {
-      if(user){
-        user.updateProfile({
-          displayName: up.username
-        }).then(() => {
-          console.log(user);
-        }).catch((error) => {
-          setError(error.code)
-          console.log(up.error)
+      // fire.firestore().collection('users').add({
+      //   auth:true,
+      //   email:email,
+      //   password:password,
+      //   admin:false
+      // }).then((ref) => {
+      //   console.log(ref);
+      //   localStorage.setItem("authorized", true);
+      //   history.push("/home");
+      // }).catch((e) => {
+      //   setPassword(null);
+      //   setConfirm(null);
+      //   console.log(e);
+      //   return;
+      // })
+
+      //Sign's a person up using an email and password, and send email confirmation.
+      fire.auth().createUserWithEmailAndPassword(up.email, up.password)
+        .then((userCreds) => {
+          console.log(userCreds)
+          fire.auth().currentUser.sendEmailVerification()
+            .then(() => {
+              alert("An email was sent to your email address. Please navigate to it and click the verification link.")
+            })
+          history.push("/");
         })
-      }
-    })
-
+        .catch((error) => {
+          console.log(error);
+          if(up.error === null)
+            setError(error.code)
+        });
+      
+      //Adds person's username
+      fire.auth().onAuthStateChanged((user) => {
+        if(user){
+          user.updateProfile({
+            displayName: up.username
+          }).then(() => {
+            console.log(user);
+          }).catch((error) => {
+            setError(error.code)
+            console.log(up.error)
+          })
+        }
+      })
+    }
   };
 
   return (
@@ -181,12 +188,9 @@ export default function SignUp() {
                   id="username"
                   label="Username"
                   name="username"
-                  autoComplete="username"
-                  helperText={up.error === "auth/invalid-email" ? 
-                                "Please enter a valid email address." : 
-                                up.error === "auth/email-already-in-use" ? 
-                                  "Email already taken." : 
-                                  null
+                  helperText={up.error === "NoUser" ? 
+                                "Please enter a valid username." :
+                                null
                               }
                   onChange={(event) => onChange(event, "username")}
                 /> :
@@ -197,7 +201,6 @@ export default function SignUp() {
                   id="username"
                   label="Username"
                   name="username"
-                  autoComplete="username"
                   onChange={(event) => onChange(event, "username")}
                 />
               }
