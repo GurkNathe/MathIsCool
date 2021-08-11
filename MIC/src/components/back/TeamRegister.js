@@ -31,7 +31,7 @@ function TeamRegister(){
 
    let longest = 0;
    var schoolData = {value: null, label: null, div: null}
-   const user = {email: fire.auth().currentUser.email, name: fire.auth().currentUser.username};
+   const user = {email: fire.auth().currentUser.email, name: fire.auth().currentUser.displayName};
 
    var url = "";
 

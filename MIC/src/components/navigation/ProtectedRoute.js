@@ -20,7 +20,9 @@ function PrivateRoute(props) {
           <ReactLoading type="spinningBubbles" color="#000" style={{width:"50px", height:"50px"}}/>
         </div> :
         user != null ?
-          <Route component={props.component} exact path={props.path}/> :
+          user.emailVerified ? 
+            <Route component={props.component} exact path={props.path}/> :
+            <Redirect to="/login"/> :
           <Redirect to="/login"/>
       }
     </>

@@ -11,8 +11,6 @@ import { Menu } from "@material-ui/icons";
 
 import image from "../../assets/logo.5a82c15d88ad2d074447.png";
 
-// const drawerWidth = "128px";
-
 const useStyles = makeStyles((theme) => ({
    closed:{
       transition: "margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)",

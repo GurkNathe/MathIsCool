@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const history = useHistory();
   const classes = useStyles();
-  const [up, setUp] = useState({email: " ", password: " ", confirm: " ", error: null});
+  const [up, setUp] = useState({email: " ", username: " ", password: " ", confirm: " ", error: null});
 
   const onChange = (event, type) => {
     switch (type) {
@@ -79,6 +79,13 @@ export default function SignUp() {
           confirm: event.target.value,
           error: null,
         }));
+        break;
+      case "username":
+        setUp((prevState) => ({
+          ...prevState,
+          username: event.target.value,
+          error: null,
+        }))
         break;
       default:
         console.log(up);
@@ -111,7 +118,6 @@ export default function SignUp() {
     // }).then((ref) => {
     //   console.log(ref);
     //   localStorage.setItem("authorized", true);
-    //   actions({type:'setState', payload:{...state, authorized: true }});
     //   history.push("/home");
     // }).catch((e) => {
     //   setPassword(null);
@@ -120,10 +126,14 @@ export default function SignUp() {
     //   return;
     // })
 
-    //Sign's a person up using an email and password.
+    //Sign's a person up using an email and password, and send email confirmation.
     fire.auth().createUserWithEmailAndPassword(up.email, up.password)
       .then((userCreds) => {
         console.log(userCreds)
+        fire.auth().currentUser.sendEmailVerification()
+          .then(() => {
+            console.log("SUCCESS");
+          })
         history.push("/");
       })
       .catch((error) => {
@@ -131,6 +141,20 @@ export default function SignUp() {
         if(up.error === null)
           setError(error.code)
       });
+    
+    //Adds person's username
+    fire.auth().onAuthStateChanged((user) => {
+      if(user){
+        user.updateProfile({
+          displayName: up.username
+        }).then(() => {
+          console.log(user);
+        }).catch((error) => {
+          setError(error.code)
+          console.log(up.error)
+        })
+      }
+    })
 
   };
 
@@ -146,6 +170,38 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
+
+            <Grid item xs={12}>
+              {(up.error) ? 
+                <TextField
+                  error
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
+                  helperText={up.error === "auth/invalid-email" ? 
+                                "Please enter a valid email address." : 
+                                up.error === "auth/email-already-in-use" ? 
+                                  "Email already taken." : 
+                                  null
+                              }
+                  onChange={(event) => onChange(event, "username")}
+                /> :
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
+                  onChange={(event) => onChange(event, "username")}
+                />
+              }
+            </Grid>
             
             <Grid item xs={12}>
               {(up.error) ? 
@@ -249,7 +305,7 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
-          <Grid container justify="flex-end">
+          <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2">
                 Already have an account? Sign in
