@@ -7,13 +7,13 @@ import fire from "../fire";
 function History() {
   const [page, setPage] = useState("");
 
-  fire.firestore().collection('pages').onSnapshot((snapshot) => {
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setPage(data[0].history.value);
-  })
+  fire.firestore().collection('web').doc('history').get()
+    .then((doc) => {
+      setPage(doc.data().history.value);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
 
   return (
     <Page title="History" page={page}/>

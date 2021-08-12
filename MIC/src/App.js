@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import SignUp from "./components/front/SignUp";
 import Competitions from "./components/front/Competitions";
 import Home from "./components/front/Home";
-import Login from "./components/front/Login";
+import SignIn from "./components/front/SignIn";
 import PastTests from "./components/front/PastTests";
 import History from "./components/front/History";
 import Contacts from "./components/front/Contacts";
@@ -21,6 +21,7 @@ import TeamRegister from "./components/back/TeamRegister";
 import Individual from "./components/back/Individual";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
 import Form from "./components/random/Form";
+import Masters from "./components/back/Masters";
 
 function App() {
   return (
@@ -38,12 +39,13 @@ function App() {
             <Route path="/information/faq" exact component={FAQ}/>
             <Route path="/resources/past-tests" exact component={PastTests}/>
             <Route path="/competitions" exact component={Competitions}/>
-            <Route path="/login" exact component={Login}/>
+            <Route path="/login" exact component={SignIn}/>
             <Route path="/login/signup" exact component={SignUp}/>
             <ProtectedRoute path="/home" exact component={LoginHome}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
             <ProtectedRoute path="/individual" exact component={Individual}/>
-            <ProtectedRoute path="/team-register/confirm/" exact component={Form} />
+            <ProtectedRoute path="/team-register/confirm/" exact component={Form}/>
+            <ProtectedRoute path="/masters-register" exact component={Masters}/>
           </Switch>
       </Router>
     </div>

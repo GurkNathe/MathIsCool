@@ -195,6 +195,7 @@ function TeamRegister(){
       <div style={{display: "flex", flexDirection:"row"}}>
          <div style={{width:"100%", borderRadius: "4px", margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
             <div style={{marginLeft:"1%", marginRight:"1%",}}>
+               <h1>Team Registration</h1>
                <p>
                   <b>Rules for Individuals:</b> Any student may compete as an individual 
                   in their grade level or any higher grade; however, a student may 

@@ -7,13 +7,13 @@ import fire from "../fire";
 function Fees() {
   const [page, setPage] = useState("");
 
-  fire.firestore().collection('pages').onSnapshot((snapshot) => {
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setPage(data[0].fees.value);
-  })
+  fire.firestore().collection('web').doc('fees').get()
+    .then((doc) => {
+      setPage(doc.data().fees.value);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
 
   return (
     <Page title="Fees" page={page}/>
