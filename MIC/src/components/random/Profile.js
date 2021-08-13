@@ -3,7 +3,6 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/styles";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { useHistory } from "react-router-dom";
 
 import fire from "../fire";
 
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
  }
 }))
 
-function Profile(props) {
+function Profile() {
   const classes = useStyles();
   
   return(

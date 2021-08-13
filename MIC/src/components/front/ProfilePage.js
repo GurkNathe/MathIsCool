@@ -1,7 +1,5 @@
 import React from "react";
 import { makeStyles, CssBaseline, Button, Avatar, Container, Typography } from '@material-ui/core';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { useHistory } from "react-router-dom";
 
 import SignIn from "../front/SignIn";
 
@@ -37,11 +35,6 @@ const useStyles = makeStyles((theme) => ({
 
 function ProfilePage () {
   const classes = useStyles();
-  const history = useHistory();
-
-  const onClick = () => {
-    
-  }
 
   return(
     <Container component="main" maxWidth="xs">

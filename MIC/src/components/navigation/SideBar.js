@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, Drawer, Button, ClickAwayListener, Divider, Avatar } from "@material-ui/core";
+import { makeStyles, Drawer, Button, ClickAwayListener, Divider, Avatar, Typography } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { useHistory } from "react-router-dom";
@@ -11,8 +11,6 @@ import Profile from "../random/Profile";
 import fire from "../fire";
 
 import image from "../../assets/logo.5a82c15d88ad2d074447.png";
-
-// `url(${image}) right center/contain no-repeat #3f51b5`
 
 const useStyles = makeStyles((theme) => ({
    closed:{
@@ -83,25 +81,7 @@ const useStyles = makeStyles((theme) => ({
    }
 }));
 
-// { fire.auth().currentUser ?
-//    <Button className={classes.button} onClick={() => {
-//             fire.auth().signOut()
-//                .then((user) => {
-//                   setOpen(false);
-//                   history.push("/login")
-//                })
-//                .catch((error) => {
-//                   console.log("An error occured ", error)
-//                })
-//          }
-//       }
-//    >
-//       Logout
-//    </Button> :
-//    <Button className={classes.button} href="/login">
-//       Login
-//    </Button>
-// }
+//NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
 
 function SideBar() {
    const history = useHistory();
@@ -133,6 +113,9 @@ function SideBar() {
             <Button onClick={() => setOpen(true)}>
                <Menu style={{color:"white"}}/>
             </Button>
+            <Typography style={{color:"white", display:"flex", alignItems:"center", fontSize:"2.5rem", fontFamily:"math"}}>
+               Math Is Cool
+            </Typography>
             <div style={{marginTop:"10px", marginBottom:"10px", marginLeft:"auto", marginRight:"10px"}}>
                {fire.auth().currentUser ?
                   <Avatar className={classes.avatar}>

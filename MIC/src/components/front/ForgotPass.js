@@ -39,7 +39,7 @@ export default function ForgotPass() {
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
     fire.auth().sendPasswordResetEmail(email)
-      .then((result) => {
+      .then(() => {
         alert("A password reset email was sent to your email. Please click on the link and reset your password.")
         history.push("/profile")
       })
