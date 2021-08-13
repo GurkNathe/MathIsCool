@@ -4,22 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import Context from "./context/loginContext";
-import useLoginState from "./context/useLoginState";
-
-const Index = () => {
-  const store = useLoginState();
-
-  return(
-    <Context.Provider value={store}>
-      <App />
-    </Context.Provider>
-  );
-}
-
 ReactDOM.render(
   <React.StrictMode>
-    <Index />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

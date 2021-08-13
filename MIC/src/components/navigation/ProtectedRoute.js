@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Route, Redirect } from "react-router-dom";
 import ReactLoading from "react-loading";
 import fire from "../fire";
-import { Alert, AlertTitle } from "@material-ui/lab";
 
 function PrivateRoute(props) {
   const [user, setUser] = useState(1);

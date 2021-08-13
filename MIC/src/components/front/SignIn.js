@@ -14,8 +14,6 @@ import Container from '@material-ui/core/Container';
 import fire from "../fire";
 import { useHistory } from "react-router-dom";
 
-//Taken from material-ui templates page
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -78,8 +76,8 @@ export default function SignIn() {
 
     fire.auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
-        console.log(userCredential.user)
         history.push("/")
+        window.location.reload()
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -173,7 +171,7 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="/login/forgot-password" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
@@ -185,7 +183,6 @@ export default function SignIn() {
           </Grid>
         </form>
       </div>
-      
     </Container>
   );
 }

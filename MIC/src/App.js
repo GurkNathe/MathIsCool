@@ -13,6 +13,8 @@ import Locations from "./components/front/Locations";
 import Rules from "./components/front/Rules";
 import Fees from "./components/front/Fees";
 import FAQ from "./components/front/FAQ";
+import ProfilePage from "./components/front/ProfilePage";
+import ForgotPass from "./components/front/ForgotPass";
 
 //Different components for logged-in website
 import SideBar from "./components/navigation/SideBar";
@@ -41,6 +43,8 @@ function App() {
             <Route path="/competitions" exact component={Competitions}/>
             <Route path="/login" exact component={SignIn}/>
             <Route path="/login/signup" exact component={SignUp}/>
+            <Route path="/profile" exact component={ProfilePage}/>
+            <Route path="/login/forgot-password" exact component={ForgotPass}/>
             <ProtectedRoute path="/home" exact component={LoginHome}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
             <ProtectedRoute path="/individual" exact component={Individual}/>

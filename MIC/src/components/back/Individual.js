@@ -156,7 +156,7 @@ function Individual(){
                }));
             }
             break;
-          case "name":
+         case "name":
             if(newValue != null){
                setChoice((prevState) => ({
                   ...prevState,
