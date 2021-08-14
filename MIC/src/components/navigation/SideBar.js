@@ -95,8 +95,6 @@ function SideBar() {
       }, 2000)
    }, [name]);
 
-   console.log(name)
-
    return(
       <div className={classes.outer}>
          <Drawer open={open} anchor="top">
