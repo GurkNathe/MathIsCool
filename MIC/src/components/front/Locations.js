@@ -7,10 +7,10 @@ import map from "../../assets/MIC_Regions.png"
 function Locations() {
   const [loc, setLoc] = useState("");
   
-  //holding names of articles
+  //holding names of sites
   var locations = [];
 
-  //getting articles from database
+  //getting sites from database
   useEffect(() => {
     fire.firestore().collection('web').doc('sites').get()
       .then((doc) => {
@@ -21,35 +21,21 @@ function Locations() {
       })
     }, [])
   
+  //getting site names
   for(const i in loc){
     locations.push(loc[i].name);
   }
 
+  //sorting site names
   locations.sort();
-  console.log(locations)
 
-
+  //alphabetically ordering getting site names 
   for(const i in locations){
     for(const j in loc){
       if(locations[i] === loc[j].name)
         locations[i] = loc[j];
     }
   }
-
-  console.log(locations)
-
-  /**<>
-            <h3>WEST</h3>
-            {locations.west.map((doc) => {
-                return(
-                  <p>
-                    <a href={doc.mapUrl}>{doc.name}</a> - 
-                    {doc.street}, {doc.city}
-                  </p>
-                );
-              })
-            }
-          </> */
 
   return(
     <div style={{display: "flex", flexDirection:"row"}}>

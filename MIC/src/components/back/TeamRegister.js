@@ -143,6 +143,7 @@ function TeamRegister(){
       }
    };
 
+   //checks data to make sure things are filled out, and redirects to the goole form with prefilled info.
    const onSubmit = () => {
 
       setError(choice);
@@ -173,6 +174,7 @@ function TeamRegister(){
       }
    }
 
+   //sets iframe url for filling google form
    const setURL = (choice, schoolData) => {
       url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${user.name}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.coach}`
    }
@@ -275,7 +277,7 @@ function TeamRegister(){
                         label="Other Emails"
                         value={choice.coach}
                         onChange={(event) => onChange(event, "coach")}
-                        style={{ width: longest }}
+                        style={{ width: longest, maxWidth: "65vw", marginRight: 0 }}
                      >
                      </TextField>
                   </div>
