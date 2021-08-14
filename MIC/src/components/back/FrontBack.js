@@ -6,11 +6,11 @@ import useStyles from "./style";
 function FrontBack(){
    const classes = useStyles();
    const [open, setOpen] = useState(false);
-   const [away, setAway] = useState({p1: true, p2: true, p3: true});
+   const [away, setAway] = useState({p1: true, p2: true});
 
    const handleChange = (panel) => (event, isOpen) => {
       setOpen(isOpen ? panel : false);
-      setAway({p1:true, p2:true, p3:true});
+      setAway({p1:true, p2:true});
    }
 
    return(
@@ -30,9 +30,9 @@ function FrontBack(){
                      </AccordionSummary>
                      <AccordionDetails>
                         <ButtonGroup orientation="vertical"> 
-                           <Button className={classes.button} component={Link} to="/about/history">History</Button>
-                           <Button className={classes.button} component={Link} to="/about/contacts">Contacts</Button>
-                           <Button className={classes.button} component={Link} to="/about/locations">Locations</Button>
+                           <Button className={classes.button} href="/about/history">History</Button>
+                           <Button className={classes.button} href="/about/contacts">Contacts</Button>
+                           <Button className={classes.button} href="/about/locations">Locations</Button>
                         </ButtonGroup>
                      </AccordionDetails>
                   </Accordion>
@@ -44,22 +44,10 @@ function FrontBack(){
                      </AccordionSummary>
                      <AccordionDetails>
                         <ButtonGroup orientation="vertical"> 
-                           <Button className={classes.button} component={Link} to="/information/rules">Rules</Button>
-                           <Button className={classes.button} component={Link} to="/information/fees">Fees</Button>
-                           <Button className={classes.button} component={Link} to="/information/faq">FAQ</Button>
-                        </ButtonGroup>
-                     </AccordionDetails>
-                  </Accordion>
-               </ClickAwayListener>
-               <ClickAwayListener onClickAway={() => setAway({...away, p3: false})}>
-                  <Accordion expanded={open === 'panel3' && away.p3} onChange={handleChange('panel3')}>
-                     <AccordionSummary className={classes.button}>
-                        Resources
-                     </AccordionSummary>
-                     <AccordionDetails>
-                        <ButtonGroup orientation="vertical"> 
-                           <Button className={classes.button} component={Link} to="/resources/rules">Rules</Button>
-                           <Button className={classes.button} component={Link} to="/resources/past-tests">Past Tests</Button>
+                           <Button className={classes.button} href="/information/rules">Rules</Button>
+                           <Button className={classes.button} href="/information/fees">Fees</Button>
+                           <Button className={classes.button} href="/information/faq">FAQ</Button>
+                           <Button className={classes.button} href="/information/past-tests">Past Tests</Button>
                         </ButtonGroup>
                      </AccordionDetails>
                   </Accordion>

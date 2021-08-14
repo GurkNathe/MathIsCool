@@ -39,7 +39,7 @@ function App() {
             <Route path="/resources/rules" exact component={Rules}/>
             <Route path="/information/fees" exact component={Fees}/>
             <Route path="/information/faq" exact component={FAQ}/>
-            <Route path="/resources/past-tests" exact component={PastTests}/>
+            <Route path="/information/past-tests" exact component={PastTests}/>
             <Route path="/competitions" exact component={Competitions}/>
             <Route path="/login" exact component={SignIn}/>
             <Route path="/login/signup" exact component={SignUp}/>

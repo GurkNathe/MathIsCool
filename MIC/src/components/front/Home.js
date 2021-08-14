@@ -5,15 +5,16 @@ import fire from "../fire";
 import math from "../../assets/math1.jpg";
 import lake from "../../assets/moseslake.jpg";
 import train from "../../assets/mtrainier.jpg";
-import wp from "../../assets/WP_20140307_009.jpg"
-import donate from "../../assets/btn_donate_LG.webp"
+import wp from "../../assets/WP_20140307_009.jpg";
+import donate from "../../assets/btn_donate_LG.webp";
 
 function Home() {
   const [news, setNews] = useState("");
   
-  //holding names of documents
+  //holding names of articles
   var test = []
 
+  //getting articles from database
   useEffect(() => {
     fire.firestore().collection('web').doc('news').get()
       .then((doc) => {
@@ -24,65 +25,17 @@ function Home() {
       })
     }, [])
 
+  //getting article names
   for(const i in news){
     test.push(i);
   }
-  test.sort()
+
+  test.sort() //sorting names
+
+  //getting article data in order
   for(let i = 0; i < test.length; i++){
     test[i] = news[test[i]];
   }
-  // console.log(test)
-
-  /**
-   * Need to find a way to import info from firestore.
-   * Currently, if I try to do it like I have above, 
-   * console.log will run in an infinite loop, 
-   * eventually crashing the page.
-   */
-
-   {/*<p>
-   <b>2021 Masters Registration:</b> Masters Registration for 
-   grades 4 through 8 is Open. The process to register 
-   is different so there is a short
-   <a href="http://www.academicsarecool.com/assets/docs/MastersRegistration.mp4" target="_blank" rel="noreferrer">video</a> 
-   to describe it.
- </p>
- <p>
-   <b>Online Contests for 2020-2021:</b> The contests for 2020-2021 
-   are currently scheduled to be held online. The High School 
-   contest will be December 2nd, starting at 3:00pm. There will 
-   not be a Masters HS contest. See the Competition pages for other dates. 
-   See the notes below for sample online information and fees.
- </p>
- <p>
-   <b>We accept PayPal:</b> In addition to checks, Academics are Cool 
-   now accepts donations and registrtion payments through PayPal. 
-   See the Donate button in the right margin. There is a 'Pay Now' 
-   button at the bottom of registration invoices.
- </p>
- <p>
-   <b>Check the Mailing Address:</b> Please note the mailing address. 
-   <b>Send all</b> payments and correspondence to:<br/>
-   Academics Are Cool<br/>
-   P. O. Box 2214<br/>
-   Richland, WA 99352
- </p>
- <p>
-   <b>2019 Divisions:</b> The divisions are assigned according to how 
-   the schools have done in past competitions 
-   (<a href="http://www.academicsarecool.com/assets/docs/division_algorithm.pdf" target="_blank" rel="noreferrer">see method</a>).
-   New schools will be assigned to a division by the regional director. 
-   The 2019-20 assignments can be found at&nbsp;
-   <a href="http://www.academicsarecool.com/assets/docs/divisions.pdf" target="_blank" rel="noreferrer">2019-20 Divisions</a>
-   . The 2020-21 Divisions will be posted by the end of the month.
- </p>
- <p>
-   <b>Fees:</b> The registration fee for each team is $40 per team for 
-   Online contests. The registration fee for an individual $12 each 
-   for Online. A school that registers at least one team for a 
-   Championships contest can also register two alternate students 
-   for no fee. See the Fees page for more information.
- </p>*/}
 
   return(
     <div style={{display: "flex", flexDirection:"row"}}>
