@@ -36,20 +36,22 @@ const useStyles = makeStyles((theme) => ({
 function ProfilePage () {
   const classes = useStyles();
 
+  const username = localStorage.getItem("username")
+
   return(
     <Container component="main" maxWidth="xs">
       <CssBaseline/>
       <div className={classes.paper}>
-        {fire.auth().currentUser ?
+        { username ?
           <Avatar className={classes.avatar} src={fire.auth().currentUser ? null : null}>
-            {fire.auth().currentUser.displayName.match(/(\b\S)?/g).join("").toUpperCase()}
+            {username.match(/(\b\S)?/g).join("").toUpperCase()}
           </Avatar>:
           <SignIn/>
         }
-        { fire.auth().currentUser ? 
+        { username ? 
           <>
             <Typography component="h1" variant="h5">
-              {fire.auth().currentUser.displayName}
+              {username}
             </Typography>
             <Button className={classes.button} onClick={() => {
                       fire.auth().signOut()
@@ -58,7 +60,9 @@ function ProfilePage () {
                         })
                         .catch((error) => {
                             console.log("An error occured ", error)
-                        })
+                        });
+                      localStorage.removeItem("username")
+                      localStorage.removeItem("email")
                   }
                 }
             >

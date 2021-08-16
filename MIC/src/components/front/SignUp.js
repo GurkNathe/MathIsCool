@@ -112,27 +112,6 @@ export default function SignUp() {
       setError("NoUser");
       return;
     } else {
-
-      
-
-      //leaving this in here for when admins/editors are added to the site
-
-      // fire.firestore().collection('users').add({
-      //   auth:true,
-      //   email:email,
-      //   password:password,
-      //   admin:false
-      // }).then((ref) => {
-      //   console.log(ref);
-      //   localStorage.setItem("authorized", true);
-      //   history.push("/home");
-      // }).catch((e) => {
-      //   setPassword(null);
-      //   setConfirm(null);
-      //   console.log(e);
-      //   return;
-      // })
-
       //Sign's a person up using an email and password, and send email confirmation.
       fire.auth().createUserWithEmailAndPassword(up.email, up.password)
         .then((userCreds) => {
@@ -155,13 +134,32 @@ export default function SignUp() {
           user.updateProfile({
             displayName: up.username
           }).then(() => {
-            console.log(user);
           }).catch((error) => {
             setError(error.code)
-            console.log(up.error)
-          })
+          });
         }
-      })
+      });
+
+      //setting the firestore data for a user
+      setTimeout(() => {
+        let uid = fire.auth().currentUser.uid;
+        if(uid){
+          fire.firestore().collection('users')
+            .add({
+              admin: false,
+              director: false,
+              editor: false,
+              email: up.email,
+              displayName: up.username,
+              userId: uid
+            })
+            .then((ref) => {
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        }
+      }, 2000)
     }
   };
 

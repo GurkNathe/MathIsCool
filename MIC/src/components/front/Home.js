@@ -15,15 +15,20 @@ function Home() {
   var test = []
 
   //getting articles from database
+  
+  // useEffect(() => {
+  //   fire.firestore().collection('web').doc('news').get()
+  //     .then((doc) => {
+  //       setNews(doc.data().news.records);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     })
+  //   }, [])
+
   useEffect(() => {
-    fire.firestore().collection('web').doc('news').get()
-      .then((doc) => {
-        setNews(doc.data().news.records);
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-    }, [])
+    setNews(JSON.parse(localStorage.getItem('news')).news.records);
+  }, [])
 
   //getting article names
   for(const i in news){
@@ -45,7 +50,7 @@ function Home() {
           <>
             {test.map((doc) => {
               return(
-                <p>
+                <p key={doc.title}>
                   <b>{doc.title}:</b>&nbsp;
                   <span dangerouslySetInnerHTML={{ __html: doc.article}}></span>
                 </p>

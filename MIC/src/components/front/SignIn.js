@@ -76,6 +76,8 @@ export default function SignIn() {
 
     fire.auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
+        localStorage.setItem("email", email);
+        localStorage.setItem("username", userCredential.user.displayName)
         history.push("/")
         window.location.reload()
       })

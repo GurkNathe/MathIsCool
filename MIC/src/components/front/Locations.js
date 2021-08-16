@@ -11,15 +11,19 @@ function Locations() {
   var locations = [];
 
   //getting sites from database
+  // useEffect(() => {
+  //   fire.firestore().collection('web').doc('sites').get()
+  //     .then((doc) => {
+  //       setLoc(doc.data().sites.records);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     })
+  //   }, [])
+
   useEffect(() => {
-    fire.firestore().collection('web').doc('sites').get()
-      .then((doc) => {
-        setLoc(doc.data().sites.records);
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-    }, [])
+    setLoc(JSON.parse(localStorage.getItem('sites')).sites.records);
+  }, [])
   
   //getting site names
   for(const i in loc){

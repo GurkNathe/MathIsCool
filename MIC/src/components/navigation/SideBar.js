@@ -70,6 +70,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "grey",
         cursor: "pointer",
       },
+      width: "40px",
+      height: "40px",
    },
    avatar2: {
       color:"#c6c6c6",
@@ -92,7 +94,7 @@ function SideBar() {
    useEffect(() => {
       setTimeout(() => {
          setName(fire.auth().currentUser);
-      }, 2000)
+      }, 1000)
    }, [name]);
 
    return(

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 //Different components for front-end website
@@ -25,7 +25,38 @@ import ProtectedRoute from "./components/navigation/ProtectedRoute";
 import Form from "./components/random/Form";
 import Masters from "./components/back/Masters";
 
+import fire from "./components/fire";
+
 function App() {
+
+  //used to store non-restriced webpage data on local on first load
+  useEffect(() => {
+    if(localStorage.getItem("load") === null || localStorage.length === 0){
+      localStorage.setItem("load", true)
+    }
+    if(localStorage.getItem("load") === "true"){
+      fire.firestore().collection('web').get()
+        .then(querySnapshot => {
+          querySnapshot.docs.forEach(doc => {
+            localStorage.setItem(Object.keys(doc.data()), JSON.stringify(doc.data()));
+          })
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+      setTimeout(() => {
+          console.log("DID")
+          let name = fire.auth().currentUser.displayName;
+          let email = fire.auth().currentUser.email
+          localStorage.setItem("username", name)
+          localStorage.setItem("email", email)
+        }, 1000)
+      localStorage.setItem("load", false)
+    }
+  }, [])
+
+  
+
   return (
     <div style={{overflowX:"hidden"}} id="app">
       <Router>
