@@ -1,6 +1,7 @@
 import { TextField, Button, makeStyles, Grid } from "@material-ui/core";
 import React, { useState } from "react";
 import Auto from "../random/Auto.js";
+import { useHistory } from "react-router-dom";
 
 //Options for each dropdown. Probably use JSON for them
 
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
  }));
 
 function Individual(){
+   const history = useHistory();
    const classes = useStyles();
    const [choice, setChoice] = useState({ loc: null, 
                                           lev: null, 
@@ -30,11 +32,6 @@ function Individual(){
                                           grade: null,
                                           school: null,
                                           stlev: null,
-                                          schoolData: {
-                                             value: null,
-                                             label: null,
-                                             div: null,
-                                           },
                                           team1: null,
                                           team2: null,
                                           coach: "",
@@ -42,16 +39,9 @@ function Individual(){
                                        });
 
    let longest = 0;
-
-   var url = `https://docs.google.com/forms/d/e/1FAIpQLSeJ_fqnbSPgfrCmRAlcGN8lFCnLKw2zbvb8YUMRtYDjSTMXVQ/viewform?usp=pp_url
-                &entry.296234163=${choice.loc}
-                &entry.1262511676=${choice.lev}
-                &entry.2068664503=${choice.schoolData.label}
-                &entry.962283225=${choice.schoolData.value}
-                &entry.1420093772=${choice.schoolData.div}
-                &entry.75608970=${choice.team1}
-                &entry.2041045214=${choice.team2}
-                &entry.2062002355=${choice.coach}`
+   var schoolData = {value: null, label: null, div: null}
+   const user = {email: localStorage.getItem("email"), name: localStorage.getItem("username")};
+   var url = "";
 
    //finding length of longest string in options and resize search box accordingly
    for(var option in options){
@@ -207,8 +197,21 @@ function Individual(){
    };
 
    const onSubmit = (event) => {
-      
-      //Setting error if something is not filled out.
+      setError(choice)
+      setSchoolData()
+      setURL(choice, schoolData)
+
+      if(!choice.error){
+         history.push({
+            pathname: `/individual-register`,
+            state:{
+               key: url
+            }
+         });
+      }
+   }
+
+   const setError = (choice) => {
       for (const item in choice){
          if(choice[item] === null || choice[item] === ""){
             console.log("ERROR :", item)
@@ -219,19 +222,22 @@ function Individual(){
             break;
          }
       }
+   }
 
-      //Getting all the data for that school
+   const setURL = (choice, schoolData) => {
+      url = "localhost:3000"
+      // url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${user.name}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.coach}`
+   }
+
+   //Getting all the data for that school
+   const setSchoolData = () => {
       for(option in options.school){
          if(options.school[option].label === choice.school){
-            setChoice((prevState) => ({
-               ...prevState,
-               schoolData: {
-                value: options.school[option].value,
-                label: options.school[option].label,
-                div: options.school[option].div,
-               }
-            }));
-            console.log(options.school[option])
+            schoolData = {
+               value: options.school[option].value,
+               label: options.school[option].label,
+               div: options.school[option].div,
+            }
             break;
          }
       }
@@ -239,7 +245,7 @@ function Individual(){
 
    return(
       <>
-         {!choice.schoolData.value ?
+         {!schoolData.value ?
             <div style={{display: "flex", flexDirection:"row"}}>
                <div style={{width:"100%", borderRadius: "4px", margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
                   <div style={{marginLeft:"1%", marginRight:"1%",}}>
