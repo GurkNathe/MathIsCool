@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 function Masters(){
    const history = useHistory();
    const classes = useStyles();
-   const [choice, setChoice] = useState({ loc: null, 
+   const [choice, setChoice] = useState({ 
                                           lev: null, 
                                           school: null,
                                           team: null,
@@ -47,21 +47,6 @@ function Masters(){
 
    const onChange = (newValue, type) => {
       switch (type) {
-         case "location":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  loc: newValue,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  loc: null,
-                  error: false,
-               }));
-            }
-            break;
          case "level":
             if(newValue != null){
                setChoice((prevState) => ({
@@ -200,18 +185,8 @@ function Masters(){
               <form className={classes.root} noValidate autoComplete="off">
 
                 <Auto
-                    title="Competition Location"
-                    options={options.locations}
-                    text="Select Competition Location"
-                    onChange={(event, newValue) => onChange(newValue, "location")}
-                    width={longest}
-                    value={choice.loc}
-                    error={choice.error}
-                />
-
-                <Auto
-                    title="Competition Level"
-                    options={options.level}
+                    title="Masters Grade"
+                    options={options.masters}
                     text="Select Your Grade Level"
                     onChange={(event, newValue) => onChange(newValue, "level")}
                     width={longest}
