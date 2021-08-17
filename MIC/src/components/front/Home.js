@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import fire from "../fire";
+// import fire from "../fire";
 
 import math from "../../assets/math1.jpg";
 import lake from "../../assets/moseslake.jpg";

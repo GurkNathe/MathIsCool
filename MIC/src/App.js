@@ -33,17 +33,17 @@ function App() {
   useEffect(() => {
     if(localStorage.getItem("load") === null || localStorage.length === 0){
       localStorage.setItem("load", true)
-    }
-    if(localStorage.getItem("load") === "true"){
-      fire.firestore().collection('web').get()
-        .then(querySnapshot => {
-          querySnapshot.docs.forEach(doc => {
-            localStorage.setItem(Object.keys(doc.data()), JSON.stringify(doc.data()));
+    } 
+    else if(localStorage.getItem("load") === "true"){
+        fire.firestore().collection('web').get()
+          .then(querySnapshot => {
+            querySnapshot.docs.forEach(doc => {
+              localStorage.setItem(Object.keys(doc.data()), JSON.stringify(doc.data()));
+            })
           })
-        })
-        .catch((error) => {
-          console.log(error);
-        })
+          .catch((error) => {
+            console.log(error);
+          })
       setTimeout(() => {
           console.log("DID")
           let name = fire.auth().currentUser.displayName;

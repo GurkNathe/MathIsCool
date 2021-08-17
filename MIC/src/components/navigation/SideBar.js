@@ -91,6 +91,8 @@ function SideBar() {
    const [open, setOpen] = useState(false);
    const [name, setName] = useState(1);
 
+   const username = localStorage.getItem("username");
+
    useEffect(() => {
       setTimeout(() => {
          setName(fire.auth().currentUser);
@@ -117,10 +119,10 @@ function SideBar() {
                Math Is Cool
             </Typography>
             <div style={{marginTop:"10px", marginBottom:"10px", marginLeft:"auto", marginRight:"10px"}}>
-               {fire.auth().currentUser ?
+               {username ?
                   <Avatar className={classes.avatar}>
                      <Button onClick={() => {setOpen(false); history.push("/profile")}}>
-                        {fire.auth().currentUser.displayName.match(/(\b\S)?/g).join("").toUpperCase()}
+                        {username.match(/(\b\S)?/g).join("").toUpperCase()}
                      </Button>
                   </Avatar>:
                   <AccountCircleIcon onClick={() => {setOpen(false); history.push("/profile")}} className={classes.avatar2}/>

@@ -43,7 +43,7 @@ function ProfilePage () {
       <CssBaseline/>
       <div className={classes.paper}>
         { username ?
-          <Avatar className={classes.avatar} src={fire.auth().currentUser ? null : null}>
+          <Avatar className={classes.avatar}>
             {username.match(/(\b\S)?/g).join("").toUpperCase()}
           </Avatar>:
           <SignIn/>

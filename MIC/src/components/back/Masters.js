@@ -2,7 +2,6 @@ import { TextField, Button, makeStyles, Grid } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
 import Auto from "../random/Auto.js";
-import fire from "../fire";
 
 //Options for each dropdown. Probably use JSON for them
 
@@ -31,7 +30,7 @@ function Masters(){
 
    let longest = 0;
    var schoolData = {value: null, label: null, div: null}
-   const user = {email: fire.auth().currentUser.email, name: fire.auth().currentUser.displayName};
+   const user = {email: localStorage.getItem("email"), name: localStorage.getItem("username")};
 
    var url = "";
 

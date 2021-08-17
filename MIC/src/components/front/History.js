@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Page from "./Page";
 
-import fire from "../fire";
+// import fire from "../fire";
 
 function History() {
   const [page, setPage] = useState("");
