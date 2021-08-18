@@ -27,35 +27,47 @@ import Masters from "./components/back/Masters";
 
 import fire from "./components/fire";
 
+//Used to get pre-login web page html/data
+async function getWeb(){
+
+  //checks whether or not a read to the database is necessary
+  //only if load isn't in local storage or local storage is empty
+  //**MIGHT NEED TO TWEAK THIS SINCE I CAN SEE SOMEONE ABUSING THIS RUNNING UP CHARGES FOR READS TO DATABASE**//
+  if(localStorage.getItem("load") === null || localStorage.length === 0){
+    localStorage.setItem("load", true)
+  } 
+
+  //checks if load variable in local storage is true, meaning database can be pulled
+  else if(localStorage.getItem("load") === "true"){
+    //getting the 'web' collection from firestore
+    const web = await fire.firestore().collection('web').get();
+
+    //checking to make sure it actually got data
+    if(web.empty){
+      console.log(web);
+      return;
+    }
+
+    //adding web page html/data to local storage
+    web.forEach(doc => {
+      localStorage.setItem(Object.keys(doc.data()), JSON.stringify(doc.data()));
+    })
+    
+    //Adding non-compromising information to local storage for using in other components
+    localStorage.setItem("username", fire.auth().currentUser.displayName)
+    localStorage.setItem("email", fire.auth().currentUser.email)
+
+    //makes it so the database won't be read for web page material again during the session
+    localStorage.setItem("load", false)
+  }
+}
+
 function App() {
 
-  //used to store non-restriced webpage data on local on first load
+  //used to store non-restriced webpage data in local storage on first load
   useEffect(() => {
-    if(localStorage.getItem("load") === null || localStorage.length === 0){
-      localStorage.setItem("load", true)
-    } 
-    else if(localStorage.getItem("load") === "true"){
-        fire.firestore().collection('web').get()
-          .then(querySnapshot => {
-            querySnapshot.docs.forEach(doc => {
-              localStorage.setItem(Object.keys(doc.data()), JSON.stringify(doc.data()));
-            })
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-      setTimeout(() => {
-          console.log("DID")
-          let name = fire.auth().currentUser.displayName;
-          let email = fire.auth().currentUser.email
-          localStorage.setItem("username", name)
-          localStorage.setItem("email", email)
-        }, 1000)
-      localStorage.setItem("load", false)
-    }
+    getWeb();
   }, [])
-
-  
 
   return (
     <div style={{overflowX:"hidden"}} id="app">

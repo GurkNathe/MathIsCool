@@ -37,6 +37,7 @@ function ProfilePage () {
   const classes = useStyles();
 
   const username = localStorage.getItem("username")
+  const email = localStorage.getItem("email")
 
   return(
     <Container component="main" maxWidth="xs">
@@ -52,6 +53,9 @@ function ProfilePage () {
           <>
             <Typography component="h1" variant="h5">
               {username}
+            </Typography>
+            <Typography component="h1" variant="h5">
+              {email}
             </Typography>
             <Button className={classes.button} onClick={() => {
                       fire.auth().signOut()
