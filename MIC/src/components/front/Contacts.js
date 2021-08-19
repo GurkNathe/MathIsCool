@@ -2,21 +2,17 @@ import React, { useState, useEffect } from "react";
 
 import Page from "./Page";
 
-// import fire from "../fire";
+import getWeb from "./getWeb";
 
 function Contacts() {
   const [page, setPage] = useState("");
 
-  // fire.firestore().collection('web').doc('whotocall').get()
-  //   .then((doc) => {
-  //     setPage(doc.data().whotocall.value);
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   })
+  const title = "whotocall";
 
   useEffect(() => {
-    setPage(JSON.parse(localStorage.getItem('whotocall')).whotocall.value);
+    getWeb(title);
+    if(localStorage.getItem(title))
+      setPage(JSON.parse(localStorage.getItem(title)).whotocall.value);
   }, [])
 
   return (
@@ -25,4 +21,3 @@ function Contacts() {
 }
 
 export default Contacts;
-

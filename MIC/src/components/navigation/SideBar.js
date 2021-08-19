@@ -4,9 +4,10 @@ import { Menu } from "@material-ui/icons";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { useHistory } from "react-router-dom";
 
-import FrontBack from "../back/FrontBack";
-import CoachTools from "../back/CoachTools";
-import Profile from "../random/Profile";
+import FrontBack from "./FrontBack";
+import CoachTools from "./CoachTools";
+import Admin from "./Admin";
+import Profile from "../custom/Profile";
 
 import fire from "../fire";
 
@@ -106,6 +107,7 @@ function SideBar() {
                <div className={classes.inner}>
                   <FrontBack/>
                   { fire.auth().currentUser ? <CoachTools/> : null }
+                  <Admin/>
                   <Divider/>
                   <Profile/>
                </div>

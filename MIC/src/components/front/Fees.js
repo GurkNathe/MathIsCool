@@ -2,21 +2,17 @@ import React, { useState, useEffect } from "react";
 
 import Page from "./Page";
 
-// import fire from "../fire";
+import getWeb from "./getWeb";
 
 function Fees() {
   const [page, setPage] = useState("");
 
-  // fire.firestore().collection('web').doc('fees').get()
-  //   .then((doc) => {
-  //     setPage(doc.data().fees.value);
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   })
+  const title = "fees";
 
   useEffect(() => {
-    setPage(JSON.parse(localStorage.getItem('fees')).fees.value);
+    getWeb(title)
+    if(localStorage.getItem(title))
+      setPage(JSON.parse(localStorage.getItem(title)).fees.value);
   }, [])
 
   return (

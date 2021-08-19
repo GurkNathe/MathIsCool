@@ -1,7 +1,7 @@
 import { TextField, Button, makeStyles, Grid } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
-import Auto from "../random/Auto.js";
+import Auto from "../custom/Auto.js";
 
 //Options for each dropdown. Probably use JSON for them
 

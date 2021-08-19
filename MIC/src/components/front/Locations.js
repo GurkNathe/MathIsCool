@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 // import fire from "../fire";
 
 import map from "../../assets/MIC_Regions.png"
+import getWeb from "./getWeb";
 
 function Locations() {
   const [loc, setLoc] = useState("");
@@ -10,19 +11,12 @@ function Locations() {
   //holding names of sites
   var locations = [];
 
-  //getting sites from database
-  // useEffect(() => {
-  //   fire.firestore().collection('web').doc('sites').get()
-  //     .then((doc) => {
-  //       setLoc(doc.data().sites.records);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error)
-  //     })
-  //   }, [])
+  const title = "sites";
 
   useEffect(() => {
-    setLoc(JSON.parse(localStorage.getItem('sites')).sites.records);
+    getWeb(title);
+    if(localStorage.getItem(title))
+      setLoc(JSON.parse(localStorage.getItem(title)).sites.records);
   }, [])
   
   //getting site names
@@ -58,7 +52,7 @@ function Locations() {
             {locations.map((doc) => {
                 return(
                   doc.region === "west" ?
-                    <span>
+                    <span key={doc.name}>
                       <a href={doc.mapUrl}>{doc.name}</a> - 
                       {doc.street}, {doc.city}<br/>
                     </span>:
@@ -70,7 +64,7 @@ function Locations() {
             {locations.map((doc) => {
                 return(
                   doc.region === "central" ?
-                    <span>
+                    <span key={doc.name}>
                       <a href={doc.mapUrl}>{doc.name}</a> - 
                       {doc.street}, {doc.city}<br/>
                     </span>:
@@ -82,7 +76,7 @@ function Locations() {
             {locations.map((doc) => {
                 return(
                   doc.region === "east" ?
-                    <span>
+                    <span key={doc.name}>
                       <a href={doc.mapUrl}>{doc.name}</a> - 
                       {doc.street}, {doc.city}<br/>
                     </span>:
@@ -94,7 +88,7 @@ function Locations() {
             {locations.map((doc) => {
                 return(
                   doc.region === "masters" ?
-                    <span>
+                    <span key={doc.name}>
                       <a href={doc.mapUrl}>{doc.name}</a> - 
                       {doc.street}{doc.city === " " ? null : ","} {doc.city}<br/>
                     </span>:

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-// import fire from "../fire";
-
 import math from "../../assets/math1.jpg";
 import lake from "../../assets/moseslake.jpg";
 import train from "../../assets/mtrainier.jpg";
 import wp from "../../assets/WP_20140307_009.jpg";
 import donate from "../../assets/btn_donate_LG.webp";
+import getWeb from "./getWeb";
 
 function Home() {
   const [news, setNews] = useState("");
@@ -14,20 +13,12 @@ function Home() {
   //holding names of articles
   var test = []
 
-  //getting articles from database
-  
-  // useEffect(() => {
-  //   fire.firestore().collection('web').doc('news').get()
-  //     .then((doc) => {
-  //       setNews(doc.data().news.records);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error)
-  //     })
-  //   }, [])
+  const title = "news";
 
   useEffect(() => {
-    setNews(JSON.parse(localStorage.getItem('news')).news.records);
+    getWeb(title);
+    if(localStorage.getItem(title))
+      setNews(JSON.parse(localStorage.getItem(title)).news.records);
   }, [])
 
   //getting article names

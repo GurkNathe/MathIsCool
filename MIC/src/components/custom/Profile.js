@@ -25,13 +25,15 @@ const useStyles = makeStyles((theme) => ({
 
 function Profile() {
   const classes = useStyles();
+
+  const username = localStorage.getItem("username");
   
   return(
     <div style={{marginTop:"10px", marginBottom:"10px", marginLeft:"auto", marginRight:"10px"}}>
-      {fire.auth().currentUser ?
-        <Avatar className={classes.avatar} src={fire.auth().currentUser ? null : null}>
+      { username !== null && username !== undefined ?
+        <Avatar className={classes.avatar}>
             <Button href="/profile">
-              {fire.auth().currentUser.displayName.match(/(\b\S)?/g).join("").toUpperCase()}
+              {username.match(/(\b\S)?/g).join("").toUpperCase()}
             </Button>
         </Avatar>:
         <AccountCircleIcon href="/profile" className={classes.avatar2}/>

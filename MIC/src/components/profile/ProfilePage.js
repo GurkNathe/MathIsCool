@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles, CssBaseline, Button, Avatar, Container, Typography } from '@material-ui/core';
 
-import SignIn from "../front/SignIn";
+import SignIn from "./SignIn";
 
 import fire from "../fire";
 
@@ -43,13 +43,13 @@ function ProfilePage () {
     <Container component="main" maxWidth="xs">
       <CssBaseline/>
       <div className={classes.paper}>
-        { username ?
+        { username !== null && username !== undefined ?
           <Avatar className={classes.avatar}>
             {username.match(/(\b\S)?/g).join("").toUpperCase()}
           </Avatar>:
           <SignIn/>
         }
-        { username ? 
+        { username !== null && username !== undefined ? 
           <>
             <Typography component="h1" variant="h5">
               {username}

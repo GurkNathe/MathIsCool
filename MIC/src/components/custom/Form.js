@@ -19,6 +19,7 @@ function Form(props) {
   return(
     <iframe 
       id="frame"
+      title="register"
       src={props.location.state.key} 
       className={classes.gform}
     >
