@@ -17,7 +17,7 @@ function CoachTools(){
                   <Button className={classes.button} href="/team-register">
                      Register Team
                   </Button>
-                  <Button className={classes.button} href="/names">
+                  <Button className={classes.button} href="/enter-names">
                      Enter Names
                   </Button>
                </ButtonGroup>

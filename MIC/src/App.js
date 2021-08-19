@@ -23,6 +23,7 @@ import SideBar from "./components/navigation/SideBar";
 import TeamRegister from "./components/back/TeamRegister";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
 import Form from "./components/custom/Form";
+import Names from "./components/back/Names";
 
 import fire from "./components/fire";
 
@@ -66,6 +67,7 @@ function App() {
             <Route path="/login/forgot-password" exact component={ForgotPass}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
             <ProtectedRoute path="/team-register/confirm/" exact component={Form}/>
+            <ProtectedRoute path="/enter-names" exact component={Names}/>
           </Switch>
       </Router>
     </div>
