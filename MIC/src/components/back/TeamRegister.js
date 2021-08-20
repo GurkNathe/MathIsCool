@@ -1,7 +1,8 @@
 import { TextField, Button, makeStyles, Grid } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Auto from "../custom/Auto.js";
+import fire from "../fire";
 
 //Options for each dropdown. Probably use JSON for them
 
@@ -14,7 +15,52 @@ const useStyles = makeStyles((theme) => ({
        width: '25ch',
      },
    },
+   top: {
+      display: "flex", 
+      flexDirection:"row"
+    },
+    second: {
+      width:"100%",
+      borderRadius: "4px", 
+      margin:"2%",
+      boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"
+    },
+    bottom: {
+      marginLeft:"1%", 
+      marginRight:"1%",
+    }
  }));
+
+//gets the competitions that are open (i.e. status == reg)
+async function getComps(title){
+   
+   //holds the competitions
+   var comps = {};
+
+   //checks if load variable in local storage is true, meaning database can be pulled
+   if(!localStorage.getItem(title + "Data")){
+
+      //getting the 'web' collection from firestore
+      const doc = await fire.firestore().collection(title).where('status', '==', 'reg').get();
+
+      //adding open competitions to holding variable
+      doc.forEach((item) => {
+         comps = {
+            ...comps,
+            [item.id]: item.data()
+         }
+      })
+
+      //checking to make sure it actually got data
+      if(doc.empty){
+         console.log(doc);
+         return;
+      }
+
+      //adding web page html/data to local storage
+      localStorage.setItem(title + "Data", JSON.stringify(comps));
+   }
+}
 
 function TeamRegister(){
    const history = useHistory();
@@ -24,15 +70,36 @@ function TeamRegister(){
                                           school: null,
                                           team: null,
                                           indiv: null,
+                                          email: "",
                                           coach: "",
                                           error: false,
                                        });
-
+   useEffect(() => {
+      getComps("competitions");
+   }, []);
+   
    let longest = 0;
    var schoolData = {value: null, label: null, div: null}
    const user = {email: localStorage.getItem("email"), name: localStorage.getItem("username")};
 
    var url = "";
+
+   //deleting options that aren't available
+   let comps = JSON.parse(localStorage.getItem("competitionsData"));
+   
+   for(const i in options.locations){
+      let test = false;
+      for(const j in comps){
+         if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
+            test = true;
+         }
+      }
+      if(!test){
+         delete options.locations[i]
+      }
+   }
+
+   console.log()
 
    //finding length of longest string in options and resize search box accordingly
    for(var option in options){
@@ -69,6 +136,16 @@ function TeamRegister(){
                   lev: newValue,
                   error: false,
                }));
+               //for removing locations that don't have the grade associated with it
+               // for(const i in options.locations){
+               //    let test = false;
+               //    for(const j in comps){
+               //       if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
+               //          if(choice.lev !== null)
+               //             test = true;
+               //       }
+               //    }
+               // }
             } else {
                setChoice((prevState) => ({
                   ...prevState,
@@ -137,6 +214,21 @@ function TeamRegister(){
                }));
             }
             break;
+         case "email":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  email: newValue.target.value,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  email: "",
+                  error: false,
+               }));
+            }
+            break;
          default:
             console.log(newValue, type)
       }
@@ -175,7 +267,8 @@ function TeamRegister(){
 
    //sets iframe url for filling google form
    const setURL = (choice, schoolData) => {
-      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${user.name}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.coach}`
+      const uid = fire.auth().currentUser.uid; //might need to do something with this, since it might not be fast enough.
+      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}`
    }
 
    //Getting all the data for that school
@@ -193,9 +286,9 @@ function TeamRegister(){
    }
 
    return(
-      <div style={{display: "flex", flexDirection:"row"}}>
-         <div style={{width:"100%", borderRadius: "4px", margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"}}>
-            <div style={{marginLeft:"1%", marginRight:"1%",}}>
+      <div className={classes.top}>
+         <div className={classes.second}>
+            <div className={classes.bottom}>
                <h1>Team Registration</h1>
                <p>
                   <b>Rules for Individuals:</b> Any student may compete as an individual 
@@ -209,16 +302,6 @@ function TeamRegister(){
                   These students don't need to be registered as individuals separately.
                </p>
                <form className={classes.root} noValidate autoComplete="off">
-
-                  <Auto
-                     title="Competition Location"
-                     options={options.locations}
-                     text="Select Competition Location"
-                     onChange={(event, newValue) => onChange(newValue, "location")}
-                     width={longest}
-                     value={choice.loc}
-                     error={choice.error}
-                  />
 
                   <Auto
                      title="Competition Level"
@@ -237,6 +320,16 @@ function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "school")}
                      width={longest}
                      value={choice.school}
+                     error={choice.error}
+                  />
+
+                  <Auto
+                     title="Competition Location"
+                     options={options.locations}
+                     text="Select Competition Location"
+                     onChange={(event, newValue) => onChange(newValue, "location")}
+                     width={longest}
+                     value={choice.loc}
                      error={choice.error}
                   />
 
@@ -262,11 +355,31 @@ function TeamRegister(){
 
                   <div style={{display:"flex"}}>
                      <Grid item sm={3}>
-                        <p>Additional Emails</p>
+                        <p>Coach Name(s)</p>
                      </Grid>
                      <TextField
                         error={choice.error && choice.coach === ""}
                         helperText={choice.error && choice.coach === "" ? 
+                                       "Please fill out to continue" : null
+                                    }
+                        variant="outlined" 
+                        margin="normal" 
+                        required
+                        label="Coach Name(s)"
+                        value={choice.coach}
+                        onChange={(event) => onChange(event, "coach")}
+                        style={{ width: longest, maxWidth: "65vw", marginRight: 0 }}
+                     >
+                     </TextField>
+                  </div>
+
+                  <div style={{display:"flex"}}>
+                     <Grid item sm={3}>
+                        <p>Additional Emails</p>
+                     </Grid>
+                     <TextField
+                        error={choice.error && choice.email === ""}
+                        helperText={choice.error && choice.email === "" ? 
                                        "Please fill out to continue" : 
                                        "Example: notyour@email.com, another@coach.com"
                                     }
@@ -274,8 +387,8 @@ function TeamRegister(){
                         margin="normal" 
                         required
                         label="Other Emails"
-                        value={choice.coach}
-                        onChange={(event) => onChange(event, "coach")}
+                        value={choice.email}
+                        onChange={(event) => onChange(event, "email")}
                         style={{ width: longest, maxWidth: "65vw", marginRight: 0 }}
                      >
                      </TextField>

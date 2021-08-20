@@ -28,7 +28,7 @@ function Auto(props){
                              label={props.text} 
                              variant="outlined"
                              required
-                             style={{ width: props.width, maxWidth: "65vw", marginRight: 0 }}
+                             style={{ ...props.style, width: props.width, maxWidth: "65vw", marginRight: 0 }}
                           />
                        }
         />
