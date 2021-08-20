@@ -73,33 +73,21 @@ function TeamRegister(){
                                           email: "",
                                           coach: "",
                                           error: false,
-                                       });
+                                       });  
+   const [locals, setLocals] = useState([]);
+                                    
+   //deleting options that aren't available
+   let comps = JSON.parse(localStorage.getItem("competitionsData"));
+   
    useEffect(() => {
       getComps("competitions");
+      setLocals(options.locations)
    }, []);
    
    let longest = 0;
    var schoolData = {value: null, label: null, div: null}
    const user = {email: localStorage.getItem("email"), name: localStorage.getItem("username")};
-
    var url = "";
-
-   //deleting options that aren't available
-   let comps = JSON.parse(localStorage.getItem("competitionsData"));
-   
-   for(const i in options.locations){
-      let test = false;
-      for(const j in comps){
-         if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
-            test = true;
-         }
-      }
-      if(!test){
-         delete options.locations[i]
-      }
-   }
-
-   console.log()
 
    //finding length of longest string in options and resize search box accordingly
    for(var option in options){
@@ -111,6 +99,19 @@ function TeamRegister(){
 
    //don't know if there is a good way to do this, couldn't find anything
    longest *= 10;
+
+   //filters the options based on the currently available competitions
+   for(const i in options.locations){
+      let test = false;
+      for(const j in comps){
+         if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
+            test = true;
+         }
+      }
+      if(!test){
+         delete options.locations[i]
+      }
+   }
 
    const onChange = (newValue, type) => {
       switch (type) {
@@ -134,24 +135,41 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   lev: newValue,
+                  loc: null,
                   error: false,
                }));
-               //for removing locations that don't have the grade associated with it
-               // for(const i in options.locations){
-               //    let test = false;
-               //    for(const j in comps){
-               //       if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
-               //          if(choice.lev !== null)
-               //             test = true;
-               //       }
-               //    }
-               // }
+
+               let temp = [];
+
+               //resets the available options if field is cleared
+               options.locations = locals;
+
+               // for removing locations that don't have the grade associated with it
+               for(const i in options.locations){
+                  for(const j in comps){
+                     //checks if same location
+                     if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
+                        //checks if level is in the grade range for selected location
+                        if(newValue !== null && comps[j].grade.indexOf(newValue) !== -1){
+                           //checks if option is already included
+                           if(!temp.includes(options.locations[i])){
+                              temp.push(options.locations[i])
+                           }
+                        }
+                     }
+                  }
+               }
+               options.locations = temp;
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   lev: null,
+                  loc: null,
                   error: false,
                }));
+
+               //resets the available options if field is cleared
+               options.locations = locals;
             }
             break;
          case "school":
@@ -284,7 +302,7 @@ function TeamRegister(){
          }
       }
    }
-
+   
    return(
       <div className={classes.top}>
          <div className={classes.second}>
@@ -305,7 +323,7 @@ function TeamRegister(){
 
                   <Auto
                      title="Competition Level"
-                     options={options.level}
+                     options={options.grade}
                      text="Select Your Grade Level"
                      onChange={(event, newValue) => onChange(newValue, "level")}
                      width={longest}
@@ -325,8 +343,12 @@ function TeamRegister(){
 
                   <Auto
                      title="Competition Location"
+                     disabled={options.locations.length === 0}
                      options={options.locations}
-                     text="Select Competition Location"
+                     text={options.locations.length === 0 ? 
+                              "No Locations for this competition level." : 
+                              "Select Competition Location"
+                           }
                      onChange={(event, newValue) => onChange(newValue, "location")}
                      width={longest}
                      value={choice.loc}

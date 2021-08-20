@@ -16,6 +16,7 @@ function Auto(props){
            options={props.options.map((option) => option.label)}
            value={props.value}
            onChange={props.onChange}
+           disabled={props.disabled}
            freeSolo
            renderInput={(params) => 
                           <TextField 
