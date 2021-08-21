@@ -70,7 +70,7 @@ function Names() {
     }
  };
 
- const numbers = [1,2,3,4,5,6]
+ const numbers = 6;
 
   return (
     <div className={classes.page}>
@@ -92,7 +92,7 @@ function Names() {
       <div className={classes.top}>
         <div className={classes.second}>
           <div className={classes.bottom}>
-            <Table nums={numbers}/>
+            <Table teams={numbers}/>
           </div>
         </div>
       </div>

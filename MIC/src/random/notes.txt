@@ -8,8 +8,6 @@ Student names.
 
 Keeping track of all schools and # teams registered.
 
-Competition location filtering based on grade and competition status.
-
 Masters collection ---> documents of each grade level ---> have all schools that can register for masters
 
 Competition ---> document for each competition ---> current competition data + list of teams that have signed up by UID (being able to write to you record but no one else's).

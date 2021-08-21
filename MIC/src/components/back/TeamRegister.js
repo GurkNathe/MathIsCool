@@ -76,7 +76,6 @@ function TeamRegister(){
                                        });  
    const [locals, setLocals] = useState([]);
                                     
-   //deleting options that aren't available
    let comps = JSON.parse(localStorage.getItem("competitionsData"));
    
    useEffect(() => {
@@ -141,6 +140,13 @@ function TeamRegister(){
 
                let temp = [];
 
+               //gets the value of each level option
+               let value = "";
+               for(const i in options.level){
+                  if(options.level[i].label === newValue)
+                     value = options.level[i].value
+               }
+
                //resets the available options if field is cleared
                options.locations = locals;
 
@@ -150,7 +156,7 @@ function TeamRegister(){
                      //checks if same location
                      if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
                         //checks if level is in the grade range for selected location
-                        if(newValue !== null && comps[j].grade.indexOf(newValue) !== -1){
+                        if(newValue !== null && comps[j].grade.indexOf(value) !== -1){
                            //checks if option is already included
                            if(!temp.includes(options.locations[i])){
                               temp.push(options.locations[i])
@@ -323,7 +329,7 @@ function TeamRegister(){
 
                   <Auto
                      title="Competition Level"
-                     options={options.grade}
+                     options={options.level}
                      text="Select Your Grade Level"
                      onChange={(event, newValue) => onChange(newValue, "level")}
                      width={longest}
