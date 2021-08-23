@@ -1,45 +1,11 @@
 import React, { useState } from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography, Button, Grid } from "@material-ui/core";
 
 import Auto from "../custom/Auto";
 import Table from "../custom/Table";
+import useStyles from "../style";
 
 import options from "./options.json";
-
-const useStyles = makeStyles((theme) => ({
-  page: {
-    width:"100vw",
-    minHeight:"80vh",
-    display:"flex",
-    textAlign:"center",
-    justifyContent:"center",
-    flexWrap:"wrap",
-  },
-  inner: {
-    padding:"10px",
-  },
-  title: {
-    fontSize: "1.35rem",
-  },
-  top: {
-    display: "flex", 
-    flexDirection:"row"
-  },
-  second: {
-    width:"100vw", 
-    minHeight:"70vh",
-    borderRadius: "4px", 
-    marginRight:"2%",
-    marginLeft:"2%",
-    marginBottom:"1%",
-    boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"
-  },
-  bottom: {
-    marginLeft:"1%", 
-    marginRight:"1%",
-    marginTop:"1%",
-  }
-}));
 
 function Names() {
   const classes = useStyles();
@@ -72,9 +38,13 @@ function Names() {
 
  const numbers = 6;
 
+ const onSubmit = () => {
+   console.log("Hello");
+ };
+
   return (
     <div className={classes.page}>
-      <div className={classes.inner}>
+      <div className={classes.innerN}>
         <Typography className={classes.title}>
           School Registering
         </Typography>
@@ -90,12 +60,26 @@ function Names() {
         />
       </div>
       <div className={classes.top}>
-        <div className={classes.second}>
+        <div className={classes.middle}>
           <div className={classes.bottom}>
             <Table teams={numbers}/>
+            <Grid container>
+                <Grid item sm={2}>
+                  <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={onSubmit}
+                  >
+                      Submit
+                  </Button>
+                </Grid>
+            </Grid>
           </div>
         </div>
       </div>
+      
+      
     </div>
   );
 }

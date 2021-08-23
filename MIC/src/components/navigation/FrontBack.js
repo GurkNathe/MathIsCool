@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Accordion, Button, AccordionSummary, ButtonGroup, AccordionDetails, ClickAwayListener } from "@material-ui/core";
-import useStyles from "./style";
+import useStyles from "../style";
 
 function FrontBack(){
    const classes = useStyles();

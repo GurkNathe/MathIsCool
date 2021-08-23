@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Page from "./Page";
 
 import getWeb from "./getWeb";
+import getPage from "./getPage";
 
 function Contacts() {
   const [page, setPage] = useState("");
@@ -11,8 +12,7 @@ function Contacts() {
 
   useEffect(() => {
     getWeb(title);
-    if(localStorage.getItem(title))
-      setPage(JSON.parse(localStorage.getItem(title)).whotocall.value);
+    setPage(getPage(title, "value"));
   }, [])
 
   return (

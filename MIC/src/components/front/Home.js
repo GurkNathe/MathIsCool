@@ -6,9 +6,12 @@ import train from "../../assets/mtrainier.jpg";
 import wp from "../../assets/WP_20140307_009.jpg";
 import donate from "../../assets/btn_donate_LG.webp";
 import getWeb from "./getWeb";
+import getPage from "./getPage";
+import useStyles from "../style";
 
 function Home() {
   const [news, setNews] = useState("");
+  const classes = useStyles();
   
   //holding names of articles
   var test = []
@@ -17,8 +20,7 @@ function Home() {
 
   useEffect(() => {
     getWeb(title);
-    if(localStorage.getItem(title))
-      setNews(JSON.parse(localStorage.getItem(title)).news.records);
+    setNews(getPage(title, "records"))
   }, [])
 
   //getting article names
@@ -34,9 +36,9 @@ function Home() {
   }
 
   return(
-    <div style={{display: "flex", flexDirection:"row"}}>
-      <div style={{margin:"2%", boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)", width:"80%"}}>
-        <div style={{marginLeft:"1%", marginRight:"1%"}}>
+    <div className={classes.root}>
+      <div className={classes.second}>
+        <div className={classes.inner}>
           <h1 style={{fontStyle:"italic"}}>What's Happening</h1>
           <>
             {test.map((doc) => {
@@ -50,12 +52,12 @@ function Home() {
           </>
         </div>
       </div>
-      <div style={{marginLeft:"2%", marginRight:"2%", marginTop:"2%", marginBottom:"2%", width:"20%", textAlign:"center"}}>
+      <div className={classes.imgCol}>
         <a href="https://www.paypal.com/us/home" target="_blank" rel="noreferrer"><img src={donate} alt="PayPal" style={{width:"50%", borderRadius:"5px", marginBottom:"1%"}}/></a>
-        <img src={math} alt="math" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
-        <img src={lake} alt="lake" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
-        <img src={train} alt="train" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
-        <img src={wp} alt="wp" style={{width:"100%", borderRadius:"5px", marginBottom:"1%"}}/>
+        <img src={math} alt="math" className={classes.imgSty}/>
+        <img src={lake} alt="lake" className={classes.imgSty}/>
+        <img src={train} alt="train" className={classes.imgSty}/>
+        <img src={wp} alt="wp" className={classes.imgSty}/>
       </div>
     </div>
   );

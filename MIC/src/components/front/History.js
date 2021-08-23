@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Page from "./Page";
 
 import getWeb from "./getWeb";
+import getPage from "./getPage";
 
 function History() {
   const [page, setPage] = useState("");
@@ -11,8 +12,7 @@ function History() {
 
   useEffect(() => {
     getWeb(title);
-    if(localStorage.getItem(title))
-      setPage(JSON.parse(localStorage.getItem(title)).history.value);
+    setPage(getPage(title, "value"))
   }, [])
 
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 import { Accordion, Button, AccordionSummary, ButtonGroup } from "@material-ui/core";
-import useStyles from "./style";
+import useStyles from "../style";
 
 function CoachTools(){
 

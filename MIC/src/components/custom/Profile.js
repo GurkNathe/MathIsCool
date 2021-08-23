@@ -1,25 +1,8 @@
 import React from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/styles";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
-const useStyles = makeStyles((theme) => ({
-  avatar: {
-    '&:hover':{
-      backgroundColor: "grey",
-      cursor: "pointer",
-    },
-  },
-  avatar2: {
-    color:"#c6c6c6",
-    width: "40px",
-    height: "40px",
-    '&:hover':{
-       color:"grey"
-    }
- }
-}))
+import useStyles from "../style";
 
 function Profile() {
   const classes = useStyles();

@@ -3,9 +3,12 @@ import React, { useState, useEffect } from "react";
 // import fire from "../fire";
 
 import map from "../../assets/MIC_Regions.png"
+import getPage from "./getPage";
 import getWeb from "./getWeb";
+import useStyles from "../style";
 
 function Locations() {
+  const classes = useStyles();
   const [loc, setLoc] = useState("");
   
   //holding names of sites
@@ -15,8 +18,7 @@ function Locations() {
 
   useEffect(() => {
     getWeb(title);
-    if(localStorage.getItem(title))
-      setLoc(JSON.parse(localStorage.getItem(title)).sites.records);
+    setLoc(getPage(title, "records"))
   }, [])
   
   //getting site names
@@ -36,17 +38,10 @@ function Locations() {
   }
 
   return(
-    <div style={{display: "flex", flexDirection:"row"}}>
-      <div 
-        style={{margin:"2%", 
-                boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)", 
-                width:"100%",
-                minHeight:"80vh", 
-                maxHeight:"100%", 
-                maxWidth:"100%"
-                }}>
-        <div style={{marginLeft:"1%", marginRight:"1%"}}>
-          <h1 style={{fontStyle:"italic"}}>Locations</h1>
+    <div className={classes.root}>
+      <div className={classes.second}>
+        <div className={classes.inner}>
+          <h1 className={classes.header}>Locations</h1>
           <>
             <h3>WEST</h3>
             {locations.map((doc) => {
@@ -97,7 +92,7 @@ function Locations() {
               })
             }
           </>
-          <img src={map} alt="map" style={{marginTop:"2%", paddingBottom:"1%", maxHeight:"100%", maxWidth:"100%"}}/>
+          <img src={map} alt="map" className={classes.map}/>
         </div>
       </div>
     </div>

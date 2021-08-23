@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Page from "./Page";
 
 import getWeb from "./getWeb";
+import getPage from "./getPage";
 
 function Rules() {
   const [page, setPage] = useState("");
@@ -11,8 +12,7 @@ function Rules() {
 
   useEffect(() => {
     getWeb(title);
-    if(localStorage.getItem(title))
-      setPage(JSON.parse(localStorage.getItem(title)).rules.value);
+    setPage(getPage(title, "value"))
   }, [])
 
   return (
