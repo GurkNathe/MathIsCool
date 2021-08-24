@@ -172,7 +172,17 @@ const useStyles = makeStyles((theme) => ({
       display:"flex", 
       flexDirection: "row", 
       flexWrap: "wrap", 
-      justifyContent: "space-between"
+      justifyContent: "space-between",
+      alignItems:"center",
+      padding:"10px"
+   },
+   indiv:{
+      display:"flex", 
+      flexDirection: "row", 
+      flexWrap: "wrap", 
+      justifyContent: "space-between",
+      alignItems:"center",
+      padding:"10px"
    },
 
    //Enter Names

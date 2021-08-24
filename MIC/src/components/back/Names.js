@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Typography, Button, Grid } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
 
 import Auto from "../custom/Auto";
 import Table from "../custom/Table";
@@ -7,6 +7,10 @@ import useStyles from "../style";
 
 import options from "./options.json";
 
+/**
+ * TODO: Add Firestore pull on selection of school.
+ * TODO: Add submit to Firestore/Google Sheets for names.
+ */
 function Names() {
   const classes = useStyles();
   const [choice, setChoice] = useState({
@@ -37,10 +41,7 @@ function Names() {
  };
 
  const numbers = 6;
-
- const onSubmit = () => {
-   console.log("Hello");
- };
+ const indiv = 12;
 
   return (
     <div className={classes.page}>
@@ -62,24 +63,10 @@ function Names() {
       <div className={classes.top}>
         <div className={classes.middle}>
           <div className={classes.bottom}>
-            <Table teams={numbers}/>
-            <Grid container>
-                <Grid item sm={2}>
-                  <Button
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      onClick={onSubmit}
-                  >
-                      Submit
-                  </Button>
-                </Grid>
-            </Grid>
+            <Table teams={numbers} individuals={indiv}/>
           </div>
         </div>
       </div>
-      
-      
     </div>
   );
 }
