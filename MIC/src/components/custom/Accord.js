@@ -4,12 +4,16 @@ import React from "react";
 import useStyles from "../style";
 
 //Used for FAQ items
-
+/**
+ * @param  {string} title
+ * @param  {string} content
+ * @param  {integer} key
+ */
 export default function Accord(props){
   const classes = useStyles();
 
   return(
-    <Accordion>
+    <Accordion key={props.key}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         id={props.title}
