@@ -205,6 +205,9 @@ const useStyles = makeStyles((theme) => ({
       flexDirection:"row"
    },
    middle: {
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"center",
       width:"100vw", 
       minHeight:"70vh",
       borderRadius: "4px", 

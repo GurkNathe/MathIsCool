@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import ReactLoading from "react-loading";
+import React, { useState, useEffect } from "react";
 import { TextField, Grid, Button, Typography } from "@material-ui/core";
 import useStyles from "../style";
 
@@ -11,43 +10,56 @@ import useStyles from "../style";
  */
 export default function Table(props) {
   const classes = useStyles();
-  const [students, setStudents] = useState({});
-
+  const [students, setStudents] = useState(1);
+  const [loading, setLoading] = useState(true);
+  
   //creates an array with length of 1 to props.teams/individuals
-  const teams = Array.from({length: props.teams}, (_, i) => i + 1);
-  const indivs = Array.from({length: props.individuals}, (_, i) => i + 1);
+  const [teams, setTeams] = useState(Array.from({length: props.teams}, (_, i) => i + 1));
+  const [indivs, setIndivs] = useState(Array.from({length: props.individuals}, (_, i) => i + 1));
 
-  //creates the object that handles name inputs.
-  var info = {}
-  if(Object.keys(students).length === 0){
-    
-    const student = {
-      student1: "",
-      student2: "",
-      student3: "",
-      student4: "",
-    };
+  const getNames = (teams, indivs) => {
+    //creates the object that handles name inputs.
+    var info = {}
+    if(students !== 1){
+      
+      const student = {
+        student1: "",
+        student2: "",
+        student3: "",
+        student4: "",
+      };
 
-    //adds number of teams to list
-    teams.forEach(team => {
-      info[team] = {};
-      for(const s in student){
-        info[team][s] = student[s];
+      //adds number of teams to list
+      teams.forEach(team => {
+        info[team] = {};
+        for(const s in student){
+          info[team][s] = student[s];
+        }
+      });
+      
+      //adds number of individuals to list
+      info[Object.keys(info).length+1] = {};
+      indivs.forEach(ind => {
+        info[Object.keys(info).length+1] = {[`indiv${ind}`]: ""};
+      })
+
+      //adds the two alternates per competition
+      if(Object.keys(info).length !== 1){
+        info[teams.length+1] = {alt1: "", alt2: ""};
       }
-    });
-    
-    //adds number of individuals to list
-    info[Object.keys(info).length+1] = {};
-    indivs.forEach(ind => {
-      info[Object.keys(info).length+1] = {[`indiv${ind}`]: ""};
-    })
 
-    //adds the two alternates per competition
-    info[teams.length+1] = {alt1: "", alt2: ""};
-
-    setStudents(info);
+      return(info);
+    }
   }
-    
+
+  useEffect(() => {
+    if(students === 1 || students === undefined)
+      setStudents(getNames(teams, indivs));
+    if(students !== 1){
+      setLoading(false);
+    }
+  },[students])
+  
   /**
    * @param  {integer} team
    * @param  {string} type
@@ -64,25 +76,28 @@ export default function Table(props) {
         [type]: newValue,
       }
     }))
-    
-    console.log(students);
   }
 
   const onSubmit = (event) => {
     event.preventDefault();
     console.log("SUBMIT");
   }
-
+  
   return(
     <div className={classes.root}>
-      {Object.keys(students).length !== 0 ?
+    {console.log("IM DOING")}
+      <Typography>
+        {props.title}
+      </Typography>
+      { !loading && students !== undefined ?
         <div className={classes.table}>
           {/*display for the teams*/
+            props.teams !== 0 ?
             teams.map((team, index) => {
               return(
                 <div className={classes.table} key={index}>
                   <Typography>Team {team}</Typography>
-                  {
+                  { 
                     [1,2,3,4].map((num, ind) => {
                       return(
                         <div className={classes.table} key={ind}>
@@ -99,12 +114,20 @@ export default function Table(props) {
                   }
                 </div>
               )
-            })
+            }):
+            <div className={classes.table}>
+              <Typography>Teams</Typography>
+              <Typography style={{opacity:"50%"}}>
+                No teams signed up for this competition.
+              </Typography>
+            </div>
           }
+
           <div className={classes.table}>
             <Typography>Individuals</Typography>
             <div className={classes.indiv}>
               {/*display for the individuals*/
+                props.individuals !== 0 ?
                 indivs.map((indNum, index) => {
                   return(
                     <div className={classes.table} key={index}>
@@ -117,13 +140,18 @@ export default function Table(props) {
                       />
                     </div>
                   )
-                })
+                }):
+                <Typography style={{opacity:"50%"}}>
+                  No individuals signed up for this competition.
+                </Typography>
               }
             </div>
           </div>
+
           <div className={classes.table}>
             <Typography>Alternates</Typography>
             {/*display for the alternates*/
+              props.teams !== 0 ?
               [1,2].map((num, index) => {
                 return(
                   <div className={classes.table} key={index}>
@@ -136,7 +164,10 @@ export default function Table(props) {
                     />
                   </div>
                 );
-              })
+              }):
+              <Typography style={{opacity:"50%"}}>
+                No teams signed up for this competition.
+              </Typography>
             }
           </div>
           <Grid container>
@@ -152,8 +183,10 @@ export default function Table(props) {
             </Grid>
           </Grid>
         </div>:
-        <div style={{position:"fixed", top:"45%", left:"45%"}}>
-          <ReactLoading type="spinningBubbles" color="#000" style={{width:"50px", height:"50px"}}/>
+        <div style={{display:"flex", alignItems:"center", justifyContent:"center",}}>
+          <Typography style={{opacity:"50%"}}>
+            No competitions signed up for current school.
+          </Typography>
         </div>
       }
     </div>

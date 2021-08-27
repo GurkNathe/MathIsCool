@@ -10,7 +10,7 @@ export default async function getWeb(title){
 
       //checking to make sure it actually got data
       if(doc.empty){
-        console.log(doc);
+        // console.log(doc);
         return;
       }
 
