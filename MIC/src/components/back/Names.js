@@ -20,10 +20,11 @@ async function getComps(schoolId){
     } else {
       comps.forEach(doc => {
         const register = doc.data().registration;
+        const title = "Grade " + doc.data().grade.substr(1) + " Competition on " + doc.data().compDate;
         for(const sign in register){
           if(register[sign].schoolID === schoolId && register[sign].uid === fire.auth().currentUser.uid){
             //TODO: add competition title
-            competitions.push({teams: register[sign].numTeams, indiv: register[sign].numIndividuals});
+            competitions.push({title: title, teams: register[sign].numTeams, indiv: register[sign].numIndividuals});
           }
         }
       })
@@ -55,6 +56,8 @@ function Names() {
         school: newValue,
         error: false,
       }));
+      setComp([]);
+      setLoading(true);
     } else {
       setChoice((prevState) => ({
         ...prevState,
@@ -62,6 +65,7 @@ function Names() {
         error: false,
       }));
       setComp([]);
+      setLoading(true);
     }
 
     if(newValue !== null){
@@ -85,7 +89,7 @@ function Names() {
             setComp((prevState) => [
               ...prevState,
               {
-                title:"test",
+                title:vals[val].title,
                 teams:vals[val].teams,
                 indivs:vals[val].indiv,
               }

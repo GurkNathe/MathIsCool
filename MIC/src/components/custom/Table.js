@@ -85,48 +85,51 @@ export default function Table(props) {
   
   return(
     <div className={classes.root}>
-    {console.log("IM DOING")}
       <Typography>
         {props.title}
       </Typography>
       { !loading && students !== undefined ?
         <div className={classes.table}>
-          {/*display for the teams*/
-            props.teams !== 0 ?
-            teams.map((team, index) => {
-              return(
-                <div className={classes.table} key={index}>
-                  <Typography>Team {team}</Typography>
-                  { 
-                    [1,2,3,4].map((num, ind) => {
-                      return(
-                        <div className={classes.table} key={ind}>
-                          <TextField
-                            variant="outlined" 
-                            margin="normal"
-                            label={`Student #${num}`}
-                            value={students[team][`student${num}`]}
-                            onChange={(event) => onChange(team, `student${num}`, event.target.value)}
-                          />
-                      </div>
-                      );
-                    })
-                  }
-                </div>
-              )
-            }):
-            <div className={classes.table}>
-              <Typography>Teams</Typography>
-              <Typography style={{opacity:"50%"}}>
-                No teams signed up for this competition.
-              </Typography>
-            </div>
-          }
+          {/*display for the teams*/}
+          <div className={classes.table}>
+            {
+              props.teams !== 0 ?
+              teams.map((team, index) => {
+                return(
+                  <div className={classes.table} key={index}>
+                    <Typography>Team {team}</Typography>
+                    { 
+                      [1,2,3,4].map((num, ind) => {
+                        return(
+                          <div className={classes.table} key={ind}>
+                            <TextField
+                              variant="outlined" 
+                              margin="normal"
+                              label={`Student #${num}`}
+                              value={students[team][`student${num}`]}
+                              onChange={(event) => onChange(team, `student${num}`, event.target.value)}
+                            />
+                        </div>
+                        );
+                      })
+                    }
+                  </div>
+                )
+              }):
+              <div className={classes.table}>
+                <Typography>Teams</Typography>
+                <Typography style={{opacity:"50%"}}>
+                  No teams signed up for this competition.
+                </Typography>
+              </div>
+            }
+          </div>
 
+          {/* display for individuals */}
           <div className={classes.table}>
             <Typography>Individuals</Typography>
             <div className={classes.indiv}>
-              {/*display for the individuals*/
+              {
                 props.individuals !== 0 ?
                 indivs.map((indNum, index) => {
                   return(
@@ -148,9 +151,10 @@ export default function Table(props) {
             </div>
           </div>
 
+          {/*display for the alternates*/}
           <div className={classes.table}>
             <Typography>Alternates</Typography>
-            {/*display for the alternates*/
+            {
               props.teams !== 0 ?
               [1,2].map((num, index) => {
                 return(
@@ -170,6 +174,8 @@ export default function Table(props) {
               </Typography>
             }
           </div>
+          
+          {/* Submit Button */}
           <Grid container>
             <Grid item sm={2}>
               <Button
