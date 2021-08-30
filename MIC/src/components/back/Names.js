@@ -23,15 +23,20 @@ async function getComps(schoolId){
         const title = "Grade " + doc.data().grade.substr(1) + " Competition on " + doc.data().compDate;
         for(const sign in register){
           if(register[sign].schoolID === schoolId && register[sign].uid === fire.auth().currentUser.uid){
-            //TODO: add competition title
-            competitions.push({title: title, teams: register[sign].numTeams, indiv: register[sign].numIndividuals});
+            competitions.push({
+              regID: sign, 
+              compID: doc.id, 
+              title: title, 
+              teams: register[sign].numTeams, 
+              indiv: register[sign].numIndividuals
+            });
           }
         }
       })
       return(competitions)
     }
   } catch(err){
-    console.log("ERROR", err)
+    console.log("ERROR:", err)
   }
 }
 
@@ -84,11 +89,12 @@ function Names() {
       //TODO: need to make it process multiple sign ups
       getComps(schoolData.value).then(vals => {
         for(const val in vals){
-          console.log(vals)
           if(vals[val] !== undefined){
             setComp((prevState) => [
               ...prevState,
               {
+                regId:vals[val].regID,
+                compId:vals[val].compID,
                 title:vals[val].title,
                 teams:vals[val].teams,
                 indivs:vals[val].indiv,
@@ -97,7 +103,6 @@ function Names() {
           }
           
           if(vals[val].teams !== 0 || vals[val].indiv !== 0){
-            console.log("I GOT IT")
             setLoading(false);
           }
         }
@@ -125,16 +130,19 @@ function Names() {
       </div>
       <div className={classes.top}>
         <div className={classes.middle}>
-          {console.log(loading)}
           { !loading ?
             <div className={classes.bottom}>
               {
                 compData.map((comp, index) => {
                   return(
                     <div key={index}>
-                      {/* TODO: Need to at url for submission */}
-                      {console.log("GETTING HERE")}
-                      <Table title={comp.title} teams={comp.teams} individuals={comp.indivs}/>
+                      <Table  
+                        title={comp.title} 
+                        teams={comp.teams} 
+                        individuals={comp.indivs} 
+                        id={comp.compId}
+                        regId={comp.regId}
+                      />
                       <br/><Divider/><br/>
                     </div>
                   )

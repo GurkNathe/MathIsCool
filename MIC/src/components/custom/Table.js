@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { TextField, Grid, Button, Typography } from "@material-ui/core";
 import useStyles from "../style";
 
+import fire from "../fire";
+
 //Used for Enter Names table
 
 /**
@@ -78,9 +80,26 @@ export default function Table(props) {
     }))
   }
 
-  const onSubmit = (event) => {
-    event.preventDefault();
-    console.log("SUBMIT");
+  const onSubmit = () => {
+
+    //adds names to registration
+    fire.firestore().collection("competitions")
+      .doc(props.id)
+      .get()
+      .then((doc) => {
+        fire.firestore().collection("competitions").doc(props.id).update({
+          ...doc.data(),
+          registration: {
+            ...doc.data().registration,
+            [props.regId]: {
+              ...doc.data().registration[props.regId],
+              names: students
+            }
+          }
+        })
+      })
+      .catch(error => {console.log(error)})
+      
   }
   
   return(

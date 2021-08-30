@@ -1,23 +1,9 @@
-Find a way for schools to enter names.
-
 Mark masters so only certain schools to register for masters.
 
 Restricting masters registration to only marked schools.
 
-Student names.
-
-Keeping track of all schools and # teams registered.
-
 Masters collection ---> documents of each grade level ---> have all schools that can register for masters
 
 Competition ---> document for each competition ---> current competition data + list of teams that have signed up by UID (being able to write to you record but no one else's).
-
-Enter names: Somehow doing a google sheet script pulling from sign-up
-
-Add aditional coach name.
-
-Make sure that they don't enter their email twice.
-
-Enter names: use a table and submit it to firestore.
 
 Find a way to put Google Sheets data into Firestore.
