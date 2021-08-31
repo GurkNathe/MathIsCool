@@ -8,6 +8,7 @@ import fire from "../fire";
 
 let options = require("./options");
 
+//TODO: change to style.js
 const useStyles = makeStyles((theme) => ({
    root: {
      '& .MuiTextField-root': {
@@ -70,6 +71,8 @@ function TeamRegister(){
                                           school: null,
                                           team: null,
                                           indiv: null,
+                                          date: null,
+                                          compId: null,
                                           email: "",
                                           coach: "",
                                           error: false,
@@ -77,7 +80,12 @@ function TeamRegister(){
    const [locals, setLocals] = useState([]);
                                     
    let comps = JSON.parse(localStorage.getItem("competitionsData"));
-   
+   let times = [];
+
+   for(const i in comps){
+      times.push({value: comps[i].compDate, label: comps[i].compDate, id: i})
+   }
+
    useEffect(() => {
       getComps("competitions");
       setLocals(options.locations)
@@ -114,6 +122,28 @@ function TeamRegister(){
 
    const onChange = (newValue, type) => {
       switch (type) {
+         case "date":
+            for(const i in times){
+               if(newValue === times[i].value){
+                  console.log(times[i].id)
+                  if(newValue != null){
+                     setChoice((prevState) => ({
+                        ...prevState,
+                        date: newValue,
+                        compId: times[i].id,
+                        error: false,
+                     }));
+                  } else {
+                     setChoice((prevState) => ({
+                        ...prevState,
+                        date: null,
+                        compId: null,
+                        error: false,
+                     }));
+                  }
+               }
+            }
+            break;
          case "location":
             if(newValue != null){
                setChoice((prevState) => ({
@@ -261,11 +291,11 @@ function TeamRegister(){
    //checks data to make sure things are filled out, and redirects to the goole form with prefilled info.
    const onSubmit = () => {
 
-      setError(choice);
+      const error = setError(choice);
       setSchoolData();
       setURL(choice, schoolData);
 
-      if(!choice.error){
+      if(!error){
          history.push({
             pathname: `/team-register/confirm/`,
             state:{
@@ -277,22 +307,25 @@ function TeamRegister(){
 
    //Setting error if something is not filled out.
    const setError = (choice) => {
+      var err = false;
       for (const item in choice){
-         if(choice[item] === null || choice[item] === ""){
-            console.log("ERROR :", item)
+         if((choice[item] === null || choice[item] === "") && item !== "email"){
+            console.log(item, choice[item])
             setChoice((prevState) => ({
                ...prevState,
                error: true,
             }));
+            err = true;
             break;
          }
       }
+      return err;
    }
 
    //sets iframe url for filling google form
    const setURL = (choice, schoolData) => {
       const uid = fire.auth().currentUser.uid; //might need to do something with this, since it might not be fast enough.
-      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}`
+      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.831651134=${choice.date}&entry.1445326839=${choice.compId}`
    }
 
    //Getting all the data for that school
@@ -344,6 +377,16 @@ function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "school")}
                      width={longest}
                      value={choice.school}
+                     error={choice.error}
+                  />
+
+                  <Auto
+                     title="Competition Date"
+                     options={times}
+                     text="Select Date"
+                     onChange={(event, newValue) => onChange(newValue, "date")}
+                     width={longest}
+                     value={choice.date}
                      error={choice.error}
                   />
 

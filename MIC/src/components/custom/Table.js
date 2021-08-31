@@ -85,18 +85,17 @@ export default function Table(props) {
     //adds names to registration
     fire.firestore().collection("competitions")
       .doc(props.id)
+      .collection("registration")
       .get()
       .then((doc) => {
-        fire.firestore().collection("competitions").doc(props.id).update({
-          ...doc.data(),
-          registration: {
-            ...doc.data().registration,
+        fire.firestore().collection("competitions").doc(props.id).collection("registration")
+          .update({
+            ...doc.data(),
             [props.regId]: {
-              ...doc.data().registration[props.regId],
+              ...doc.data()[props.regId],
               names: students
             }
-          }
-        })
+          })
       })
       .catch(error => {console.log(error)})
       

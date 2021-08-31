@@ -40,9 +40,6 @@ async function getComps(schoolId){
   }
 }
 
-/**
- * TODO: Add submit to Firestore/Google Sheets for names.
- */
 function Names() {
   const classes = useStyles();
   const [choice, setChoice] = useState({
@@ -86,7 +83,6 @@ function Names() {
         }
       }
       
-      //TODO: need to make it process multiple sign ups
       getComps(schoolData.value).then(vals => {
         for(const val in vals){
           if(vals[val] !== undefined){
