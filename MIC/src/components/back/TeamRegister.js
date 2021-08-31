@@ -54,7 +54,6 @@ async function getComps(title){
 
       //checking to make sure it actually got data
       if(doc.empty){
-         console.log(doc);
          return;
       }
 
@@ -125,7 +124,6 @@ function TeamRegister(){
          case "date":
             for(const i in times){
                if(newValue === times[i].value){
-                  console.log(times[i].id)
                   if(newValue != null){
                      setChoice((prevState) => ({
                         ...prevState,
@@ -310,7 +308,6 @@ function TeamRegister(){
       var err = false;
       for (const item in choice){
          if((choice[item] === null || choice[item] === "") && item !== "email"){
-            console.log(item, choice[item])
             setChoice((prevState) => ({
                ...prevState,
                error: true,
@@ -355,7 +352,7 @@ function TeamRegister(){
 
                   Also note each team includes four students in addition to 
                   two alternates per school that can compete as individuals. So 
-                  when registering n teams , you get to bring 4n+2 students along. 
+                  when registering n teams, you get to bring 4n+2 students along. 
                   These students don't need to be registered as individuals separately.
                </p>
                <form className={classes.root} noValidate autoComplete="off">
@@ -383,7 +380,10 @@ function TeamRegister(){
                   <Auto
                      title="Competition Date"
                      options={times}
-                     text="Select Date"
+                     text={times.length === 0 ? 
+                              "No times for this competition level." : 
+                              "Select Date"
+                           }
                      onChange={(event, newValue) => onChange(newValue, "date")}
                      width={longest}
                      value={choice.date}
@@ -395,7 +395,7 @@ function TeamRegister(){
                      disabled={options.locations.length === 0}
                      options={options.locations}
                      text={options.locations.length === 0 ? 
-                              "No Locations for this competition level." : 
+                              "No locations for this competition level." : 
                               "Select Competition Location"
                            }
                      onChange={(event, newValue) => onChange(newValue, "location")}
@@ -455,8 +455,7 @@ function TeamRegister(){
                                        "Example: notyour@email.com, another@coach.com"
                                     }
                         variant="outlined" 
-                        margin="normal" 
-                        required
+                        margin="normal"
                         label="Other Emails"
                         value={choice.email}
                         onChange={(event) => onChange(event, "email")}

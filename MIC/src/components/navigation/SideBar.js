@@ -12,8 +12,6 @@ import useStyles from "../style";
 
 import fire from "../fire";
 
-
-
 //NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
 
 function SideBar() {

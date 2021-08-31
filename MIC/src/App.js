@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 //Different components for front-end website
 import Competitions from "./components/front/Competitions";
 import Home from "./components/front/Home";
-import PastTests from "./components/front/PastTests";
+// import PastTests from "./components/front/PastTests";
 import History from "./components/front/History";
 import Contacts from "./components/front/Contacts";
 import Locations from "./components/front/Locations";
@@ -24,6 +24,9 @@ import TeamRegister from "./components/back/TeamRegister";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
 import Form from "./components/custom/Form";
 import Names from "./components/back/Names";
+
+//Admin/Editor pages
+import ImportContent from "./components/front/PastTests";
 
 import fire from "./components/fire";
 
@@ -59,7 +62,7 @@ function App() {
             <Route path="/resources/rules" exact component={Rules}/>
             <Route path="/information/fees" exact component={Fees}/>
             <Route path="/information/faq" exact component={FAQ}/>
-            <Route path="/information/past-tests" exact component={PastTests}/>
+            <Route path="/information/past-tests" exact component={ImportContent}/>
             <Route path="/competitions" exact component={Competitions}/>
             <Route path="/login" exact component={SignIn}/>
             <Route path="/login/signup" exact component={SignUp}/>

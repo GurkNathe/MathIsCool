@@ -7,10 +7,8 @@ export default async function getWeb(title){
     //getting the 'web' collection from firestore
     try{
       const doc = await fire.firestore().collection('web').doc(title).get();
-
       //checking to make sure it actually got data
       if(doc.empty){
-        // console.log(doc);
         return;
       }
 
