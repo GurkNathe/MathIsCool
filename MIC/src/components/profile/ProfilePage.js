@@ -2,36 +2,9 @@ import React from "react";
 import { makeStyles, CssBaseline, Button, Avatar, Container, Typography } from '@material-ui/core';
 
 import SignIn from "./SignIn";
+import useStyles from "../style";
 
 import fire from "../fire";
-
-const useStyles = makeStyles((theme) => ({
-  avatar: {
-    '&:hover':{
-      backgroundColor: "grey",
-      cursor: "pointer",
-    },
-    margin: theme.spacing(1),
-    width:"100px",
-    height:"100px",
-    
-  },
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar2: {
-    color:"grey",
-    width:"100px",
-    height:"100px",
-    margin: theme.spacing(1),
-    '&:hover':{
-       color:"#3f51b5",
-    }
- }
-}))
 
 function ProfilePage () {
   const classes = useStyles();
@@ -44,7 +17,7 @@ function ProfilePage () {
       <CssBaseline/>
       <div className={classes.paper}>
         { username !== null && username !== undefined ?
-          <Avatar className={classes.avatar}>
+          <Avatar className={classes.pAvatar}>
             {username.match(/(\b\S)?/g).join("").toUpperCase()}
           </Avatar>:
           <SignIn/>
@@ -57,7 +30,7 @@ function ProfilePage () {
             <Typography component="h1" variant="h5">
               {email}
             </Typography>
-            <Button className={classes.button} onClick={() => {
+            <Button onClick={() => {
                       fire.auth().signOut()
                         .then((user) => {
                             window.location.reload();

@@ -6,6 +6,47 @@ import fire from "../fire";
 
 //Used for Enter Names table
 
+//adds names to registration
+async function submitNames(id, regId, students){
+  const comps = fire.firestore().collection("competitions").doc(id);
+  
+  const res = await comps.get()
+    .then((doc) => {
+      comps.update({
+        ...doc.data(),
+        registration: {
+          ...doc.data().registration,
+          [regId]: {
+            ...doc.data().registration[regId],
+            names: students,
+          }
+        }
+      })
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+//used to get current names of school
+//! not implemented
+async function getCurrentNames(id, regId){
+  try{
+    const comps = fire.firestore().collection("competitions").doc(id);
+
+    const names = comps.get()
+      .then((doc) => {
+        if(doc.data().registration[regId] !== undefined && doc.data().registration[regId].names !== undefined)
+          localStorage.setItem("students", JSON.stringify(doc.data().registration[regId].names));
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  } catch(error) {
+    console.log(error)
+  }
+}
+
 /**
  * @param  {integer} teams 
  * @param  {integer} individuals
@@ -49,7 +90,6 @@ export default function Table(props) {
       if(Object.keys(info).length !== 1){
         info[teams.length+1] = {alt1: "", alt2: ""};
       }
-
       return(info);
     }
   }
@@ -81,24 +121,7 @@ export default function Table(props) {
   }
 
   const onSubmit = () => {
-
-    //adds names to registration
-    fire.firestore().collection("competitions")
-      .doc(props.id)
-      .collection("registration")
-      .get()
-      .then((doc) => {
-        fire.firestore().collection("competitions").doc(props.id).collection("registration")
-          .update({
-            ...doc.data(),
-            [props.regId]: {
-              ...doc.data()[props.regId],
-              names: students
-            }
-          })
-      })
-      .catch(error => {console.log(error)})
-      
+    submitNames(props.id, props.regId, students)
   }
   
   return(

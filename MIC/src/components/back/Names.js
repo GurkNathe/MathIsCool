@@ -68,6 +68,7 @@ function Names() {
       }));
       setComp([]);
       setLoading(true);
+      localStorage.removeItem("students")
     }
 
     if(newValue !== null){

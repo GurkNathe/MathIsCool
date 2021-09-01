@@ -5,7 +5,7 @@ import image from "../assets/logo.5a82c15d88ad2d074447.png";
 /**
  * Main styles sheet
 */
-
+const profCol = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
 const useStyles = makeStyles((theme) => ({
    //frontback, coachtools
    button:{
@@ -150,8 +150,9 @@ const useStyles = makeStyles((theme) => ({
       overflow:"hidden",
    },
    avatar: {
+      backgroundColor: profCol,
       '&:hover':{
-        backgroundColor: "grey",
+        filter: "brightness(0.65)",
         cursor: "pointer",
       },
       width: "40px",
@@ -162,10 +163,30 @@ const useStyles = makeStyles((theme) => ({
       width: "40px",
       height: "40px",
       '&:hover':{
-         color:"grey"
+         filter: "brightness(0.65)",
+         cursor: "pointer",
       }
    },
    //sidebar styles
+
+   //profile page
+   pAvatar: {
+      color:"black",
+      backgroundColor: profCol,
+      '&:hover':{
+         filter: "brightness(0.65)",
+         cursor: "pointer",
+      },
+      margin: theme.spacing(1),
+      width:"100px",
+      height:"100px",
+   },
+   paper: {
+      marginTop: theme.spacing(8),
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+   },
 
    //Name Table
    table:{

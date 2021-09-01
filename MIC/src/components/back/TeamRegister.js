@@ -76,18 +76,31 @@ function TeamRegister(){
                                           coach: "",
                                           error: false,
                                        });  
-   const [locals, setLocals] = useState([]);
+   const [locals, setLocals] = useState([]); //used to store the locations, does not change
+   const [dates, setDates] = useState([]); //used to store the competition dates, does not change
+   const [times, setTimes] = useState([]); //used to store the available dates for grade level
                                     
    let comps = JSON.parse(localStorage.getItem("competitionsData"));
-   let times = [];
+   let tempTimes = [];
 
+   //getting date information
    for(const i in comps){
-      times.push({value: comps[i].compDate, label: comps[i].compDate, id: i})
+      tempTimes.push({
+         value: comps[i].compDate, 
+         label: comps[i].compDate, 
+         id: i, 
+         site: comps[i].site,
+         grade: comps[i].grade,
+      })
    }
 
    useEffect(() => {
       getComps("competitions");
-      setLocals(options.locations)
+
+      setLocals(options.locations);
+
+      setDates(tempTimes);
+      setTimes(tempTimes);
    }, []);
    
    let longest = 0;
@@ -129,17 +142,20 @@ function TeamRegister(){
                         ...prevState,
                         date: newValue,
                         compId: times[i].id,
-                        error: false,
-                     }));
-                  } else {
-                     setChoice((prevState) => ({
-                        ...prevState,
-                        date: null,
-                        compId: null,
+                        loc: times[i].site.replace(/^\w/, (c) => c.toUpperCase()),
                         error: false,
                      }));
                   }
                }
+            }
+            if(newValue === null) {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  date: null,
+                  compId: null,
+                  loc: null,
+                  error: false,
+               }));
             }
             break;
          case "location":
@@ -162,6 +178,7 @@ function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   lev: newValue,
+                  date: null,
                   loc: null,
                   error: false,
                }));
@@ -171,13 +188,16 @@ function TeamRegister(){
                //gets the value of each level option
                let value = "";
                for(const i in options.level){
-                  if(options.level[i].label === newValue)
+                  if(options.level[i].label === newValue){
                      value = options.level[i].value
+                     break;
+                  }
                }
 
                //resets the available options if field is cleared
                options.locations = locals;
 
+               //TODO: might need to change options.location to a state
                // for removing locations that don't have the grade associated with it
                for(const i in options.locations){
                   for(const j in comps){
@@ -194,16 +214,28 @@ function TeamRegister(){
                   }
                }
                options.locations = temp;
+
+               // for removing times that aren't available for the particular grade level
+               temp = [];
+               for(const i in dates){
+                  if(dates[i].grade.indexOf(value) !== -1){
+                     temp.push(dates[i])
+                  }
+               }
+               setTimes(temp)
+               
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   lev: null,
+                  date: null,
                   loc: null,
                   error: false,
                }));
 
                //resets the available options if field is cleared
                options.locations = locals;
+               setTimes(dates);
             }
             break;
          case "school":
@@ -379,6 +411,7 @@ function TeamRegister(){
 
                   <Auto
                      title="Competition Date"
+                     disabled={times.length === 0}
                      options={times}
                      text={times.length === 0 ? 
                               "No times for this competition level." : 
