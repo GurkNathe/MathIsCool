@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-import math from "../../assets/math1.jpg";
-import lake from "../../assets/moseslake.jpg";
-import train from "../../assets/mtrainier.jpg";
-import wp from "../../assets/WP_20140307_009.jpg";
-import donate from "../../assets/btn_donate_LG.webp";
+import { math, lake, train, wp, donate } from "../assets.js";
+
 import getWeb from "./getWeb";
 import getPage from "./getPage";
 import useStyles from "../style";

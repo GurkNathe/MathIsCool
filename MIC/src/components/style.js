@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
       '-webkit-text-stroke-color': "black",
       '&:hover':{
          backgroundColor:"#2a3576",
-         opacity:"0.9",
+         filter:"brightness(0.9)",
          transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
       }
    },
@@ -34,22 +34,11 @@ const useStyles = makeStyles((theme) => ({
          backgroundColor:"transparent",
          color:"white"
       },
-      '& .MuiAccordionSummary-root':{
-         color:"white",
-         background:"transparent",
-         fontSize:"15px",
-         '-webkit-text-stroke': "0.25px",
-         '-webkit-text-stroke-color': "black",
-         '&:hover':{
-            backgroundColor:"#2a3576",
-            opacity:"0.9",
-            transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-         }
-      },
       '& .MuiAccordion-root.Mui-expanded':{
          margin:"0px"
       },
       '& .MuiButtonBase-root':{
+         display:"flex",
          alignItems:"left"
       },
       '& .MuiPaper-elevation1':{
@@ -169,6 +158,25 @@ const useStyles = makeStyles((theme) => ({
    },
    //sidebar styles
 
+   //home buttons
+   homeButton: {
+      justifyContent:"left",
+      textTransform:"capitalize",
+      textDecoration:"none",
+      border:"currentColor",
+      color:"white",
+      borderRadius:"0",
+      fontSize:"15px",
+      padding:"10px",
+      '-webkit-text-stroke': "0.25px",
+      '-webkit-text-stroke-color': "black",
+      '&:hover':{
+         backgroundColor:"#2a3576",
+         filter:"brightness(0.9)",
+         transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      }
+   },
+
    //profile page
    pAvatar: {
       color:"black",
@@ -249,6 +257,7 @@ const useStyles = makeStyles((theme) => ({
       marginHeight:"0",
       marginWidth:"0",
    },
+
 }));
 
 export default useStyles;

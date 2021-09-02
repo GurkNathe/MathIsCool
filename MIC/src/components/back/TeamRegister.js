@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import Auto from "../custom/Auto.js";
 import fire from "../fire";
 
+import { divisions } from "../assets.js";
+
 //Options for each dropdown. Probably use JSON for them
 
 let options = require("./options");
@@ -62,7 +64,7 @@ async function getComps(title){
    }
 }
 
-function TeamRegister(){
+export default function TeamRegister(){
    const history = useHistory();
    const classes = useStyles();
    const [choice, setChoice] = useState({ loc: null, 
@@ -516,12 +518,10 @@ function TeamRegister(){
                   A school's division level is assigned based on past performance at 
                   Math is Cool contests. For more details and a current list of 
                   schools and assignments, see&nbsp;
-                  <a href="../../assets/divisions.pdf" target="_blank" rel="noreferrer">2018-19 Divisions</a>.
+                  <a href={divisions} target="_blank" rel="noreferrer">2018-19 Divisions</a>.
                </p>
             </div>
          </div>
       </div>
    );
 }
-
-export default TeamRegister;

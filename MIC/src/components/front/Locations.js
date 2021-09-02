@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-// import fire from "../fire";
-
-import map from "../../assets/MIC_Regions.png"
+import { map } from "../assets.js";
 import getPage from "./getPage";
 import getWeb from "./getWeb";
 import useStyles from "../style";

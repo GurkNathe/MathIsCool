@@ -35,7 +35,7 @@ function SideBar() {
                <div className={classes.in}>
                   <FrontBack/>
                   { fire.auth().currentUser ? <CoachTools/> : null }
-                  <Admin/>
+                  { fire.auth().currentUser ? <Admin/> : null} {/* TODO: need to add admin permission check */}
                   <Divider/>
                   <Profile/>
                </div>
