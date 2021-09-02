@@ -6,7 +6,7 @@ import React from "react";
  * 
  * @param props title, options, text, onChange, width, value, error
  */
-function Auto(props){
+ export default function Auto(props){
   return(
      <div style={{display:"flex"}}>
         <Grid item sm={3}>
@@ -36,5 +36,3 @@ function Auto(props){
      </div>
   );
 }
-
-export default Auto;

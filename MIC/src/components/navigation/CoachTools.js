@@ -1,8 +1,8 @@
 import React from "react";
-import { Accordion, Button, AccordionSummary, ButtonGroup, Typography } from "@material-ui/core";
+import { Button, ButtonGroup, Typography } from "@material-ui/core";
 import useStyles from "../style";
 
-function CoachTools(){
+export default function CoachTools(){
 
    const classes = useStyles();
 
@@ -24,5 +24,3 @@ function CoachTools(){
       </div>
    );
 }
-
-export default CoachTools;

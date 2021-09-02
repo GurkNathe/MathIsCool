@@ -5,7 +5,7 @@ import { map } from "../assets.js"; //not working
 import getWeb from "./getWeb";
 import getPage from "./getPage";
 
-function Contacts() {
+export default function Contacts() {
   const [page, setPage] = useState("");
 
   const title = "whotocall";
@@ -19,5 +19,3 @@ function Contacts() {
     <Page title="Contacts" page={page}/>
   );
 }
-
-export default Contacts;

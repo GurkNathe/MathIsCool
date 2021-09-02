@@ -14,6 +14,7 @@ import Container from '@material-ui/core/Container';
 import fire from "../fire";
 import { useHistory } from "react-router-dom";
 
+//TODO: change to style.js
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),

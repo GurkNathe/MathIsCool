@@ -3,7 +3,7 @@ import { Route, Redirect } from "react-router-dom";
 import ReactLoading from "react-loading";
 import fire from "../fire";
 
-function PrivateRoute(props) {
+export default function PrivateRoute(props) {
   const [user, setUser] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -31,5 +31,3 @@ function PrivateRoute(props) {
     </>
   );
 }
-
-export default PrivateRoute;

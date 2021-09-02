@@ -1,6 +1,6 @@
-import React,{ useState }from "react";
+import React, { useState } from "react";
 import Button from '@material-ui/core/Button';
-import{ makeStyles }from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import fire from "../fire";
 
 export default function ImportContent(){

@@ -5,7 +5,7 @@ import Page from "./Page";
 import getWeb from "./getWeb";
 import getPage from "./getPage";
 
-function History() {
+export default function History() {
   const [page, setPage] = useState("");
 
   const title = "history";
@@ -19,6 +19,3 @@ function History() {
     <Page title="History" page={page}/>
   );
 }
-
-export default History;
-

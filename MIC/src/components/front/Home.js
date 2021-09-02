@@ -6,7 +6,7 @@ import getWeb from "./getWeb";
 import getPage from "./getPage";
 import useStyles from "../style";
 
-function Home() {
+export default function Home() {
   const [news, setNews] = useState("");
   const classes = useStyles();
   
@@ -59,5 +59,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;

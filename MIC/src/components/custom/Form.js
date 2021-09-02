@@ -1,9 +1,9 @@
 import React from "react";
 import useStyles from "../style";
 
-//NEED TO FIND A WAY TO DISABLE SCROLL BAR OF GOOGLE FORM
+//NEED TO FIND A WAY TO DISABLE SCROLL BAR OF GOOGLE FORM (MIGHT NOT BE POSSIBLE)
 
-function Form(props) {
+export default function Form(props) {
   const classes = useStyles();
 
   return(
@@ -17,5 +17,3 @@ function Form(props) {
     </iframe>
   );
 }
-
-export default Form;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import fire from "../fire";
 import getWeb from "./getWeb";
 
-function Competitions() {
+export default function Competitions() {
   const [comp, setComp] = useState("");
 
   const title = "competitions";
@@ -62,5 +62,3 @@ function Competitions() {
     </div>
   );
 }
-
-export default Competitions;

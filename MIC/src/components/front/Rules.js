@@ -5,7 +5,7 @@ import Page from "./Page";
 import getWeb from "./getWeb";
 import getPage from "./getPage";
 
-function Rules() {
+export default function Rules() {
   const [page, setPage] = useState("");
 
   const title = "rules";
@@ -19,7 +19,3 @@ function Rules() {
     <Page title="Rules" page={page}/>
   );
 }
-
-export default Rules;
-
-

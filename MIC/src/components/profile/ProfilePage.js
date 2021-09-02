@@ -6,7 +6,7 @@ import useStyles from "../style";
 
 import fire from "../fire";
 
-function ProfilePage () {
+export default function ProfilePage () {
   const classes = useStyles();
 
   const username = localStorage.getItem("username")
@@ -53,5 +53,3 @@ function ProfilePage () {
     </Container>
   );
 }
-
-export default ProfilePage;

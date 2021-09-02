@@ -5,7 +5,7 @@ import getPage from "./getPage";
 import getWeb from "./getWeb";
 import useStyles from "../style";
 
-function Locations() {
+export default function Locations() {
   const classes = useStyles();
   const [loc, setLoc] = useState("");
   
@@ -96,5 +96,3 @@ function Locations() {
     </div>
   );
 }
-
-export default Locations;

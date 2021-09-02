@@ -5,7 +5,7 @@ import Page from "./Page";
 import getWeb from "./getWeb";
 import getPage from "./getPage";
 
-function Fees() {
+export default function Fees() {
   const [page, setPage] = useState("");
 
   const title = "fees";
@@ -19,6 +19,3 @@ function Fees() {
     <Page title="Fees" page={page}/>
   );
 }
-
-export default Fees;
-

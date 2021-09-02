@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import useStyles from "../style";
 
-function Profile() {
+export default function Profile() {
   const classes = useStyles();
 
   const username = localStorage.getItem("username");
@@ -22,5 +22,3 @@ function Profile() {
     </div>
   );
 }
-
-export default Profile;

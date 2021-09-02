@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Accordion, Button, AccordionSummary, ButtonGroup, AccordionDetails, ClickAwayListener, Typography } from "@material-ui/core";
 import useStyles from "../style";
 
-function FrontBack(){
+export default function FrontBack(){
    const classes = useStyles();
    const [open, setOpen] = useState(false);
    const [away, setAway] = useState({p1: true, p2: true});
@@ -55,5 +55,3 @@ function FrontBack(){
       </div>
    );
 };
-
-export default FrontBack;

@@ -14,7 +14,7 @@ import fire from "../fire";
 
 //NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
 
-function SideBar() {
+export default function SideBar() {
    const history = useHistory();
    const classes = useStyles();
    const [open, setOpen] = useState(false);
@@ -62,5 +62,3 @@ function SideBar() {
       </div>
    );
 };
-
-export default SideBar;

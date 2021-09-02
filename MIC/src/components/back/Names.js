@@ -40,7 +40,7 @@ async function getComps(schoolId){
   }
 }
 
-function Names() {
+export default function Names() {
   const classes = useStyles();
   const [choice, setChoice] = useState({
                                         school: null,
@@ -155,5 +155,3 @@ function Names() {
     </div>
   );
 }
-
-export default Names;
