@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Alert } from "@material-ui/lab";
+import { Snackbar } from "@material-ui/core";
 
 import { math, lake, train, wp, donate } from "../assets.js";
 
@@ -6,9 +8,10 @@ import getWeb from "./getWeb";
 import getPage from "./getPage";
 import useStyles from "../style";
 
-export default function Home() {
-  const [news, setNews] = useState("");
+export default function Home(props) {
   const classes = useStyles();
+  const [news, setNews] = useState("");
+  const [open, setOpen] = useState(props.location.state.alert);
   
   //holding names of articles
   var test = []
@@ -32,8 +35,24 @@ export default function Home() {
     test[i] = news[test[i]];
   }
 
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway')
+      return;
+    setOpen(false);
+  }
+
   return(
     <div className={classes.root}>
+      <Snackbar 
+        open={open} 
+        onClose={handleClose} 
+        autoHideDuration={props.location.state.duration} 
+        anchorOrigin={{vertical:'top', horizontal:'center'}}
+      >
+        <Alert severity={props.location.state.severity} variant="filled">
+          {props.location.state.message}
+        </Alert>
+      </Snackbar>
       <div className={classes.second}>
         <div className={classes.inner}>
           <h1 style={{fontStyle:"italic"}}>What's Happening</h1>

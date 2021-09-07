@@ -56,38 +56,23 @@ export default function SignIn() {
 
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
-
-    //leaving this in here for when admins/editors are added to the site
-    
-    // fire.firestore().collection('users').onSnapshot((snapshot) => {
-    //   const data = snapshot.docs.map((doc) => ({
-    //     id: doc.id,
-    //     ...doc.data(),
-    //   }));
-    //   data.forEach(user => {
-    //     if(user.email == email && user.password == password){
-    //       localStorage.setItem("id", user.id);
-    //       history.push("/home");
-    //     }
-    //   })
-    //   setEmail(null);
-    //   setPassword(null);
-    //   return;
-    // })
-
     fire.auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         localStorage.setItem("email", email);
         localStorage.setItem("username", userCredential.user.displayName)
-        history.push("/")
+        history.push({
+          pathname: "/",
+          state: {
+            alert: false,
+            severity: null,
+            message: null,
+            duration: null
+          }
+        })
         window.location.reload()
       })
       .catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
         setError(error)
-        console.log(errorCode);
-        console.log(errorMessage);
       })
   };
 

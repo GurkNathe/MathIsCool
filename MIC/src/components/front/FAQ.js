@@ -22,27 +22,25 @@ export default function FAQ() {
     setFAQ(getPage(title, "records"))
   }, [])
 
-  console.log(faq)
-
   //Used for sorting the questions
   for(const i in faq){
-    if(faq[i].answer !== undefined){
-      if(faq[i].order < 200){
+    if(faq[i].answer !== undefined && faq[i].answer !== null){
+      if(i < 200){
         test[0] = {
           ...test[0],
           [i]: faq[i]
         }
-      } else if(faq[i].order < 300){
+      } else if(i < 300){
         test[1] = {
           ...test[1],
           [i]: faq[i]
         }
-      } else if(faq[i].order < 400){
+      } else if(i < 400){
         test[2] = {
           ...test[2],
           [i]: faq[i]
         }
-      } else if(faq[i].order < 500){
+      } else if(i < 500){
         test[3] = {
           ...test[3],
           [i]: faq[i]

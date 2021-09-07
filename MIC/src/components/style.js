@@ -213,6 +213,20 @@ const useStyles = makeStyles((theme) => ({
       alignItems:"center",
       padding:"10px"
    },
+   tableTop:{
+      display:"flex",
+      flexDirection:"column",
+   },
+
+   //student
+   field:{
+      minWidth:"10vw",
+      maxWidth:"50vw",
+      width:"100%",
+   },
+   main:{
+      width:"100%"
+   },
 
    //Enter Names
    page: {
@@ -231,14 +245,15 @@ const useStyles = makeStyles((theme) => ({
    },
    top: {
       display: "flex", 
-      flexDirection:"row"
+      flexDirection:"row",
+      paddingTop: "2%",
+      paddingBottom: "2%",
    },
    middle: {
       display:"flex",
       alignItems:"center",
       justifyContent:"center",
-      width:"100vw", 
-      minHeight:"70vh",
+      width:"100vw",
       borderRadius: "4px", 
       marginRight:"2%",
       marginLeft:"2%",

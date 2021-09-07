@@ -3,7 +3,7 @@ import { Route, Redirect } from "react-router-dom";
 import ReactLoading from "react-loading";
 import fire from "../fire";
 
-export default function PrivateRoute(props) {
+export default function AdminRoute(props) {
   const [user, setUser] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ export default function PrivateRoute(props) {
     if(user !== 1)
       setLoading(false);
   }, [user]);
-  
+
   return(
     <>
       { loading ?
@@ -23,27 +23,10 @@ export default function PrivateRoute(props) {
           user.emailVerified ? 
             <Route component={props.component} exact path={props.path}/> :
             <>
-              <Redirect to={{
-                pathname: '/',
-                state: {
-                  alert: true,
-                  severity: "error",
-                  message: "Please verify your email address.",
-                  duration: 3000
-                }
-              }}/>)
+              {alert("Please confirm your email before continuing.")}
+              <Redirect to="/"/>
             </> :
-            <>
-              <Redirect to={{
-                pathname: '/',
-                state: {
-                  alert: true,
-                  severity: "error",
-                  message: "Please sign in.",
-                  duration: 3000
-                }
-              }}/>
-            </>
+          <Redirect to="/login"/>
       }
     </>
   );

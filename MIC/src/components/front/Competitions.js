@@ -13,17 +13,6 @@ export default function Competitions() {
       setComp(JSON.parse(localStorage.getItem(title)).competitions.records);
   }, [])
 
-  console.log(comp);
-  const uid = "0";
-
-  const reg = { 
-    [uid]:{
-      numTeams: 0,
-      numIndividuals: 0,
-      schoolID: 0,
-    }
-  }
-
   const onClick = () => {
     // console.log(comp)
     // for(const i in comp){

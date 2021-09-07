@@ -7,7 +7,7 @@ import React from "react";
  * @param props title, options, text, onChange, width, value, error
  */
  export default function Auto(props){
-  return(
+   return(
      <div style={{display:"flex"}}>
         <Grid item sm={3}>
            <p>{props.title}</p>
@@ -29,7 +29,11 @@ import React from "react";
                              label={props.text} 
                              variant="outlined"
                              required
-                             style={{ ...props.style, width: props.width, maxWidth: "65vw", marginRight: 0 }}
+                             className={props.className}
+                             style={props.className === undefined ? 
+                              { ...props.style, width: props.width, maxWidth: "65vw", marginRight: 0 }:
+                              null
+                             }
                           />
                        }
         />

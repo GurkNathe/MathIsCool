@@ -99,22 +99,28 @@ export default function SignUp() {
     } else {
       //Sign's a person up using an email and password, and send email confirmation.
       fire.auth().createUserWithEmailAndPassword(up.email, up.password)
-        .then((userCreds) => {
-          console.log(userCreds)
+        .then(() => {
           fire.auth().currentUser.sendEmailVerification()
-            .then(() => {
-              alert("An email was sent to your email address. Please navigate to it and click the verification link.")
-            })
-          history.push("/");
+          localStorage.setItem("email", up.email);
+          localStorage.setItem("username", up.username)
+          history.push({
+            pathname: "/",
+            state: {
+              alert: true,
+              severity: "info",
+              message: "An email was sent to your email address. Please navigate to it and click the verification link.",
+              duration: 5000
+            }
+          });
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error, error.code);
           if(up.error === null)
             setError(error.code)
         });
       
       //Adds person's username
-      fire.auth().onAuthStateChanged((user) => {
+      const unsub = fire.auth().onAuthStateChanged((user) => {
         if(user){
           user.updateProfile({
             displayName: up.username
@@ -125,26 +131,7 @@ export default function SignUp() {
         }
       });
 
-      //setting the firestore data for a user
-      setTimeout(() => {
-        let uid = fire.auth().currentUser.uid;
-        if(uid){
-          fire.firestore().collection('users')
-            .add({
-              admin: false,
-              director: false,
-              editor: false,
-              email: up.email,
-              displayName: up.username,
-              userId: uid
-            })
-            .then((ref) => {
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        }
-      }, 2000)
+      return unsub;
     }
   };
 

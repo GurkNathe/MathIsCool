@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Button, AccordionSummary, ButtonGroup, Typography } from "@material-ui/core";
+import { Button, ButtonGroup, Typography } from "@material-ui/core";
 import useStyles from "../style";
 
 export default function Admin(){
@@ -15,6 +15,9 @@ export default function Admin(){
             <ButtonGroup orientation="vertical">
                <Button className={classes.homeButton} href="/admin/import-content">
                   Import Content
+               </Button>
+               <Button className={classes.homeButton} href="/admin/add-admin">
+                  Add Admin
                </Button>
             </ButtonGroup>
          </div>

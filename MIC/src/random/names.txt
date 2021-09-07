@@ -1,0 +1,4 @@
+individual level: math level
+team level: grade level?
+
+split competitions up by grade level

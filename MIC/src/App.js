@@ -26,7 +26,9 @@ import Form from "./components/custom/Form";
 import Names from "./components/back/Names";
 
 //Admin/Editor pages
-import ImportContent from "./components/front/PastTests";
+import ImportContent from "./components/admin/ImportContent";
+import AdminRoute from "./components/navigation/AdminRoute";
+import AddAdmin from "./components/admin/AddAdmin";
 
 import fire from "./components/fire";
 
@@ -54,7 +56,7 @@ function App() {
       <Router>
           <SideBar/>
           <Switch>
-            <Route path="/" exact component={Home}/>
+            <Route path="/" exact render={(props) => <Home {...props}/>}/>
             <Route path="/about/history" exact component={History}/>
             <Route path="/about/contacts" exact component={Contacts}/>
             <Route path="/about/locations" exact component={Locations}/>
@@ -71,7 +73,8 @@ function App() {
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
             <ProtectedRoute path="/team-register/confirm/" exact component={Form}/>
             <ProtectedRoute path="/enter-names" exact component={Names}/>
-            <ProtectedRoute path="/admin/import-content" exact component={ImportContent}/>
+            <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
+            <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>
           </Switch>
       </Router>
     </div>
