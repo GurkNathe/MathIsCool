@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import fire from "../fire";
+import getPage from "./getPage";
 import getWeb from "./getWeb";
 
 export default function Competitions() {
@@ -9,8 +10,8 @@ export default function Competitions() {
 
   useEffect(() => {
     getWeb(title);
-    if(localStorage.getItem(title))
-      setComp(JSON.parse(localStorage.getItem(title)).competitions.records);
+    // console.log(JSON.parse(sessionStorage.getItem(title))["records"])
+    setComp(getPage(title, "records"))
   }, [])
 
   const onClick = () => {

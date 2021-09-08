@@ -34,12 +34,12 @@ import fire from "./components/fire";
 
 //Used to get pre-login web page html/data
 async function getUser(){
-  if(!(localStorage.getItem("username") || localStorage.getItem("email"))){
+  if(!(sessionStorage.getItem("username") || sessionStorage.getItem("email"))){
     //Adding non-compromising information to local storage for using in other components
     const user = await fire.auth().currentUser;
     if(user !== undefined && user !== null){
-      localStorage.setItem("username", user.displayName)
-      localStorage.setItem("email", user.email)
+      sessionStorage.setItem("username", user.displayName)
+      sessionStorage.setItem("email", user.email)
     }
   }
 }

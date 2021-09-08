@@ -11,7 +11,7 @@ import useStyles from "../style";
 export default function Home(props) {
   const classes = useStyles();
   const [news, setNews] = useState("");
-  const [open, setOpen] = useState(props.location.state.alert);
+  const [open, setOpen] = useState(props.location.state ? props.location.state.alert : false);
   
   //holding names of articles
   var test = []
@@ -43,16 +43,19 @@ export default function Home(props) {
 
   return(
     <div className={classes.root}>
-      <Snackbar 
-        open={open} 
-        onClose={handleClose} 
-        autoHideDuration={props.location.state.duration} 
-        anchorOrigin={{vertical:'top', horizontal:'center'}}
-      >
-        <Alert severity={props.location.state.severity} variant="filled">
-          {props.location.state.message}
-        </Alert>
-      </Snackbar>
+      { props.location.state ?
+        <Snackbar 
+          open={open} 
+          onClose={handleClose} 
+          autoHideDuration={props.location.state.duration} 
+          anchorOrigin={{vertical:'top', horizontal:'center'}}
+        >
+          <Alert severity={props.location.state.severity} variant="filled">
+            {props.location.state.message}
+          </Alert>
+        </Snackbar>:
+        null
+      }
       <div className={classes.second}>
         <div className={classes.inner}>
           <h1 style={{fontStyle:"italic"}}>What's Happening</h1>

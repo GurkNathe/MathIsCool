@@ -3,7 +3,7 @@ import fire from "../fire";
 //Used to get pre-login web page html/data
 export default async function getWeb(title){
   //checks if not in local storage, meaning database can be pulled
-  if(!localStorage.getItem(title)){
+  if(!sessionStorage.getItem(title)){
     //getting the subcollection form 'web' collection from firestore
     try{
       const doc = await fire.firestore().collection('web').doc(title).get();
@@ -14,7 +14,7 @@ export default async function getWeb(title){
       }
 
       //adding web page html/data to local storage
-      localStorage.setItem(title, JSON.stringify(doc.data()));
+      sessionStorage.setItem(title, JSON.stringify(doc.data()));
       
       window.location.reload();
     } catch (err) {

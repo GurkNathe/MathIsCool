@@ -20,7 +20,7 @@ export default function SideBar() {
    const [open, setOpen] = useState(false);
    const [name, setName] = useState(1);
 
-   const username = localStorage.getItem("username");
+   const username = sessionStorage.getItem("username");
 
    useEffect(() => {
       setTimeout(() => {
@@ -37,7 +37,7 @@ export default function SideBar() {
                   { fire.auth().currentUser ? <CoachTools/> : null }
                   { fire.auth().currentUser ? <Admin/> : null} {/* TODO: need to add admin permission check */}
                   <Divider/>
-                  <Profile/>
+                  <Profile setOpen={setOpen}/>
                </div>
             </ClickAwayListener>
          </Drawer>

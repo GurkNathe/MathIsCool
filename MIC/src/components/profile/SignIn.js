@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import firebase from "firebase/app";
+import "firebase/auth";
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -56,23 +58,29 @@ export default function SignIn() {
 
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
-    fire.auth().signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        localStorage.setItem("email", email);
-        localStorage.setItem("username", userCredential.user.displayName)
-        history.push({
-          pathname: "/",
-          state: {
-            alert: false,
-            severity: null,
-            message: null,
-            duration: null
-          }
+    fire.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(() => {
+        return fire.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          sessionStorage.setItem("email", email);
+          sessionStorage.setItem("username", userCredential.user.displayName)
+          history.push({
+            pathname: "/",
+            state: {
+              alert: false,
+              severity: null,
+              message: null,
+              duration: null
+            }
+          })
+          window.location.reload()
         })
-        window.location.reload()
+        .catch((error) => {
+          setError(error)
+        })
       })
       .catch((error) => {
-        setError(error)
+        console.log(error)
       })
   };
 

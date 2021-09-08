@@ -9,8 +9,8 @@ import fire from "../fire";
 export default function ProfilePage () {
   const classes = useStyles();
 
-  const username = localStorage.getItem("username")
-  const email = localStorage.getItem("email")
+  const username = sessionStorage.getItem("username")
+  const email = sessionStorage.getItem("email")
 
   return(
     <Container component="main" maxWidth="xs">
@@ -38,8 +38,8 @@ export default function ProfilePage () {
                         .catch((error) => {
                             console.log("An error occured ", error)
                         });
-                      localStorage.removeItem("username")
-                      localStorage.removeItem("email")
+                      sessionStorage.removeItem("username")
+                      sessionStorage.removeItem("email")
                   }
                 }
             >

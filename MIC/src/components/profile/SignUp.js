@@ -101,8 +101,8 @@ export default function SignUp() {
       fire.auth().createUserWithEmailAndPassword(up.email, up.password)
         .then(() => {
           fire.auth().currentUser.sendEmailVerification()
-          localStorage.setItem("email", up.email);
-          localStorage.setItem("username", up.username)
+          sessionStorage.setItem("email", up.email);
+          sessionStorage.setItem("username", up.username)
           history.push({
             pathname: "/",
             state: {

@@ -72,7 +72,7 @@ export default function Table(props) {
     const names = await comps.get()
       .then((doc) => {
         if(doc.data().registration[props.regId] !== undefined && doc.data().registration[props.regId].names !== undefined)
-          localStorage.setItem("students", JSON.stringify(doc.data().registration[props.regId].names));
+          sessionStorage.setItem("students", JSON.stringify(doc.data().registration[props.regId].names));
           call(doc.data().registration[props.regId].names)
       })
       .catch((error) => {

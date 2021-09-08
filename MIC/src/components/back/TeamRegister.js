@@ -41,7 +41,7 @@ async function getComps(title){
    var comps = {};
 
    //checks if load variable in local storage is true, meaning database can be pulled
-   if(!localStorage.getItem(title + "Data")){
+   if(!sessionStorage.getItem(title + "Data")){
 
       //getting the 'web' collection from firestore
       const doc = await fire.firestore().collection(title).where('status', '==', 'reg').get();
@@ -60,7 +60,7 @@ async function getComps(title){
       }
 
       //adding web page html/data to local storage
-      localStorage.setItem(title + "Data", JSON.stringify(comps));
+      sessionStorage.setItem(title + "Data", JSON.stringify(comps));
    }
 }
 
@@ -72,42 +72,24 @@ export default function TeamRegister(){
                                           school: null,
                                           team: null,
                                           indiv: null,
-                                          date: null,
                                           compId: null,
                                           email: "",
                                           coach: "",
                                           error: false,
                                        });  
    const [locals, setLocals] = useState([]); //used to store the locations, does not change
-   const [dates, setDates] = useState([]); //used to store the competition dates, does not change
-   const [times, setTimes] = useState([]); //used to store the available dates for grade level
                                     
-   let comps = JSON.parse(localStorage.getItem("competitionsData"));
-   let tempTimes = [];
-
-   //getting date information
-   for(const i in comps){
-      tempTimes.push({
-         value: comps[i].compDate, 
-         label: comps[i].compDate, 
-         id: i, 
-         site: comps[i].site,
-         grade: comps[i].grade,
-      })
-   }
+   let comps = JSON.parse(sessionStorage.getItem("competitionsData"));
 
    useEffect(() => {
       getComps("competitions");
 
       setLocals(options.locations);
-
-      setDates(tempTimes);
-      setTimes(tempTimes);
    }, []);
    
    let longest = 0;
    var schoolData = {value: null, label: null, div: null}
-   const user = {email: localStorage.getItem("email"), name: localStorage.getItem("username")};
+   const user = {email: sessionStorage.getItem("email"), name: sessionStorage.getItem("username")};
    var url = "";
 
    //finding length of longest string in options and resize search box accordingly
@@ -136,30 +118,6 @@ export default function TeamRegister(){
 
    const onChange = (newValue, type) => {
       switch (type) {
-         case "date":
-            for(const i in times){
-               if(newValue === times[i].value){
-                  if(newValue != null){
-                     setChoice((prevState) => ({
-                        ...prevState,
-                        date: newValue,
-                        compId: times[i].id,
-                        loc: times[i].site.replace(/^\w/, (c) => c.toUpperCase()),
-                        error: false,
-                     }));
-                  }
-               }
-            }
-            if(newValue === null) {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  date: null,
-                  compId: null,
-                  loc: null,
-                  error: false,
-               }));
-            }
-            break;
          case "location":
             if(newValue != null){
                setChoice((prevState) => ({
@@ -180,7 +138,6 @@ export default function TeamRegister(){
                setChoice((prevState) => ({
                   ...prevState,
                   lev: newValue,
-                  date: null,
                   loc: null,
                   error: false,
                }));
@@ -216,28 +173,14 @@ export default function TeamRegister(){
                   }
                }
                options.locations = temp;
-
-               // for removing times that aren't available for the particular grade level
-               temp = [];
-               for(const i in dates){
-                  if(dates[i].grade.indexOf(value) !== -1){
-                     temp.push(dates[i])
-                  }
-               }
-               setTimes(temp)
                
             } else {
                setChoice((prevState) => ({
                   ...prevState,
                   lev: null,
-                  date: null,
                   loc: null,
                   error: false,
                }));
-
-               //resets the available options if field is cleared
-               options.locations = locals;
-               setTimes(dates);
             }
             break;
          case "school":
@@ -324,9 +267,10 @@ export default function TeamRegister(){
    const onSubmit = () => {
 
       const error = setError(choice);
+      setCompID();
       setSchoolData();
       setURL(choice, schoolData);
-
+      console.log(choice)
       if(!error){
          history.push({
             pathname: `/team-register/confirm/`,
@@ -334,6 +278,31 @@ export default function TeamRegister(){
                key: url
             }
          });
+      }
+   }
+
+   const setCompID = () => {
+      //gets the proper grade level displays
+      for(const i in comps){
+         var grade = comps[i].grade.substr(1)
+         var grades = []
+         for(const item in options.level){
+            for(const char in grade){
+               if(options.level[item].value === grade[char]){
+                  grades.push(options.level[item].label)
+                  break;
+               }
+            }
+         }
+
+         for(const j in grades){
+            if(grades[j] === choice.lev && choice.loc.toUpperCase() === comps[i].site.toUpperCase()){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  compId: i
+               }))
+            }
+         }
       }
    }
 
@@ -356,7 +325,7 @@ export default function TeamRegister(){
    //sets iframe url for filling google form
    const setURL = (choice, schoolData) => {
       const uid = fire.auth().currentUser.uid; //might need to do something with this, since it might not be fast enough.
-      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.831651134=${choice.date}&entry.1445326839=${choice.compId}`
+      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.1445326839=${choice.compId}`
    }
 
    //Getting all the data for that school
@@ -408,20 +377,6 @@ export default function TeamRegister(){
                      onChange={(event, newValue) => onChange(newValue, "school")}
                      width={longest}
                      value={choice.school}
-                     error={choice.error}
-                  />
-
-                  <Auto
-                     title="Competition Date"
-                     disabled={times.length === 0}
-                     options={times}
-                     text={times.length === 0 ? 
-                              "No times for this competition level." : 
-                              "Select Date"
-                           }
-                     onChange={(event, newValue) => onChange(newValue, "date")}
-                     width={longest}
-                     value={choice.date}
                      error={choice.error}
                   />
 
