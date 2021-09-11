@@ -40,8 +40,15 @@ export default function ForgotPass() {
   const onSubmit = () => {
     fire.auth().sendPasswordResetEmail(email)
       .then(() => {
-        alert("A password reset email was sent to your email. Please click on the link and reset your password.")
-        history.push("/profile")
+        history.push({
+          pathname: "/",
+          state: {
+            alert: true,
+            severity: "info",
+            message: "A password reset email was sent to your email. Please click on the link and reset your password.",
+            duration: 5000
+          }
+        });
       })
       .catch((error) => {
         setError(error)

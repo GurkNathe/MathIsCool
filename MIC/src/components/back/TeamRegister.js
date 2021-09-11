@@ -5,34 +5,11 @@ import Auto from "../custom/Auto.js";
 import fire from "../fire";
 
 import { divisions } from "../assets.js";
+import useStyles from "../style";
 
 //Options for each dropdown. Probably use JSON for them
 
 let options = require("./options");
-
-//TODO: change to style.js
-const useStyles = makeStyles((theme) => ({
-   root: {
-     '& .MuiTextField-root': {
-       margin: theme.spacing(1),
-       width: '25ch',
-     },
-   },
-   top: {
-      display: "flex", 
-      flexDirection:"row"
-    },
-    second: {
-      width:"100%",
-      borderRadius: "4px", 
-      margin:"2%",
-      boxShadow:"0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%)"
-    },
-    bottom: {
-      marginLeft:"1%", 
-      marginRight:"1%",
-    }
- }));
 
 //gets the competitions that are open (i.e. status == reg)
 async function getComps(title){
@@ -64,6 +41,7 @@ async function getComps(title){
    }
 }
 
+//TODO: add filtering for masters (i.e. if the school selected at the grade level isn't in masters, don't show masters)
 export default function TeamRegister(){
    const history = useHistory();
    const classes = useStyles();
@@ -72,25 +50,23 @@ export default function TeamRegister(){
                                           school: null,
                                           team: null,
                                           indiv: null,
-                                          compId: null,
                                           email: "",
                                           coach: "",
                                           error: false,
                                        });  
    const [locals, setLocals] = useState([]); //used to store the locations, does not change
+   const user = {email: sessionStorage.getItem("email"), name: sessionStorage.getItem("username")}; //stores email and username of user
                                     
-   let comps = JSON.parse(sessionStorage.getItem("competitionsData"));
+   let comps = JSON.parse(sessionStorage.getItem("competitionsData")); //all open competitions
+   let compId = null; //used to store the id of the competition being signed up for
+   let longest = 0; //used for storing the width of the longest string that can be selected in the drop-downs
+   let schoolData = {value: null, label: null, div: null} //used to store the data of the selected school
+   let url = ""; //used to store the url for the Google Form
 
    useEffect(() => {
       getComps("competitions");
-
       setLocals(options.locations);
    }, []);
-   
-   let longest = 0;
-   var schoolData = {value: null, label: null, div: null}
-   const user = {email: sessionStorage.getItem("email"), name: sessionStorage.getItem("username")};
-   var url = "";
 
    //finding length of longest string in options and resize search box accordingly
    for(var option in options){
@@ -266,11 +242,11 @@ export default function TeamRegister(){
    //checks data to make sure things are filled out, and redirects to the goole form with prefilled info.
    const onSubmit = () => {
 
+      compId = setCompID(choice);
       const error = setError(choice);
-      setCompID();
       setSchoolData();
       setURL(choice, schoolData);
-      console.log(choice)
+
       if(!error){
          history.push({
             pathname: `/team-register/confirm/`,
@@ -281,8 +257,11 @@ export default function TeamRegister(){
       }
    }
 
-   const setCompID = () => {
+   //sets the competition id
+   const setCompID = (choice) => {
       //gets the proper grade level displays
+      let id = null;
+      comp_loop:
       for(const i in comps){
          var grade = comps[i].grade.substr(1)
          var grades = []
@@ -294,16 +273,15 @@ export default function TeamRegister(){
                }
             }
          }
-
+         
          for(const j in grades){
             if(grades[j] === choice.lev && choice.loc.toUpperCase() === comps[i].site.toUpperCase()){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  compId: i
-               }))
+               id = i;
+               break comp_loop;
             }
          }
       }
+      return id;
    }
 
    //Setting error if something is not filled out.
@@ -324,8 +302,8 @@ export default function TeamRegister(){
 
    //sets iframe url for filling google form
    const setURL = (choice, schoolData) => {
-      const uid = fire.auth().currentUser.uid; //might need to do something with this, since it might not be fast enough.
-      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.1445326839=${choice.compId}`
+      const uid = fire.auth().currentUser.uid; //!might need to do something with this, since it might not be fast enough.
+      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.1445326839=${compId}`
    }
 
    //Getting all the data for that school
@@ -343,9 +321,9 @@ export default function TeamRegister(){
    }
    
    return(
-      <div className={classes.top}>
-         <div className={classes.second}>
-            <div className={classes.bottom}>
+      <div className={classes.tTop}>
+         <div className={classes.tSecond}>
+            <div className={classes.tBottom}>
                <h1>Team Registration</h1>
                <p>
                   <b>Rules for Individuals:</b> Any student may compete as an individual 
@@ -358,7 +336,7 @@ export default function TeamRegister(){
                   when registering n teams, you get to bring 4n+2 students along. 
                   These students don't need to be registered as individuals separately.
                </p>
-               <form className={classes.root} noValidate autoComplete="off">
+               <form className={classes.tRoot} noValidate autoComplete="off">
 
                   <Auto
                      title="Competition Level"

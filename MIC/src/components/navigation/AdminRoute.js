@@ -21,12 +21,35 @@ export default function AdminRoute(props) {
         </div> :
         user != null ?
           user.emailVerified ? 
-            <Route component={props.component} exact path={props.path}/> :
-            <>
-              {alert("Please confirm your email before continuing.")}
-              <Redirect to="/"/>
-            </> :
-          <Redirect to="/login"/>
+            user.photoURL ? 
+              <Route component={props.component} exact path={props.path}/>:
+              <Redirect to={{
+                pathname: '/',
+                state: {
+                  alert: true,
+                  severity: "error",
+                  message: "You are not an admin.",
+                  duration: 3000
+                }
+              }}/>:
+              <Redirect to={{
+                pathname: '/',
+                state: {
+                  alert: true,
+                  severity: "error",
+                  message: "Please verify your email address.",
+                  duration: 3000
+                }
+              }}/>:
+              <Redirect to={{
+                pathname: '/',
+                state: {
+                  alert: true,
+                  severity: "error",
+                  message: "Please sign in.",
+                  duration: 3000
+                }
+              }}/>
       }
     </>
   );

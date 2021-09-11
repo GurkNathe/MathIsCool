@@ -127,14 +127,9 @@ export default function Table(props) {
   return(
     <div className={classes.tableTop}>
       <Snackbar open={clicked} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{vertical:'top', horizontal:'center'}}>
-        {alert ? 
-          <Alert onClose={handleClose} severity="success" variant="filled">
-            This is a success message!
-          </Alert>:
-          <Alert onClose={handleClose} severity="error" variant="filled">
-            This is an error message!
-          </Alert>
-        }
+        <Alert onClose={handleClose} severity={alert ? "success" : "error"} variant="filled">
+          Names {alert ? "successfully submitted" : "failed to submit, contact web master for help if you can't resolve the issue"}.
+        </Alert>
       </Snackbar>
       { students !== undefined && students !== 1 ?
         <>

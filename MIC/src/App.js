@@ -42,6 +42,28 @@ async function getUser(){
       sessionStorage.setItem("email", user.email)
     }
   }
+
+  if(fire.auth().currentUser !== null){
+    const user = fire.auth().currentUser;
+    if(!user.photoURL){
+      const admins = fire.firestore().collection("roles").doc("admin");
+      const admin = admins.get().then((doc) => {
+        if(doc.data().admins.includes(user.uid)){
+          fire.auth().onAuthStateChanged((user) => {
+            if(user){
+              user.updateProfile({
+                photoURL: user.uid
+              }).then(() => {
+              }).catch((error) => {
+                console.log(error)
+              });
+            }
+          });
+        }
+      })
+      return admin;
+    }
+  }
 }
 
 function App() {
@@ -52,7 +74,7 @@ function App() {
   }, [])
 
   return (
-    <div style={{overflowX:"hidden"}} id="app">
+    <div id="app">
       <Router>
           <SideBar/>
           <Switch>

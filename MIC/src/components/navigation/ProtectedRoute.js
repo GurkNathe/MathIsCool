@@ -22,7 +22,6 @@ export default function PrivateRoute(props) {
         user != null ?
           user.emailVerified ? 
             <Route component={props.component} exact path={props.path}/> :
-            <>
               <Redirect to={{
                 pathname: '/',
                 state: {
@@ -31,9 +30,7 @@ export default function PrivateRoute(props) {
                   message: "Please verify your email address.",
                   duration: 3000
                 }
-              }}/>)
-            </> :
-            <>
+              }}/>:
               <Redirect to={{
                 pathname: '/',
                 state: {
@@ -43,7 +40,6 @@ export default function PrivateRoute(props) {
                   duration: 3000
                 }
               }}/>
-            </>
       }
     </>
   );
