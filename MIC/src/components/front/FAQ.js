@@ -10,12 +10,8 @@ export default function FAQ() {
 
   const title = "faq";
 
-  var test = [{},
-              {},
-              {},
-              {}];
-
-  const cats = ["General", "Registration", "Contest Time", "Masters"];
+  var test = [];
+  var cats = [];
 
   useEffect(() => {
     getWeb(title);
@@ -25,31 +21,15 @@ export default function FAQ() {
   //Used for sorting the questions
   for(const i in faq){
     if(faq[i].answer !== undefined && faq[i].answer !== null){
-      if(i < 200){
-        test[0] = {
-          ...test[0],
-          [i]: faq[i]
-        }
-      } else if(i < 300){
-        test[1] = {
-          ...test[1],
-          [i]: faq[i]
-        }
-      } else if(i < 400){
-        test[2] = {
-          ...test[2],
-          [i]: faq[i]
-        }
-      } else if(i < 500){
-        test[3] = {
-          ...test[3],
-          [i]: faq[i]
-        }
+      const digit = Math.floor((Number(i)+100)/100) - 2;
+      test[digit] = {
+        ...test[digit],
+        [i]: faq[i]
       }
+    } else {
+      cats.push(faq[i].question)
     }
   }
-
-  console.log(test)
 
   return (
     <div className={classes.root}>
@@ -58,16 +38,11 @@ export default function FAQ() {
           <h1 style={{fontStyle:"italic"}}>FAQ</h1>
           {
             test.map((group, index) => {
-              var g = [];
-              for(const i in group){
-                g.push(group[i])
-              }
-              console.log(g)
               return(
                 <div key={index}>
                   <p><b>{cats[index]}</b></p>
                   {
-                    g.map((quest, ind) => {
+                    Object.values(group).map((quest, ind) => {
                       return(
                         <Accord key={ind} title={quest.question} content={quest.answer}/>
                       )

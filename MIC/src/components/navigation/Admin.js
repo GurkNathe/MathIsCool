@@ -19,6 +19,9 @@ export default function Admin(){
                <Button className={classes.homeButton} href="/admin/add-admin">
                   Add Admin
                </Button>
+               <Button className={classes.homeButton} href="/admin/mark-masters">
+                  Mark Masters
+               </Button>
             </ButtonGroup>
          </div>
       </div>

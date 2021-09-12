@@ -13,12 +13,14 @@ export default function Accord(props){
   const classes = useStyles();
 
   return(
-    <Accordion key={props.key}>
+    <Accordion>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         id={props.title}
       >
-        <Typography className={classes.heading}>{props.title}</Typography>
+        <Typography className={classes.heading}>
+          {props.title}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Typography>

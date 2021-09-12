@@ -29,6 +29,7 @@ import Names from "./components/back/Names";
 import ImportContent from "./components/admin/ImportContent";
 import AdminRoute from "./components/navigation/AdminRoute";
 import AddAdmin from "./components/admin/AddAdmin";
+import MarkMasters from "./components/admin/MarkMasters";
 
 import fire from "./components/fire";
 
@@ -97,6 +98,7 @@ function App() {
             <ProtectedRoute path="/enter-names" exact component={Names}/>
             <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
             <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>
+            <AdminRoute path="/admin/mark-masters" exact component={MarkMasters}/>
           </Switch>
       </Router>
     </div>
