@@ -30,6 +30,7 @@ import ImportContent from "./components/admin/ImportContent";
 import AdminRoute from "./components/navigation/AdminRoute";
 import AddAdmin from "./components/admin/AddAdmin";
 import MarkMasters from "./components/admin/MarkMasters";
+import MastersTeams from "./components/custom/MastersTeams";
 
 import fire from "./components/fire";
 
@@ -99,6 +100,7 @@ function App() {
             <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
             <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>
             <AdminRoute path="/admin/mark-masters" exact component={MarkMasters}/>
+            <Route path="/admin/mark-masters/teams" exact render={(props) => <MastersTeams {...props}/>}/>
           </Switch>
       </Router>
     </div>

@@ -110,6 +110,7 @@ const useStyles = makeStyles((theme) => ({
       background: "#3f51b5",
       display:"flex",
       flexDirection:"row",
+      zIndex:"9999",
       '&::-webkit-scrollbar':{
          display:"none"
       }
@@ -139,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
       position:"-webkit-sticky",
       position:"sticky",
       top:0,
-      zIndex:"9999",
+      zIndex:"1300",
    },
    avatar: {
       backgroundColor: profCol,
