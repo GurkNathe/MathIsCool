@@ -21,7 +21,7 @@ export default function AdminRoute(props) {
         </div> :
         user != null ?
           user.emailVerified ? 
-            user.photoURL ? 
+            user.photoURL === user.uid ? 
               <Route component={props.component} exact path={props.path}/>:
               <Redirect to={{
                 pathname: '/',

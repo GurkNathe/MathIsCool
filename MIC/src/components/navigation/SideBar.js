@@ -35,7 +35,7 @@ export default function SideBar() {
                <div className={classes.in}>
                   <FrontBack/>
                   { fire.auth().currentUser ? <CoachTools/> : null }
-                  { fire.auth().currentUser ? <Admin/> : null} {/* TODO: need to add admin permission check */}
+                  { fire.auth().currentUser ? fire.auth().currentUser.photoURL ? <Admin/> : null : null}
                   <Divider/>
                   <Profile setOpen={setOpen}/>
                </div>

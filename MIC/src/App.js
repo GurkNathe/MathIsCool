@@ -32,6 +32,8 @@ import AddAdmin from "./components/admin/AddAdmin";
 import MarkMasters from "./components/admin/MarkMasters";
 import MastersTeams from "./components/custom/MastersTeams";
 
+import Test from "./components/admin/Test";
+
 import fire from "./components/fire";
 
 //Used to get pre-login web page html/data
@@ -80,6 +82,7 @@ function App() {
       <Router>
           <SideBar/>
           <Switch>
+            <Route path="/test" exact component={Test}/>
             <Route path="/" exact render={(props) => <Home {...props}/>}/>
             <Route path="/about/history" exact component={History}/>
             <Route path="/about/contacts" exact component={Contacts}/>

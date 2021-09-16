@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import BasicPage from '../custom/BasicPage';
+import React, { useState } from 'react'
 import ReactLoading from 'react-loading';
-import MastersTeams from '../custom/MastersTeams';
-import fire from "../fire";
 import { useHistory } from 'react-router';
+
+import BasicPage from '../custom/BasicPage';
+import fire from "../fire";
+import options from "../back/options.json";
+import DataTable from "../custom/DataTable";
 
 //gets every compeition currently available
 //TODO: tweak this to know which compeitions to not get
@@ -12,6 +14,9 @@ async function getComps(){
     //getting all competitions
     const comps = await fire.firestore().collection("competitions").get();
 
+    //getting masters schools
+    const masters = await fire.firestore().collection("masters").doc("teams").get();
+    const master = masters ? masters.data() : null;
     //creating an Array version of the competions
     var competitions = [];
     comps.forEach((doc) => {
@@ -20,23 +25,79 @@ async function getComps(){
 
     //prevents the need for multiple reads in one session
     sessionStorage.setItem("mastersComps", JSON.stringify(competitions)); 
+    sessionStorage.setItem("mastersData", JSON.stringify(master)); 
 
-    return(competitions)
+    return([competitions, master])
   } catch(error) {
     return error;
   }
 }
 
+//! doesn't work well on smaller window mobile devices
 export default function MarkMasters() {
   const history = useHistory();
   const [comps, setComps] = useState({comp: JSON.parse(sessionStorage.getItem("mastersComps")), loading: true});
+  const [mast, setMast] = useState(JSON.parse(sessionStorage.getItem("mastersData")));
+  
+  //TODO: flex or width?
+  const columns = [
+    { 
+      field: 'id', 
+      headerName: 'ID', 
+      description:"ID",
+      flex: 1,
+      hide: true,
+      editable: false
+    },
+    { 
+      field: 'site', 
+      headerName: 'Site', 
+      description:"Site",
+      flex: 1,
+      editable: false
+    },
+    {
+      field: 'level',
+      headerName: 'Level',
+      description:"Grade Level",
+      flex: 1,
+      editable: false
+    },
+    {
+      field: 'date',
+      headerName: 'Date',
+      description:"Competition date.",
+      flex: 1,
+      editable: false,
+      type: 'date'
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      description:"Status",
+      flex: 1,
+      editable: false
+    },
+    {
+      field: 'page',
+      headerName: 'View Teams',
+      description:"View Teams",
+      flex: 1,
+      editable: false,
+      renderCell: (params) => (
+        <button onClick={() => onClick(params.value, mast)}>View Teams</button>
+      )
+    },
+  ];
+  var rows = [];
 
   if(comps.comp === null || comps.comp === undefined){
     getComps().then((result) => {
       console.log(result)
+      setMast(result[1])
       setComps((prev) => ({
         ...prev,
-        comp: result,
+        comp: result[0],
         loading: false
       }));
     })
@@ -47,48 +108,50 @@ export default function MarkMasters() {
     }))
   }
 
-  const onClick = (data) => {
+  const onClick = (data, mast) => {
     history.push({
       pathname: '/admin/mark-masters/teams',
       state: {
         data: data,
+        masters: mast
       }
     })
   }
 
   return (
     <BasicPage>
+      
       {!comps.loading ? 
-        <table>
-          <thead>
-            <th>Site</th>
-            <th>Level</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th></th>
-          </thead>
+        <>
           {Object.values(comps.comp).map((data, index) => {
-            return(
-              <tbody key={index}>
-                <td>
-                  {data.site.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())))}
-                </td>
-                <td>
-                  {data.grade}
-                </td>
-                <td>
-                  {data.compDate}
-                </td>
-                <td>
-                  {data.status}
-                </td>
-                <td>
-                  <a href="/admin/mark-masters/teams" onClick={() => onClick(data)}>View Teams</a>
-                </td>
-              </tbody>
-            )
+            if(data.site !== "masters"){
+              var grades = []
+              for(const item in options.level){
+                for(const char in data.grade.substr(1)){
+                  if(options.level[item].value === data.grade.substr(1)[char]){
+                      grades.push(options.level[item].label)
+                      break;
+                  }
+                }
+              }
+              var grade = grades.length > 2 ? grades.join(", ") : grades.join(" and ");
+              grade = grades.length > 2 ? grade.substring(0, grade.lastIndexOf(", ")) + ", and " + grade.substring(grade.lastIndexOf(", ")+2, grade.length) : grade;
+
+              rows.push({
+                id: index,
+                site: data.site.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+                level: grade,
+                date: data.compDate,
+                status: data.status,
+                page: data
+              })
+            }
           })}
-        </table> :
+          <DataTable 
+            columns={columns}
+            rows={rows}
+          />
+        </> :
         <div style={{position:"fixed", top:"45%", left:"45%"}}>
           <ReactLoading type="spinningBubbles" color="#000" style={{width:"50px", height:"50px"}}/>
         </div>
@@ -96,3 +159,4 @@ export default function MarkMasters() {
     </BasicPage>
   )
 }
+

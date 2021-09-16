@@ -65,7 +65,7 @@ export default function TeamRegister(){
    let url = ""; //used to store the url for the Google Form
 
    useEffect(() => {
-      //!don't know if this is good. Seems to work decently
+      setLocals(options.locations);
       if(comps === null || comps === undefined){
          getComps("competitions").then((result) => {
             setComps(result);
@@ -85,7 +85,6 @@ export default function TeamRegister(){
             }
          });
       }
-      setLocals(options.locations);
    }, []);
 
    //finding length of longest string in options and resize search box accordingly
