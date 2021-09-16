@@ -10,17 +10,14 @@ import fire from "../fire";
 //adds schools to masters
 async function setMasters(master, values){
   var newMasters = [];
-  console.log(values)
   for(const i in values){
     if(values[i].status === "Masters Team")
-      newMasters.push({grades: values[i].level, schoolID: values[i].schoolId})
+      newMasters.push({grade: values[i].level, schoolID: values[i].schoolId})
   }
-
-  console.log([...master, ...newMasters])
   const data = {teams: [...master, ...newMasters]};
-  console.log(data)
-  // const mast = fire.firestore().collection("masters").doc("teams").set(data);
-  // return(mast);
+  // console.log(data)
+  const mast = fire.firestore().collection("masters").doc("teams").set(data);
+  return(data);
 }
 
 export default function MastersTeams(props) {
@@ -125,14 +122,17 @@ export default function MastersTeams(props) {
 
   const same = (list, value) => {
     for(const i in list){
-      if(list[i].schoolID === value.schoolID)
+      if(list[i].schoolID === value.schoolID && list[i].grade === value.level)
         return true;
     }
     return false;
   }
 
   const onSubmit = () => {
-    setMasters(masters, rows)
+    setMasters(masters, rows).then((result) => {
+      console.log(result)
+      sessionStorage.setItem("mastersData", JSON.stringify(result))
+    })
   }
 
   return (

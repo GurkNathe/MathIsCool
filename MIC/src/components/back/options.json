@@ -1,7 +1,6 @@
 {
 
 "locations":[
-              {"value": "Masters", "label": "Masters"},
               {"value": "Online", "label": "Online"},
               {"value": "Carmichael MS", "label": "Carmichael MS"},
               {"value": "Clovis Point MS", "label": "Clovis Point MS"},

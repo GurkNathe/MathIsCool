@@ -33,13 +33,13 @@ async function getComps(){
   }
 }
 
-//! doesn't work well on smaller window mobile devices
 export default function MarkMasters() {
   const history = useHistory();
   const [comps, setComps] = useState({comp: JSON.parse(sessionStorage.getItem("mastersComps")), loading: true});
   const [mast, setMast] = useState(JSON.parse(sessionStorage.getItem("mastersData")));
   
   //TODO: flex or width?
+  //Columns and rows of the data table
   const columns = [
     { 
       field: 'id', 
@@ -91,9 +91,9 @@ export default function MarkMasters() {
   ];
   var rows = [];
 
-  if(comps.comp === null || comps.comp === undefined){
+  //gets the competitions to mark
+  if(comps.comp === null || comps.comp === undefined || mast === null || mast === undefined){
     getComps().then((result) => {
-      console.log(result)
       setMast(result[1])
       setComps((prev) => ({
         ...prev,

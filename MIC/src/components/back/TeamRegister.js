@@ -18,10 +18,11 @@ async function getComps(title){
    var comps = {};
 
    //checks if load variable in local storage is true, meaning database can be pulled
-   if(!sessionStorage.getItem(title + "Data")){
+   if(!sessionStorage.getItem(title + "Data") || !sessionStorage.getItem("mastersData")){
 
       //getting the 'web' collection from firestore
       const doc = await fire.firestore().collection(title).where('status', '==', 'reg').get();
+      const masters = await fire.firestore().collection("masters").doc("teams").get();
 
       //adding open competitions to holding variable
       doc.forEach((item) => {
@@ -38,7 +39,9 @@ async function getComps(title){
 
       //adding web page html/data to local storage
       sessionStorage.setItem(title + "Data", JSON.stringify(comps));
-      return(comps);
+      sessionStorage.setItem("mastersData", masters ? JSON.stringify(masters.data()) : null);
+
+      return([comps, masters ? masters.data() : null]);
    }
 }
 
@@ -46,7 +49,9 @@ async function getComps(title){
 export default function TeamRegister(){
    const history = useHistory();
    const classes = useStyles();
+   
    const [comps, setComps] = useState(JSON.parse(sessionStorage.getItem("competitionsData")));//all open competitions
+   const [masters, setMasters] = useState(JSON.parse(sessionStorage.getItem("mastersData"))); //stores the masters data
    const [choice, setChoice] = useState({ loc: null, 
                                           lev: null, 
                                           school: null,
@@ -57,10 +62,24 @@ export default function TeamRegister(){
                                           error: false,
                                        });  
    const [locals, setLocals] = useState([]); //used to store the locations, does not change
+
    const user = {email: sessionStorage.getItem("email"), name: sessionStorage.getItem("username")}; //stores email and username of user
    
+   //gets the value for width of text fields
+   const getLongest = (longest) => {
+      //finding length of longest string in options and resize search box accordingly
+      for(const option in options){
+         for(let i = 0; i < Object.keys(options[option]).length; i++){
+            if(options[option][i].label.length > longest)
+               longest = options[option][i].label.length;
+         }
+      }
+      //don't know if there is a good way to do this, couldn't find anything
+      return longest * 10;
+   }
+
    let compId = null; //used to store the id of the competition being signed up for
-   let longest = 0; //used for storing the width of the longest string that can be selected in the drop-downs
+   let longest = getLongest(0); //used for storing the width of the longest string that can be selected in the drop-downs
    let schoolData = {value: null, label: null, div: null} //used to store the data of the selected school
    let url = ""; //used to store the url for the Google Form
 
@@ -68,36 +87,28 @@ export default function TeamRegister(){
       setLocals(options.locations);
       if(comps === null || comps === undefined){
          getComps("competitions").then((result) => {
-            setComps(result);
+            setComps(result[0]);
+            setMasters(result[1])
             //filters the options based on the currently available competitions
-            if(result !== null && result !== undefined){
+            if(result[0] !== null && result[0] !== undefined){
                for(const i in options.locations){
                   let test = false;
-                  for(const j in result){
-                     if(options.locations[i].value.toUpperCase() === result[j].site.toUpperCase()){
+                  for(const j in result[0]){
+                     if(options.locations[i].value.toUpperCase() === result[0][j].site.toUpperCase()){
                         test = true;
                      }
                   }
                   if(!test){
-                     delete options.locations[i]
+                     let first = options.locations.splice(0,i-1);
+                     let second = options.locations.splice(1,options.locations.length);
+                     options.locaitons = first.concat(second)
                   }
                }
             }
          });
       }
    }, []);
-
-   //finding length of longest string in options and resize search box accordingly
-   for(var option in options){
-      for(let i = 0; i < Object.keys(options[option]).length; i++){
-         if(options[option][i].label.length > longest)
-            longest = options[option][i].label.length;
-      }
-   }
-
-   //don't know if there is a good way to do this, couldn't find anything
-   longest *= 10;
-
+   
    const onChange = (newValue, type) => {
       switch (type) {
          case "location":
@@ -135,9 +146,6 @@ export default function TeamRegister(){
                   }
                }
 
-               //resets the available options if field is cleared
-               options.locations = locals;
-
                //TODO: might need to change options.location to a state
                // for removing locations that don't have the grade associated with it
                for(const i in options.locations){
@@ -155,6 +163,22 @@ export default function TeamRegister(){
                   }
                }
                options.locations = temp;
+
+               //getting school id for chosen school
+               let id = null;
+               for(const option in options.school){
+                  if(options.school[option].label === choice.school){
+                     id = options.school[option].value;
+                  }
+               }
+               
+               //checking if school is able to sign up for masters
+               for(const option in masters.teams){
+                  if(masters.teams[option].grade === newValue && masters.teams[option].schoolID === id){
+                     options.locations.push({"value": "Masters", "label": "Masters"});
+                     break;
+                  }
+               }
                
             } else {
                setChoice((prevState) => ({
@@ -163,19 +187,58 @@ export default function TeamRegister(){
                   loc: null,
                   error: false,
                }));
+
+               //resets the available locations if field is cleared
+               options.locations = locals;
             }
             break;
          case "school":
             if(newValue != null){
+               //deletes any masters in location options "reseting options"
+               for(const option in options.locations){
+                  if(options.locations[option].value === "Masters"){
+                     let first = options.locations.splice(0,option-1);
+                     let second = options.locations.splice(1,options.locations.length);
+                     options.locaitons = first.concat(second)
+                  }
+               }
+               
+               //getting school id for chosen school
+               let id = null;
+               for(const option in options.school){
+                  if(options.school[option].label === newValue){
+                     id = options.school[option].value;
+                  }
+               }
+
+               //checking if school is able to sign up for masters
+               for(const option in masters.teams){
+                  if(masters.teams[option].grade === choice.lev && masters.teams[option].schoolID === id){
+                     options.locations.push({"value": "Masters", "label": "Masters"});
+                     break;
+                  }
+               }
+
                setChoice((prevState) => ({
                   ...prevState,
                   school: newValue,
+                  loc: null,
                   error: false,
                }));
             } else {
+               //deletes any masters in location options "reseting options"
+               for(const option in options.locations){
+                  if(options.locations[option].value === "Masters"){
+                     let first = options.locations.splice(0,option-1);
+                     let second = options.locations.splice(1,options.locations.length);
+                     options.locaitons = first.concat(second)
+                  }
+               }
+
                setChoice((prevState) => ({
                   ...prevState,
                   school: null,
+                  loc: null,
                   error: false,
                }));
             }
@@ -314,7 +377,7 @@ export default function TeamRegister(){
 
    //Getting all the data for that school
    const setSchoolData = () => {
-      for(option in options.school){
+      for(const option in options.school){
          if(options.school[option].label === choice.school){
             schoolData = {
                value: options.school[option].value,
