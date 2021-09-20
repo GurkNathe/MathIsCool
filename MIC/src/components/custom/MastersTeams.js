@@ -6,16 +6,40 @@ import BasicPage from './BasicPage';
 import options from '../back/options.json';
 import DataTable from "../custom/DataTable";
 import fire from "../fire";
+import removeElement from "../custom/removeElement";
 
 //adds schools to masters
-async function setMasters(master, values){
+async function setMasters(master, values, grade){
   var newMasters = [];
-  for(const i in values){
-    if(values[i].status === "Masters Team")
-      newMasters.push({grade: values[i].level, schoolID: values[i].schoolId})
+  
+  //getting masters that aren't in grade group
+  for(const i in master){
+    if(!grade.includes(master[i].grade)){
+      newMasters.push({grade: master[i].grade, schoolID: master[i].schoolID});
+    }
   }
-  const data = {teams: [...master, ...newMasters]};
-  // console.log(data)
+  
+  //getting data the is marked as a masters team
+  for(const i in values){
+    //only competitions marked for masters
+    if(values[i].status === "Masters Team"){
+      const reg = values[i];
+      let test = true;
+      //checking if already in masters
+      for(const j in master){
+        if(master[j].grade === reg.level && master[j].schoolID === reg.schoolId){
+          newMasters.push(master[j])
+          test = false;
+          break;
+        }
+      }
+      if(test){
+        newMasters.push({grade: reg.level, schoolID: reg.schoolId})
+      }
+    }
+  }
+  
+  const data = {teams: [...newMasters]};
   const mast = fire.firestore().collection("masters").doc("teams").set(data);
   return(data);
 }
@@ -53,7 +77,7 @@ export default function MastersTeams(props) {
   }
  
   const grade = getGrade();
-
+  
   const getSchoolName = (reg) => {
     let schoolName = "";
     for(const option in schools){
@@ -65,7 +89,7 @@ export default function MastersTeams(props) {
     return schoolName;
   }
 
-  //? should I change <select> to React component or leave as is
+  //? should I change <select> to JSX component or leave as is
   const columns = [
     { 
       field: 'id', 
@@ -111,7 +135,7 @@ export default function MastersTeams(props) {
       flex: 1,
       editable: false,
       renderCell: (params) => (
-        <select id={params.row.id} onChange={(event) => {params.row.status = event.target.value}}>
+        <select defaultValue={params.row.status} id={params.row.id} onChange={(event) => {params.row.status = event.target.value}}>
           <option value="Team">Team</option>
           <option value="Masters Team">Masters Team</option>
         </select>
@@ -119,6 +143,7 @@ export default function MastersTeams(props) {
     },
   ];
   var rows = [];
+
 
   const same = (list, value) => {
     for(const i in list){
@@ -129,8 +154,7 @@ export default function MastersTeams(props) {
   }
 
   const onSubmit = () => {
-    setMasters(masters, rows).then((result) => {
-      console.log(result)
+    setMasters(masters, rows, data.grade.substr(1)).then((result) => {
       sessionStorage.setItem("mastersData", JSON.stringify(result))
     })
   }

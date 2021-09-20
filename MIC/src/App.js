@@ -31,6 +31,7 @@ import AdminRoute from "./components/navigation/AdminRoute";
 import AddAdmin from "./components/admin/AddAdmin";
 import MarkMasters from "./components/admin/MarkMasters";
 import MastersTeams from "./components/custom/MastersTeams";
+import ManageCompetitions from "./components/admin/ManageCompetitions";
 
 import Test from "./components/admin/Test";
 
@@ -74,7 +75,7 @@ function App() {
 
   //used to get non-compromising user information
   useEffect(() => {
-    getUser();
+    getUser()
   }, [])
 
   return (
@@ -103,7 +104,8 @@ function App() {
             <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
             <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>
             <AdminRoute path="/admin/mark-masters" exact component={MarkMasters}/>
-            <Route path="/admin/mark-masters/teams" exact render={(props) => <MastersTeams {...props}/>}/>
+            <AdminRoute path="/admin/mark-masters/teams" exact component={MastersTeams}/>
+            <AdminRoute path="/admin/manage-comps" exact component={ManageCompetitions}/>
           </Switch>
       </Router>
     </div>

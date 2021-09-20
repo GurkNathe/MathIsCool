@@ -22,6 +22,9 @@ export default function Admin(){
                <Button className={classes.homeButton} href="/admin/mark-masters">
                   Mark Masters
                </Button>
+               <Button className={classes.homeButton} href="/admin/manage-comps">
+                  Manage Competitions
+               </Button>
             </ButtonGroup>
          </div>
       </div>

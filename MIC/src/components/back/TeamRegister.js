@@ -6,8 +6,7 @@ import fire from "../fire";
 import BasicPage from "../custom/BasicPage.js";
 import { divisions } from "../assets.js";
 import useStyles from "../style";
-
-//Options for each dropdown. Probably use JSON for them
+import removeElement from "../custom/removeElement.js";
 
 let options = require("./options");
 
@@ -45,7 +44,6 @@ async function getComps(title){
    }
 }
 
-//TODO: add filtering for masters (i.e. if the school selected at the grade level isn't in masters, don't show masters)
 export default function TeamRegister(){
    const history = useHistory();
    const classes = useStyles();
@@ -60,7 +58,7 @@ export default function TeamRegister(){
                                           email: "",
                                           coach: "",
                                           error: false,
-                                       });  
+                                       });  //input variables
    const [locals, setLocals] = useState([]); //used to store the locations, does not change
 
    const user = {email: sessionStorage.getItem("email"), name: sessionStorage.getItem("username")}; //stores email and username of user
@@ -85,10 +83,11 @@ export default function TeamRegister(){
 
    useEffect(() => {
       setLocals(options.locations);
-      if(comps === null || comps === undefined){
+      if(comps === null || comps === undefined || masters === null || masters === undefined){
          getComps("competitions").then((result) => {
             setComps(result[0]);
             setMasters(result[1])
+            
             //filters the options based on the currently available competitions
             if(result[0] !== null && result[0] !== undefined){
                for(const i in options.locations){
@@ -99,9 +98,8 @@ export default function TeamRegister(){
                      }
                   }
                   if(!test){
-                     let first = options.locations.splice(0,i-1);
-                     let second = options.locations.splice(1,options.locations.length);
-                     options.locaitons = first.concat(second)
+                     //deleting option
+                     options.locations = removeElement(options.locations, i)
                   }
                }
             }
@@ -197,9 +195,8 @@ export default function TeamRegister(){
                //deletes any masters in location options "reseting options"
                for(const option in options.locations){
                   if(options.locations[option].value === "Masters"){
-                     let first = options.locations.splice(0,option-1);
-                     let second = options.locations.splice(1,options.locations.length);
-                     options.locaitons = first.concat(second)
+                     //deleting option
+                     options.locations = removeElement(options.locations, option)
                   }
                }
                
@@ -229,9 +226,8 @@ export default function TeamRegister(){
                //deletes any masters in location options "reseting options"
                for(const option in options.locations){
                   if(options.locations[option].value === "Masters"){
-                     let first = options.locations.splice(0,option-1);
-                     let second = options.locations.splice(1,options.locations.length);
-                     options.locaitons = first.concat(second)
+                     //deleting option
+                     options.locations = removeElement(options.locations, option)
                   }
                }
 

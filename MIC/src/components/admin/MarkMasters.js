@@ -17,6 +17,7 @@ async function getComps(){
     //getting masters schools
     const masters = await fire.firestore().collection("masters").doc("teams").get();
     const master = masters ? masters.data() : null;
+    
     //creating an Array version of the competions
     var competitions = [];
     comps.forEach((doc) => {
@@ -37,7 +38,7 @@ export default function MarkMasters() {
   const history = useHistory();
   const [comps, setComps] = useState({comp: JSON.parse(sessionStorage.getItem("mastersComps")), loading: true});
   const [mast, setMast] = useState(JSON.parse(sessionStorage.getItem("mastersData")));
-  
+
   //TODO: flex or width?
   //Columns and rows of the data table
   const columns = [
