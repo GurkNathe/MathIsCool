@@ -7,8 +7,17 @@ export default function PrivateRoute(props) {
   const [user, setUser] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  if(user === 1){
+    fire.auth().onAuthStateChanged((use) => {
+      if(use){
+        setUser(use);
+      } else {
+        setUser(use);
+      }
+    })
+  }
+  
   useEffect(() => {
-    setTimeout(() => {setUser(fire.auth().currentUser);}, 2000)
     if(user !== 1)
       setLoading(false);
   }, [user]);
