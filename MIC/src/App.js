@@ -75,7 +75,7 @@ function App() {
 
   //used to get non-compromising user information
   useEffect(() => {
-    getUser()
+    getUser();
   }, [])
 
   return (

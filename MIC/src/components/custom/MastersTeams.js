@@ -6,7 +6,6 @@ import BasicPage from './BasicPage';
 import options from '../back/options.json';
 import DataTable from "../custom/DataTable";
 import fire from "../fire";
-import removeElement from "../custom/removeElement";
 
 //adds schools to masters
 async function setMasters(master, values, grade){
