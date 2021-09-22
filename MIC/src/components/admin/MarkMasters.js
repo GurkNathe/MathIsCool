@@ -147,6 +147,7 @@ export default function MarkMasters() {
                 page: data
               })
             }
+            return null;
           })}
           <DataTable 
             columns={columns}

@@ -5,7 +5,7 @@ import getWeb from "./getWeb";
 
 export default function Competitions() {
   const [comp, setComp] = useState("");
-
+console.log(comp)
   const title = "competitions";
 
   useEffect(() => {

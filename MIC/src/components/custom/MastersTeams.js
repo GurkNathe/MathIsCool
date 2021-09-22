@@ -39,7 +39,7 @@ async function setMasters(master, values, grade){
   }
   
   const data = {teams: [...newMasters]};
-  const mast = fire.firestore().collection("masters").doc("teams").set(data);
+  fire.firestore().collection("masters").doc("teams").set(data);
   return(data);
 }
 
@@ -177,6 +177,7 @@ export default function MastersTeams(props) {
               level: reg.level,
               status: same(masters, reg) ? "Masters Team" : "Team"
             })
+            return null;
           })}
 
           <DataTable

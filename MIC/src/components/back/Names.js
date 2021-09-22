@@ -30,7 +30,7 @@ async function getComps(){
             }
           }
         }
-        const title = "Grade " + `${grades.length > 2 ? grades.join(", "): grades.join(" and ")}` + " Competition on " + doc.data().compDate;
+        const title = `Grade ${grades.length > 2 ? grades.join(", "): grades.join(" and ")} Competition on ${doc.data().compDate}`;
 
         //adds the competitions that current user has signed up for
         for(const sign in register){

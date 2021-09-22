@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Grid, Button, Typography, Divider, Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import ReactLoading from "react-loading";
@@ -60,32 +60,23 @@ export default function Table(props) {
     options.push({value:`Team ${i}`, label:`Team ${i}`});
   }
 
-  //TODO: might need to change this
-  const callback = (result) => {
-    setStudents(result)
-  }
-
   //gets current names
-  const getComps = async (call) => {
+  const getComps = useCallback(async () => {
     const comps = fire.firestore().collection("competitions").doc(props.id);
-
-    const names = await comps.get()
-      .then((doc) => {
-        if(doc.data().registration[props.regId] !== undefined && doc.data().registration[props.regId].names !== undefined)
-          sessionStorage.setItem("students", JSON.stringify(doc.data().registration[props.regId].names));
-          call(doc.data().registration[props.regId].names)
-      })
-      .catch((error) => {
-        console.log(error)
-      });
-  }
+    const names = await comps.get();
+    return names;
+  }, [props.id])
 
   useEffect(() => {
     if(students === 1){
-      getComps(callback)
+      getComps().then((doc) => {
+        if(doc.data().registration[props.regId] !== undefined && doc.data().registration[props.regId].names !== undefined)
+          sessionStorage.setItem("students", JSON.stringify(doc.data().registration[props.regId].names));
+          setStudents(doc.data().registration[props.regId].names);
+      })
       setLoading(false)
     }
-  },[])
+  }, [getComps, students, props.regId])
 
   const onSubmit = () => {
     submitNames(props.id, props.regId, students)

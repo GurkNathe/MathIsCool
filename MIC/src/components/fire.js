@@ -1,6 +1,6 @@
 import firebase from "firebase"
 
-//firebase config stuff
+//firebase config
 
 require("dotenv").config({ path: "../../.env" });
 
@@ -16,4 +16,5 @@ var config = {
 };
 
 const fire = firebase.initializeApp(config);
+
 export default fire;
