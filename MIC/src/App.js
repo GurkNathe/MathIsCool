@@ -33,6 +33,8 @@ import MarkMasters from "./components/admin/MarkMasters";
 import MastersTeams from "./components/custom/MastersTeams";
 import ManageCompetitions from "./components/admin/ManageCompetitions";
 
+import NotFound from "./components/custom/NotFound";
+
 import Test from "./components/admin/Test";
 
 import fire from "./components/fire";
@@ -74,7 +76,7 @@ async function getUser(){
   }
 }
 
-function App() {
+export default function App() {
 
   //used to get non-compromising user information
   useEffect(() => {
@@ -88,34 +90,29 @@ function App() {
           <Switch>
             <Route path="/test" exact component={Test}/>
             <Route path="/" exact render={(props) => <Home {...props}/>}/>
-            <Route path="/about/history" component={History}/>
-            <Route path="/about/contacts" component={Contacts}/>
-            <Route path="/about/locations" component={Locations}/>
-            <Route path="/information/rules" component={Rules}/>
-            <Route path="/information/fees" component={Fees}/>
-            <Route path="/information/faq" component={FAQ}/>
-            <Route path="/information/past-tests" component={PastTests}/>
-            <Route path="/competitions" component={Competitions}/>
+            <Route path="/about/history" exact component={History}/>
+            <Route path="/about/contacts" exact component={Contacts}/>
+            <Route path="/about/locations" exact component={Locations}/>
+            <Route path="/information/rules" exact component={Rules}/>
+            <Route path="/information/fees" exact component={Fees}/>
+            <Route path="/information/faq" exact component={FAQ}/>
+            <Route path="/information/past-tests" exact component={PastTests}/>
+            <Route path="/competitions" exact component={Competitions}/>
             <Route path="/login" exact component={SignIn}/>
-            <Route path="/login/signup" component={SignUp}/>
-            <Route path="/profile" component={ProfilePage}/>
-            <Route path="/login/forgot-password" component={ForgotPass}/>
-          </Switch>
-          <Switch>
+            <Route path="/login/signup" exact component={SignUp}/>
+            <Route path="/profile" exact component={ProfilePage}/>
+            <Route path="/login/forgot-password" exact component={ForgotPass}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
-            <ProtectedRoute path="/team-register/confirm/" component={Form}/>
-            <ProtectedRoute path="/enter-names" component={Names}/>
-          </Switch>
-          <Switch>
-            <AdminRoute path="/admin/import-content" component={ImportContent}/>
-            <AdminRoute path="/admin/add-admin" component={AddAdmin}/>
+            <ProtectedRoute path="/team-register/confirm/" exact component={Form}/>
+            <ProtectedRoute path="/enter-names" exact component={Names}/>
+            <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
+            <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>
             <AdminRoute path="/admin/mark-masters" exact component={MarkMasters}/>
-            <AdminRoute path="/admin/mark-masters/teams" component={MastersTeams}/>
-            <AdminRoute path="/admin/manage-comps" component={ManageCompetitions}/>
+            <AdminRoute path="/admin/mark-masters/teams" exact component={MastersTeams}/>
+            <AdminRoute path="/admin/manage-comps" exact component={ManageCompetitions}/>
+            <Route component={NotFound}/>
           </Switch>
       </Router>
     </div>
   );
 }
-
-export default App;

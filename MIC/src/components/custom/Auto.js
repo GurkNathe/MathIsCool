@@ -13,14 +13,14 @@ import React from "react";
            <p>{props.title}</p>
         </Grid>
         <Autocomplete
-           options={props.options.map((option) => option.label)}
+           options={props.options ? props.options.map((option) => option.label) : []}
            value={props.value}
            onChange={props.onChange}
            disabled={props.disabled}
            freeSolo
            renderInput={(params) => 
                           <TextField 
-                             {...params} 
+                             {...params}
                              error={props.error && (props.value === null || props.value === "")}
                              helperText={props.error && (props.value === null || props.value === "") ? 
                                             "Please fill out to continue" : 

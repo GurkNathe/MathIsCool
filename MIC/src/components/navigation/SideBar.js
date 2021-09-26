@@ -13,6 +13,7 @@ import useStyles from "../style";
 import fire from "../fire";
 
 //NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
+//TODO: Make open bar buttons fit to screen
 
 export default function SideBar() {
    const classes = useStyles();
