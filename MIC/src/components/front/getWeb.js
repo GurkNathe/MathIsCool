@@ -15,10 +15,10 @@ export default async function getWeb(title){
 
       //adding web page html/data to local storage
       sessionStorage.setItem(title, JSON.stringify(doc.data()));
+      return doc.data();
       
-      window.location.reload();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 }

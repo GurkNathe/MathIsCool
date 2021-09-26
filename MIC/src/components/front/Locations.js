@@ -7,17 +7,18 @@ import useStyles from "../style";
 
 export default function Locations() {
   const classes = useStyles();
-  const [loc, setLoc] = useState("");
+  const title = "sites";
+  const [loc, setLoc] = useState(getPage(title, "records"));
   
   //holding names of sites
   var locations = [];
 
-  const title = "sites";
 
   useEffect(() => {
-    getWeb(title);
-    setLoc(getPage(title, "records"))
-  }, [])
+    getWeb(title).then((result) => {
+      result !== undefined ? setLoc(result.records) : setLoc(loc);
+    })
+  }, [loc])
   
   //getting site names
   for(const i in loc){

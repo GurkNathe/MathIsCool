@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Accordion, Button, AccordionSummary, ButtonGroup, AccordionDetails, ClickAwayListener, Typography } from "@material-ui/core";
+import { Accordion, Button, AccordionSummary, AccordionDetails, ClickAwayListener, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import useStyles from "../style";
 
-export default function FrontBack(){
+export default function FrontBack(props){
    const classes = useStyles();
    const [open, setOpen] = useState(false);
    const [away, setAway] = useState({p1: true, p2: true});
@@ -18,20 +19,34 @@ export default function FrontBack(){
             Home
          </Typography>
          <div style={{paddingLeft:"20px"}}>
-            <Button className={classes.homeButton} href="/">
-               Homepage
-            </Button>
+            <Link className={classes.link} to="/" onClick={props.onClick}>
+               <Button className={classes.homeButton}>
+                  Homepage
+               </Button>
+            </Link>
             <ClickAwayListener onClickAway={() => setAway({...away, p1: false})}>
                <Accordion expanded={open === 'panel1' && away.p1} onChange={handleChange('panel1')}>
                   <AccordionSummary className={classes.homeButton}>
                      About Us
                   </AccordionSummary>
                   <AccordionDetails>
-                     <ButtonGroup orientation="vertical"> 
-                        <Button className={classes.homeButton} href="/about/history">History</Button>
-                        <Button className={classes.homeButton} href="/about/contacts">Contacts</Button>
-                        <Button className={classes.homeButton} href="/about/locations">Locations</Button>
-                     </ButtonGroup>
+                     <div>
+                        <Link className={classes.link} to="/about/history" onClick={props.onClick}>
+                           <Button className={classes.homeButton}>
+                              History
+                           </Button>
+                        </Link> 
+                        <Link className={classes.link} to="/about/contacts" onClick={props.onClick}>
+                           <Button className={classes.homeButton}>
+                              Contacts
+                           </Button>
+                        </Link> 
+                        <Link className={classes.link} to="/about/locations" onClick={props.onClick}>
+                           <Button className={classes.homeButton}>
+                              Locations
+                           </Button>
+                        </Link>
+                     </div>
                   </AccordionDetails>
                </Accordion>
             </ClickAwayListener>
@@ -41,16 +56,36 @@ export default function FrontBack(){
                      Information
                   </AccordionSummary>
                   <AccordionDetails>
-                     <ButtonGroup orientation="vertical"> 
-                        <Button className={classes.homeButton} href="/information/rules">Rules</Button>
-                        <Button className={classes.homeButton} href="/information/fees">Fees</Button>
-                        <Button className={classes.homeButton} href="/information/faq">FAQ</Button>
-                        <Button className={classes.homeButton} href="/information/past-tests">Past Tests</Button>
-                     </ButtonGroup>
+                     <div> 
+                        <Link to="/information/rules" className={classes.link} onClick={props.onClick}>
+                           <Button className={classes.homeButton}>
+                              Rules
+                           </Button>
+                        </Link>
+                        <Link to="/information/fees" className={classes.link} onClick={props.onClick}>
+                           <Button className={classes.homeButton}>
+                              Fees
+                           </Button>
+                        </Link>
+                        <Link to="/information/faq" className={classes.link} onClick={props.onClick}>
+                           <Button className={classes.homeButton}>
+                              FAQ
+                           </Button>
+                        </Link>
+                        <Link to="/information/past-tests" className={classes.link} onClick={props.onClick}>
+                           <Button className={classes.homeButton}>
+                              Past Tests
+                           </Button>
+                        </Link>
+                     </div>
                   </AccordionDetails>
                </Accordion>
             </ClickAwayListener>
-            <Button className={classes.homeButton} href="/competitions">Competitions</Button>
+            <Link className={classes.link} to="/competitions" onClick={props.onClick}>
+               <Button className={classes.homeButton}>
+                  Competitions
+               </Button>
+            </Link>
          </div>
       </div>
    );

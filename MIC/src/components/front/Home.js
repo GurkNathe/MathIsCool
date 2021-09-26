@@ -10,18 +10,18 @@ import useStyles from "../style";
 
 export default function Home(props) {
   const classes = useStyles();
-  const [news, setNews] = useState("");
+  const title = "news";
+  const [news, setNews] = useState(getPage(title, "records"));
   const [open, setOpen] = useState(props.location.state ? props.location.state.alert : false);
   
   //holding names of articles
   var test = []
 
-  const title = "news";
-
   useEffect(() => {
-    getWeb(title);
-    setNews(getPage(title, "records"))
-  }, [])
+    getWeb(title).then((result) => {
+      result !== undefined ? setNews(result.records) : setNews(news);
+    })
+  }, [news])
 
   //getting article names
   for(const i in news){

@@ -4,15 +4,14 @@ import getPage from "./getPage";
 import getWeb from "./getWeb";
 
 export default function Competitions() {
-  const [comp, setComp] = useState("");
-console.log(comp)
   const title = "competitions";
+  const [comp, setComp] = useState(getPage(title, "records"));
 
   useEffect(() => {
-    getWeb(title);
-    // console.log(JSON.parse(sessionStorage.getItem(title))["records"])
-    setComp(getPage(title, "records"))
-  }, [])
+    getWeb(title).then((result) => {
+      result !== undefined ? setComp(result.records) : setComp(comp);
+    })
+  }, [comp])
 
   const onClick = () => {
     // console.log(comp)

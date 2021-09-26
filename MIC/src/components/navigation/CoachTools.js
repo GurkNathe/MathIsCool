@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, ButtonGroup, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import useStyles from "../style";
 
-export default function CoachTools(){
+export default function CoachTools(props){
 
    const classes = useStyles();
 
@@ -12,14 +13,18 @@ export default function CoachTools(){
             Coach Tools
          </Typography>
          <div style={{paddingLeft:"20px"}}>
-            <ButtonGroup orientation="vertical">
-               <Button className={classes.button} href="/team-register">
-                  Register Team
-               </Button>
-               <Button className={classes.button} href="/enter-names">
-                  Enter Names
-               </Button>
-            </ButtonGroup>
+            <div>
+               <Link to="/team-register" className={classes.link} onClick={props.onClick}>
+                  <Button className={classes.button}>
+                     Register Team
+                  </Button>
+               </Link>
+               <Link to="/enter-names" className={classes.link} onClick={props.onClick}>
+                  <Button className={classes.button}>
+                     Enter Names
+                  </Button>
+               </Link>
+            </div>
          </div>
       </div>
    );

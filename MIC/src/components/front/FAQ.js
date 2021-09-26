@@ -6,16 +6,16 @@ import useStyles from "../style";
 
 export default function FAQ() {
   const classes = useStyles();
-  const [faq, setFAQ] = useState("");
-
   const title = "faq";
+  const [faq, setFAQ] = useState(getPage(title, "records"));
 
   var test = [];
   var cats = [];
 
   useEffect(() => {
-    getWeb(title);
-    setFAQ(getPage(title, "records"))
+    getWeb(title).then((result) => {
+      result !== undefined ? setFAQ(result.records) : setFAQ(faq);
+    })
   }, [])
 
   //Used for sorting the questions

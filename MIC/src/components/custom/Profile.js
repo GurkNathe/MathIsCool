@@ -3,10 +3,9 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import useStyles from "../style";
-import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
 
 export default function Profile(props) {
-  const history = useHistory();
   const classes = useStyles();
 
   const username = sessionStorage.getItem("username");
@@ -15,11 +14,15 @@ export default function Profile(props) {
     <div style={{marginTop:"10px", marginBottom:"10px", marginLeft:"auto", marginRight:"10px"}}>
       { username !== null && username !== undefined ?
         <Avatar className={classes.avatar}>
-            <Button href="/profile">
+          <Link to="/profile" className={classes.link} onClick={() => {props.setOpen(false)}}>
+            <Button>
               {username.match(/(\b\S)?/g).join("").toUpperCase()}
             </Button>
+          </Link>
         </Avatar>:
-        <AccountCircleIcon onClick={() => {props.setOpen(false); history.push("/profile")}} className={classes.avatar2}/>
+        <Link to="/profile" className={classes.link} onClick={() => {props.setOpen(false)}}>
+          <AccountCircleIcon className={classes.avatar2}/>
+        </Link>
       }
     </div>
   );

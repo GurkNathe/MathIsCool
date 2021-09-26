@@ -12,7 +12,7 @@ export default function ImportContent() {
   });
   
   const [table, setTable] = useState({ string: "", name: "new"});
-  const [page, setPage] = useState( {string: "", name: "new"}) ;
+  const [page, setPage] = useState( {string: "", name: "new"});
   
   const classes = importStyles();
  
@@ -20,38 +20,38 @@ export default function ImportContent() {
     if ( table.string.length > 0 ) {
 
       //  make a map of records from the table.string
-      let lines = table.string.split('\n') ;
-      let fields = lines[0].split('\t') ;
-      let line, record, j, val, records={}, n=0 ;
+      let lines = table.string.split('\n');
+      let fields = lines[0].split('\t');
+      let line, record, j, val, records={}, n=0;
 
       for (let i=1; i<lines.length; i++) {
-        line = lines[i].split('\t') ;
-        record = {} ;
+        line = lines[i].split('\t');
+        record = {};
         for (j=0; j<line.length; j++) {
-          val = line[j] ;
+          val = line[j];
           if ( val.length === 0 ) {
-            val = null ;
+            val = null;
           } else if ( val.toLowerCase() === "false" ) {
-            val = false ;
+            val = false;
           } else if ( val.toLowerCase() === "true" ) {
-            val = true ;
+            val = true;
           } else if ( !isNaN(val) ) {
             val = Number(val) 
           } else {
             val = val.replace (/~/g, '\n')
           }
-          record[fields[j]] = val ;
+          record[fields[j]] = val;
         }
-        if ( record.key === null ) record.key = "key" ;
-        records[record.key] = record ;
-        n++ ;
+        if ( record.key === null ) record.key = "key";
+        records[record.key] = record;
+        n++;
       }
 
       fire.firestore().collection("web").doc(table.name)
           .set({n:n, timestamp: (new Date().toString().slice(4,24)), records: records})
         .then(() => {
           setTable({string: "", name: table.name})
-          alert ('Wrote '+n+' records') ;
+          alert ('Wrote '+n+' records');
         })  
         .catch((error) => {
           console.error("Error writing document: ", error);
@@ -62,12 +62,14 @@ export default function ImportContent() {
   function savePage() {
     if ( page.string.length > 0 ) {
       fire.firestore().collection("web").doc(page.name)
-        .set({value: (page.string).replace (/~/g, '\n'), 
-              timestamp: (new Date().toString().slice(4,24))})
+        .set({
+          value: (page.string).replace (/~/g, '\n'), 
+          timestamp: (new Date().toString().slice(4,24))
+        })
         .then(() => {
-          console.log((page.string).replace (/~/g, '\n')) ;
-          setPage({string: "", name: page.name}) ;
-          alert ('Wrote Page: '+page.name) ;
+          console.log((page.string).replace (/~/g, '\n'));
+          setPage({string: "", name: page.name});
+          alert ('Wrote Page: '+page.name);
         })  
         .catch((error) => {
           console.error("Error writing document: ", error);
@@ -88,8 +90,7 @@ export default function ImportContent() {
       />
 
       <p>
-        <span onChange={(ev) => setTable({string: table.string, 
-                                  name: ev.target.value})}>
+        <span onChange={(ev) => setTable({string: table.string, name: ev.target.value})}>
          <input type="radio" value="faq" name="table" /> FAQ &emsp;
          <input type="radio" value="news" name="table" /> News &emsp;
          <input type="radio" value="sites" name="table" /> Sites &emsp;

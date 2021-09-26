@@ -9,11 +9,7 @@ export default function PrivateRoute(props) {
 
   if(user === 1){
     fire.auth().onAuthStateChanged((use) => {
-      if(use){
-        setUser(use);
-      } else {
-        setUser(use);
-      }
+      setUser(use);
     })
   }
   

@@ -114,7 +114,6 @@ export default function SignUp() {
           });
         })
         .catch((error) => {
-          console.log(error, error.code);
           if(up.error === null)
             setError(error.code)
         });

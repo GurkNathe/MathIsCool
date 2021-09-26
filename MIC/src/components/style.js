@@ -7,6 +7,18 @@ import image from "../assets/logo.5a82c15d88ad2d074447.png";
 */
 const profCol = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
 const useStyles = makeStyles((theme) => ({
+
+   //button links
+   link:{
+      textDecoration: "none",
+      color: "white",
+      border:"currentColor",
+      borderRadius:"0",
+      fontSize:"15px",
+      '-webkit-text-stroke': "0.25px",
+      '-webkit-text-stroke-color': "black",
+   },
+
    //frontback, coachtools
    button:{
       justifyContent:"left",
@@ -132,6 +144,8 @@ const useStyles = makeStyles((theme) => ({
       overflowX:"hidden",
       overflowY:"scroll",
       display:"flex",
+      padding:"10px",
+      backgroundColor:"#3f51b5",
       '&::-webkit-scrollbar':{
          display:"none"
       }

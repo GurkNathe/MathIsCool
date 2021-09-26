@@ -9,11 +9,7 @@ export default function AdminRoute(props) {
 
   if(user === 1){
     fire.auth().onAuthStateChanged((use) => {
-      if(use){
-        setUser(use);
-      } else {
-        setUser(use);
-      }
+      setUser(use);
     })
   }
   

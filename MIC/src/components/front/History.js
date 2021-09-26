@@ -6,14 +6,14 @@ import getWeb from "./getWeb";
 import getPage from "./getPage";
 
 export default function History() {
-  const [page, setPage] = useState("");
-
   const title = "history";
+  const [page, setPage] = useState(getPage(title, "value"));
 
   useEffect(() => {
-    getWeb(title);
-    setPage(getPage(title, "value"))
-  }, [])
+    getWeb(title).then((result) => {
+      result !== undefined ? setPage(result.value) : setPage(page);
+    })
+  }, [page])
 
   return (
     <Page title="History" page={page}/>
