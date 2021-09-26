@@ -153,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
    outer:{
       position:"-webkit-sticky",
       position:"sticky",
-      top:0,
+      top:"-1px",
       zIndex:"1300",
    },
    avatar: {
