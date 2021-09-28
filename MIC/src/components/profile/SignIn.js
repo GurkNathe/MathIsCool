@@ -109,7 +109,6 @@ export default function SignIn() {
                 id="password" 
                 autoComplete="current-password" 
                 helperText="Inncorrect email address or password." 
-                autoFocus 
                 onChange={onPass}
               /> :
               <TextField  
@@ -122,7 +121,6 @@ export default function SignIn() {
                 type="password" 
                 id="password" 
                 autoComplete="current-password" 
-                autoFocus 
                 onChange={onPass}
               />
             }

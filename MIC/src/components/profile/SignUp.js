@@ -131,6 +131,7 @@ export default function SignUp() {
                                 "Please enter a valid username." :
                                 null
                               }
+                  autoFocus
                   onChange={(event) => onChange(event, "username")}
                 /> :
                 <TextField
@@ -140,6 +141,7 @@ export default function SignUp() {
                   id="username"
                   label="Username"
                   name="username"
+                  autoFocus
                   onChange={(event) => onChange(event, "username")}
                 />
               }
