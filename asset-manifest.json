@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "/MathIsCool/static/css/main.2ae47eeb.chunk.css",
+    "main.js": "/MathIsCool/static/js/main.14c437c1.chunk.js",
+    "main.js.map": "/MathIsCool/static/js/main.14c437c1.chunk.js.map",
+    "runtime-main.js": "/MathIsCool/static/js/runtime-main.258827de.js",
+    "runtime-main.js.map": "/MathIsCool/static/js/runtime-main.258827de.js.map",
+    "static/js/2.bfec28fb.chunk.js": "/MathIsCool/static/js/2.bfec28fb.chunk.js",
+    "static/js/2.bfec28fb.chunk.js.map": "/MathIsCool/static/js/2.bfec28fb.chunk.js.map",
+    "index.html": "/MathIsCool/index.html",
+    "static/css/main.2ae47eeb.chunk.css.map": "/MathIsCool/static/css/main.2ae47eeb.chunk.css.map",
+    "static/js/2.bfec28fb.chunk.js.LICENSE.txt": "/MathIsCool/static/js/2.bfec28fb.chunk.js.LICENSE.txt",
+    "static/js/main.14c437c1.chunk.js.LICENSE.txt": "/MathIsCool/static/js/main.14c437c1.chunk.js.LICENSE.txt",
+    "static/media/MIC_Regions.b6a6db9a.png": "/MathIsCool/static/media/MIC_Regions.b6a6db9a.png",
+    "static/media/MastersRegistration.a01981e5.mp4": "/MathIsCool/static/media/MastersRegistration.a01981e5.mp4",
+    "static/media/WP_20140307_009.3ac74608.jpg": "/MathIsCool/static/media/WP_20140307_009.3ac74608.jpg",
+    "static/media/btn_donate_LG.94afddc5.webp": "/MathIsCool/static/media/btn_donate_LG.94afddc5.webp",
+    "static/media/division_algorithm.72a535b4.pdf": "/MathIsCool/static/media/division_algorithm.72a535b4.pdf",
+    "static/media/divisions.b3579fa0.pdf": "/MathIsCool/static/media/divisions.b3579fa0.pdf",
+    "static/media/logo.5a82c15d88ad2d074447.5ff2b6f0.png": "/MathIsCool/static/media/logo.5a82c15d88ad2d074447.5ff2b6f0.png",
+    "static/media/math1.50ed3c24.jpg": "/MathIsCool/static/media/math1.50ed3c24.jpg",
+    "static/media/moseslake.ed36f9da.jpg": "/MathIsCool/static/media/moseslake.ed36f9da.jpg",
+    "static/media/mtrainier.db1336dc.jpg": "/MathIsCool/static/media/mtrainier.db1336dc.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.258827de.js",
+    "static/js/2.bfec28fb.chunk.js",
+    "static/css/main.2ae47eeb.chunk.css",
+    "static/js/main.14c437c1.chunk.js"
+  ]
+}
