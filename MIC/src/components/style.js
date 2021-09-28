@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
       border:"currentColor",
       borderRadius:"0",
-      fontSize:"15px",
       '-webkit-text-stroke': "0.25px",
       '-webkit-text-stroke-color': "black",
    },
@@ -29,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
       color:"white",
       borderRadius:"0",
       width:"100%",
-      fontSize:"15px",
       padding:"10px",
       textAlign:"left",
       '-webkit-text-stroke': "0.25px",
@@ -38,8 +36,15 @@ const useStyles = makeStyles((theme) => ({
          backgroundColor:"#2a3576",
          filter:"brightness(0.9)",
          transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      },
+      '@media screen and (min-width: 420px)': {
+         fontSize:"15px"
+      },
+      '@media screen and (max-width: 420px)': {
+         fontSize:"3.5vw"
       }
    },
+
    //frontback, coachtools
    all:{
       '& .MuiPaper-root':{
@@ -174,6 +179,18 @@ const useStyles = makeStyles((theme) => ({
          cursor: "pointer",
       }
    },
+   sHeader: {
+      display:"flex", 
+      color:"white", 
+      justifyContent:"center", 
+      paddingTop:"5px",
+      '@media screen and (min-width: 420px)': {
+         fontSize:"15px"
+      },
+      '@media screen and (max-width: 420px)': {
+         fontSize:"3.5vw"
+      }
+   },
    //sidebar styles
 
    //home buttons
@@ -192,6 +209,12 @@ const useStyles = makeStyles((theme) => ({
          backgroundColor:"#2a3576",
          filter:"brightness(0.9)",
          transition:"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      },
+      '@media screen and (min-width: 420px)': {
+         fontSize:"15px"
+      },
+      '@media screen and (max-width: 420px)': {
+         fontSize:"3.5vw"
       }
    },
 
@@ -311,7 +334,20 @@ const useStyles = makeStyles((theme) => ({
    tBottom: {
       marginLeft:"1%", 
       marginRight:"1%",
-   }
+   },
+
+   //sign in
+   sAvatar: {
+      margin: theme.spacing(1),
+      backgroundColor: theme.palette.secondary.main,
+   },
+   form: {
+      width: '100%',
+      marginTop: theme.spacing(1),
+   },
+   submit: {
+      margin: theme.spacing(3, 0, 2),
+   },
 
 }));
 

@@ -15,10 +15,10 @@ export default function FrontBack(props){
 
    return(
       <div className={classes.all}>
-         <Typography style={{display:"flex", color:"white", justifyContent:"center", paddingTop:"5px"}}>
+         <Typography className={classes.sHeader}>
             Home
          </Typography>
-         <div style={{paddingLeft:"20px"}}>
+         <div>
             <Link className={classes.link} to="/" onClick={props.onClick}>
                <Button className={classes.homeButton}>
                   Homepage

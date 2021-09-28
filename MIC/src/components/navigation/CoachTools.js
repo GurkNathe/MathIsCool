@@ -9,7 +9,7 @@ export default function CoachTools(props){
 
    return(
       <div className={classes.all}>
-         <Typography style={{display:"flex", color:"white", justifyContent:"center", paddingTop:"5px"}}>
+         <Typography className={classes.sHeader}>
             Coach Tools
          </Typography>
          <div style={{paddingLeft:"20px"}}>

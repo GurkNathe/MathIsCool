@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Drawer, Button, ClickAwayListener, Divider, Avatar, Typography } from "@material-ui/core";
+import React, { useState } from "react";
+import { Drawer, Button, ClickAwayListener, Avatar, Typography, Grid } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { Link } from "react-router-dom";
@@ -13,12 +13,13 @@ import useStyles from "../style";
 import fire from "../fire";
 
 //NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
-//TODO: Make open bar buttons fit to screen
 
 export default function SideBar() {
    const classes = useStyles();
    const [open, setOpen] = useState(false);
    const [name, setName] = useState(1);
+   const [xsVal, setXs] = useState(window.innerWidth > 540 ? null : 3);
+   const [width, setWidth] = useState(window.innerWidth);
 
    const username = sessionStorage.getItem("username");
 
@@ -34,14 +35,23 @@ export default function SideBar() {
 
    return(
       <div className={classes.outer}>
+         {width !== window.innerWidth ? setWidth(window.innerWidth) : null}
+         {xsVal !== (window.innerWidth > 540 ? null : 3) ? setXs(window.innerWidth > 540 ? null : 3) : null}
          <Drawer open={open} anchor="top">
             <ClickAwayListener onClickAway={() => setOpen(false)}>
                <div className={classes.in}>
-                  <FrontBack onClick={onClick}/>
-                  { fire.auth().currentUser ? <CoachTools onClick={onClick}/> : null }
-                  { fire.auth().currentUser ? fire.auth().currentUser.photoURL ? <Admin onClick={onClick}/> : null : null}
-                  <Divider/>
-                  <Profile setOpen={setOpen}/>
+                  <Grid container>
+                     <Grid item xs={xsVal}>
+                        <FrontBack onClick={onClick}/>
+                     </Grid>
+                     <Grid item xs={xsVal}>
+                        { fire.auth().currentUser ? <CoachTools onClick={onClick}/> : null }
+                     </Grid>
+                     <Grid item xs={xsVal}>
+                        { fire.auth().currentUser ? fire.auth().currentUser.photoURL ? <Admin onClick={onClick}/> : null : null}
+                     </Grid>
+                     <Profile setOpen={setOpen}/>
+                  </Grid>
                </div>
             </ClickAwayListener>
          </Drawer>
