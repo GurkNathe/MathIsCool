@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Grid, Button, Typography, Divider, Snackbar } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+import { Grid, Button, Typography, Divider, Snackbar, Alert } from "@mui/material";
 import ReactLoading from "react-loading";
+import { TableDiv, TableTop, Student } from "../styledComps";
 
-import useStyles from "../style";
-import Student from "./Student"
-import fire from "../fire";
+import { doc, getDoc } from "@firebase/firestore";
+import { db } from "../fire";
 
 //Used for Enter Names table
 
 //adds names to registration
-async function submitNames(id, regId, students){
-  const comps = fire.firestore().collection("competitions").doc(id);
-  const res = await comps.get()
+async function submitNames(id, regId, students) {
+  const comps = doc(db, "competitions", id);
+  const res = await getDoc(comps)
     .then((doc) => {
       comps.update({
         ...doc.data(),
@@ -38,7 +37,6 @@ async function submitNames(id, regId, students){
  * @param  {integer} individuals
  */
 export default function Table(props) {
-  const classes = useStyles();
   const [students, setStudents] = useState(1);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(false);
@@ -62,8 +60,8 @@ export default function Table(props) {
 
   //gets current names
   const getComps = useCallback(async () => {
-    const comps = fire.firestore().collection("competitions").doc(props.id);
-    const names = await comps.get();
+    const comps = doc(db, "competitions", props.id);
+    const names = await getDoc(comps);
     return names;
   }, [props.id])
 
@@ -116,7 +114,7 @@ export default function Table(props) {
   }
   
   return(
-    <div className={classes.tableTop}>
+    <TableTop>
       <Snackbar open={clicked} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{vertical:'top', horizontal:'center'}}>
         <Alert onClose={handleClose} severity={alert ? "success" : "error"} variant="filled">
           Names {alert ? "successfully submitted" : "failed to submit, contact web master for help if you can't resolve the issue"}.
@@ -127,7 +125,7 @@ export default function Table(props) {
           <Typography>
             {props.title}
           </Typography>
-          <div className={classes.table}>
+          <TableDiv>
             <table>
               <thead>
                 <tr>
@@ -164,14 +162,14 @@ export default function Table(props) {
                 <Button
                   fullWidth
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor:"#3f51b5"}}
                   onClick={onSubmit}
                 >
                   Submit
                 </Button>
               </Grid>
             </Grid>
-          </div>
+          </TableDiv>
           <br/><Divider/><br/>
         </>:
         !loading ? 
@@ -180,6 +178,6 @@ export default function Table(props) {
             <ReactLoading type="spinningBubbles" color="#000" style={{width:"50px", height:"50px"}}/>
           </div>
       }
-    </div>
+    </TableTop>
   );
 }

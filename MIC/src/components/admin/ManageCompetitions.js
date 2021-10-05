@@ -1,5 +1,5 @@
 import React from 'react'
-import Auto from "../custom/Auto";
+import { Auto } from "../styledComps";
 
 //Not functional, just testing things right now
 

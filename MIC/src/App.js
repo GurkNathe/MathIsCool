@@ -22,7 +22,7 @@ import SignIn from "./components/profile/SignIn";
 import SideBar from "./components/navigation/SideBar";
 import TeamRegister from "./components/back/TeamRegister";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
-import Form from "./components/custom/Form";
+import { GoogleForm, NotFound } from "./components/styledComps";
 import Names from "./components/back/Names";
 
 //Admin/Editor pages
@@ -33,31 +33,32 @@ import MarkMasters from "./components/admin/MarkMasters";
 import MastersTeams from "./components/custom/MastersTeams";
 import ManageCompetitions from "./components/admin/ManageCompetitions";
 
-import NotFound from "./components/custom/NotFound";
-
 import Test from "./components/admin/Test";
 
-import fire from "./components/fire";
+//Firebase stuff
+import { doc, getDoc } from "@firebase/firestore";
+import { onAuthStateChanged } from "@firebase/auth";
+import { db, auth } from "./components/fire";
 
 //Used to get pre-login web page html/data
 async function getUser(){
   if(!(sessionStorage.getItem("username") || sessionStorage.getItem("email"))){
     //Adding non-compromising information to local storage for using in other components
-    const user = await fire.auth().currentUser;
+    const user = await auth.currentUser;
     if(user !== undefined && user !== null){
       sessionStorage.setItem("username", user.displayName)
       sessionStorage.setItem("email", user.email)
     }
   }
 
-  if(!Number(sessionStorage.getItem("checked"))){
-    if(fire.auth().currentUser !== null){
-      const user = fire.auth().currentUser;
-      if(!user.photoURL){
-        const admins = fire.firestore().collection("roles").doc("admin");
-        const admin = admins.get().then((doc) => {
-          if(doc.data().admins.includes(user.uid)){
-            fire.auth().onAuthStateChanged((user) => {
+  if (!Number(sessionStorage.getItem("checked"))) {
+    if (auth.currentUser !== null) {
+      const user = auth.currentUser;
+      if (!user.photoURL) {
+        const admins = doc(db, "roles", "admin");
+        const admin = await getDoc(admins).then((doc) => {
+          if (doc.data().admins.includes(user.uid)) {
+            onAuthStateChanged((user) => {
               if(user){
                 user.updateProfile({
                   photoURL: user.uid
@@ -103,7 +104,7 @@ export default function App() {
             <Route path="/profile" exact component={ProfilePage}/>
             <Route path="/login/forgot-password" exact component={ForgotPass}/>
             <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
-            <ProtectedRoute path="/team-register/confirm/" exact component={Form}/>
+            <ProtectedRoute path="/team-register/confirm/" exact component={GoogleForm}/>
             <ProtectedRoute path="/enter-names" exact component={Names}/>
             <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
             <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>

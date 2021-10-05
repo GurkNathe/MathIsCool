@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Typography } from "@material-ui/core";
-
+import { Typography } from "@mui/material";
+import { NamesOne, NamesTwo, NamesThree } from "../styledComps";
 import Table from "../custom/Table";
-import useStyles from "../style";
-import fire from "../fire";
-
 import options from "./options.json";
+import { getDocs, collection } from "@firebase/firestore";
+import { auth, db } from "../fire";
 
+
+//TODO: if only individuals, remove Alternate option
 //returns the values of #individuals and #teams for each competition where the current user
 //signed up the chosen school
 async function getComps(){
   try{
-    const comps = await fire.firestore().collection("competitions").get();
+    const comps = await getDocs(collection(db, "competitions"));
     var competitions = [];
     if(comps.empty){
       return;
@@ -34,7 +35,7 @@ async function getComps(){
 
         //adds the competitions that current user has signed up for
         for(const sign in register){
-          if(register[sign].uid === fire.auth().currentUser.uid){
+          if(register[sign].uid === auth.currentUser.uid){
             competitions.push({
               regID: sign, 
               compID: doc.id, 
@@ -54,7 +55,6 @@ async function getComps(){
 }
 
 export default function Names() {
-  const classes = useStyles();
   var schoolData = []; //used to store the schools current user has registered for
   const [compData, setComp] = useState([]); //registration data that current user has submitted
   const [loading, setLoading] = useState(true);
@@ -98,11 +98,11 @@ export default function Names() {
   }
   
   return (
-    <div className={classes.page}>
-      <div className={classes.top}>
-        <div className={classes.middle}>
+    <NamesOne>
+      <NamesTwo>
+        <NamesThree>
           { !loading ?
-            <div className={classes.bottom}>
+            <div style={{ margin: "1%" }}>
               {
                 compData.map((comp, index) => {
                   return(
@@ -125,8 +125,8 @@ export default function Names() {
                 You have no registrations.
               </Typography>
           }
-        </div>
-      </div>
-    </div>
+        </NamesThree>
+      </NamesTwo>
+    </NamesOne>
   );
 }

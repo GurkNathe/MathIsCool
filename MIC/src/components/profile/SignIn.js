@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import firebase from "firebase/app";
-import "firebase/auth";
-
-import { Avatar, Button, CssBaseline, TextField, Grid, Typography, Container } from "@material-ui/core";
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { CssBaseline, TextField, Grid, Typography, Container } from "@mui/material";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useHistory, Link } from "react-router-dom";
+import { Paper, LockAvatar, Form, Submit } from "../styledComps";
 
-import fire from "../fire";
-import useStyles from '../style';
+import { setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from "@firebase/auth";
+import { auth } from "../fire";
 
+//TODO: links to other pages won't lay flat under submit button
 export default function SignIn() {
   const history = useHistory();
-  const classes = useStyles();
   const [email, setEmail] = useState(" ");
   const [password, setPassword] = useState(" ");
   const [error, setError] = useState(null);
@@ -30,9 +28,9 @@ export default function SignIn() {
 
   //will handle sending info to firebase and changing to loggedin page
   const onSubmit = () => {
-    fire.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    setPersistence(auth, browserSessionPersistence)
       .then(() => {
-        return fire.auth().signInWithEmailAndPassword(email, password)
+        return signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           sessionStorage.setItem("email", email);
           sessionStorage.setItem("username", userCredential.user.displayName)
@@ -57,31 +55,18 @@ export default function SignIn() {
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.sAvatar}>
+      <CssBaseline/>
+      <Paper>
+        <LockAvatar>
           <LockOutlinedIcon />
-        </Avatar>
+        </LockAvatar>
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form id="user" className={classes.form} noValidate>
+        <Form id="user" noValidate>
           <Grid item xs={12}>
-            {(error) ? 
-              <TextField 
-                error
-                variant="outlined" 
-                margin="normal" 
-                required 
-                fullWidth 
-                id="email" 
-                label="Email Address" 
-                name="email" 
-                autoComplete="email" 
-                autoFocus 
-                onChange={onEmail}
-              /> : 
-              <TextField  
+            <TextField 
+                error={error}
                 variant="outlined" 
                 margin="normal" 
                 required 
@@ -93,12 +78,10 @@ export default function SignIn() {
                 autoFocus 
                 onChange={onEmail}
               />
-            }
           </Grid>
           <Grid item xs={12}>
-            {(error) ? 
-              <TextField  
-                error 
+            <TextField  
+                error={error}
                 variant="outlined" 
                 margin="normal" 
                 required 
@@ -108,46 +91,31 @@ export default function SignIn() {
                 type="password" 
                 id="password" 
                 autoComplete="current-password" 
-                helperText="Inncorrect email address or password." 
-                onChange={onPass}
-              /> :
-              <TextField  
-                variant="outlined" 
-                margin="normal" 
-                required 
-                fullWidth 
-                name="password" 
-                label="Password" 
-                type="password" 
-                id="password" 
-                autoComplete="current-password" 
+                helperText={error ? "Inncorrect email address or password." : null}
                 onChange={onPass}
               />
-            }
           </Grid>
-          <Button
+          <Submit
             fullWidth
             variant="contained"
-            color="primary"
-            className={classes.submit}
             onClick={onSubmit}
           >
             Sign In
-          </Button>
+          </Submit>
           <Grid container>
-            <Grid item xs>
+            <Grid item xs={5}>
               <Link to="/login/forgot-password">
                 Forgot password?
               </Link>
             </Grid>
-            <Grid item>
+            <Grid item xs={7}>
               <Link to="/login/signup">
-                {"Don't have an account? Sign Up"}
+                Don't have an account? Sign Up
               </Link>
             </Grid>
           </Grid>
-        </form>
-      </div>
+        </Form>
+      </Paper>
     </Container>
   );
 }

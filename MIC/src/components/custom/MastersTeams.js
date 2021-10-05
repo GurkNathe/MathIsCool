@@ -2,10 +2,11 @@ import React from 'react'
 import { Button, Grid, Typography } from '@material-ui/core';
 import { Redirect } from "react-router-dom";
 
-import BasicPage from './BasicPage';
+import { BasicPage } from '../styledComps';
 import options from '../back/options.json';
 import DataTable from "../custom/DataTable";
-import fire from "../fire";
+import { doc, setDoc } from "@firebase/firestore";
+import { db } from "../fire";
 
 //adds schools to masters
 async function setMasters(master, values, grade){
@@ -38,8 +39,8 @@ async function setMasters(master, values, grade){
     }
   }
   
-  const data = {teams: [...newMasters]};
-  fire.firestore().collection("masters").doc("teams").set(data);
+  const data = { teams: [...newMasters] };
+  setDoc(doc(db, "masters", "teams"), data);
   return(data);
 }
 

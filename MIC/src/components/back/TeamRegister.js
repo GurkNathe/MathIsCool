@@ -1,11 +1,11 @@
-import { TextField, Button, Grid } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import Auto from "../custom/Auto.js";
-import fire from "../fire";
-import BasicPage from "../custom/BasicPage.js";
+import { TextField, Button, Grid } from "@mui/material";
+import { useHistory } from "react-router-dom";
+import { TeamForm, Auto, BasicPage } from "../styledComps";
 import { divisions } from "../assets.js";
-import useStyles from "../style";
+
+import { collection, where, getDocs, getDoc, doc } from "@firebase/firestore"
+import { auth, db } from "../fire";
 
 let options = require("./options");
 
@@ -19,8 +19,8 @@ async function getComps(title){
    if(!sessionStorage.getItem(title + "Data") || !sessionStorage.getItem("mastersData")){
 
       //getting the 'web' collection from firestore
-      const doc = await fire.firestore().collection(title).where('status', '==', 'reg').get();
-      const masters = await fire.firestore().collection("masters").doc("teams").get();
+      const doc = await getDocs(collection(db, title), where('status', '==', 'reg'));
+      const masters = await getDoc(doc(db, "masters", "teams"));
 
       //adding open competitions to holding variable
       doc.forEach((item) => {
@@ -43,9 +43,9 @@ async function getComps(title){
    }
 }
 
+//!! ISSUE WITH LOCATION LIMITING
 export default function TeamRegister(){
    const history = useHistory();
-   const classes = useStyles();
    
    const [comps, setComps] = useState(JSON.parse(sessionStorage.getItem("competitionsData")));//all open competitions
    const [masters, setMasters] = useState(JSON.parse(sessionStorage.getItem("mastersData"))); //stores the masters data
@@ -377,7 +377,7 @@ export default function TeamRegister(){
 
    //sets iframe url for filling google form
    const setURL = (choice, schoolData) => {
-      const uid = fire.auth().currentUser.uid; //!might need to do something with this, since it might not be fast enough.
+      const uid = auth.currentUser.uid; //!might need to do something with this, since it might not be fast enough.
       url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.1445326839=${compId}`
    }
 
@@ -409,7 +409,7 @@ export default function TeamRegister(){
             when registering n teams, you get to bring 4n+2 students along. 
             These students don't need to be registered as individuals separately.
          </p>
-         <form className={classes.tRoot} noValidate autoComplete="off">
+         <TeamForm noValidate autoComplete="off">
 
             <Auto
                title="Competition Level"
@@ -511,15 +511,15 @@ export default function TeamRegister(){
                   <Button
                      fullWidth
                      variant="contained"
-                     color="primary"
                      onClick={onSubmit}
+                     style={{ background:"#3f51b5" }}
                   >
                      Continue
                   </Button>
                </Grid>
             </Grid>
 
-         </form>
+         </TeamForm>
          <p>
                   A school's division level is assigned based on past performance at 
                   Math is Cool contests. For more details and a current list of 

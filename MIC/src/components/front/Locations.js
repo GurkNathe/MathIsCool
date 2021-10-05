@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { LayerOne, LayerTwo, LayerThree, Map } from "../styledComps.js";
 
 import { map } from "../assets.js";
 import getPage from "./getPage";
 import getWeb from "./getWeb";
-import useStyles from "../style";
 
 export default function Locations() {
-  const classes = useStyles();
   const title = "sites";
   const [loc, setLoc] = useState(getPage(title, "records"));
   
@@ -37,10 +36,10 @@ export default function Locations() {
   }
 
   return(
-    <div className={classes.root}>
-      <div className={classes.second}>
-        <div className={classes.inner}>
-          <h1 className={classes.header}>Locations</h1>
+    <LayerOne>
+      <LayerTwo>
+        <LayerThree>
+          <h1 style={{fontStyle: "italic"}}>Locations</h1>
           <>
             <h3>WEST</h3>
             {locations.map((doc) => {
@@ -91,9 +90,9 @@ export default function Locations() {
               })
             }
           </>
-          <img src={map} alt="map" className={classes.map}/>
-        </div>
-      </div>
-    </div>
+          <Map src={map} alt="map"/>
+        </LayerThree>
+      </LayerTwo>
+    </LayerOne>
   );
 }

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "@material-ui/lab";
-import { Snackbar } from "@material-ui/core";
+import { Snackbar, Alert } from "@mui/material";
+import { LayerOne, LayerTwo, LayerThree, ImageSet, Image } from "../styledComps.js";
 
 import { math, lake, train, wp, donate } from "../assets.js";
 
 import getWeb from "./getWeb";
 import getPage from "./getPage";
-import useStyles from "../style";
 
 export default function Home(props) {
-  const classes = useStyles();
   const title = "news";
   const [news, setNews] = useState(getPage(title, "records"));
   const [open, setOpen] = useState(props.location.state ? props.location.state.alert : false);
@@ -42,7 +40,7 @@ export default function Home(props) {
   }
 
   return(
-    <div className={classes.root}>
+    <LayerOne>
       { props.location.state ?
         <Snackbar 
           open={open} 
@@ -56,8 +54,8 @@ export default function Home(props) {
         </Snackbar>:
         null
       }
-      <div className={classes.second}>
-        <div className={classes.inner}>
+      <LayerTwo>
+        <LayerThree>
           <h1 style={{fontStyle:"italic"}}>What's Happening</h1>
           <>
             {test.map((doc) => {
@@ -69,15 +67,15 @@ export default function Home(props) {
               )
             })}
           </>
-        </div>
-      </div>
-      <div className={classes.imgCol}>
+        </LayerThree>
+      </LayerTwo>
+      <ImageSet>
         <a href="https://www.paypal.com/us/home" target="_blank" rel="noreferrer"><img src={donate} alt="PayPal" style={{width:"50%", borderRadius:"5px", marginBottom:"1%"}}/></a>
-        <img src={math} alt="math" className={classes.imgSty}/>
-        <img src={lake} alt="lake" className={classes.imgSty}/>
-        <img src={train} alt="train" className={classes.imgSty}/>
-        <img src={wp} alt="wp" className={classes.imgSty}/>
-      </div>
-    </div>
+        <Image src={math} alt="math"/>
+        <Image src={lake} alt="lake"/>
+        <Image src={train} alt="train"/>
+        <Image src={wp} alt="wp"/>
+      </ImageSet>
+    </LayerOne>
   );
 }

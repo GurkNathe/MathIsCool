@@ -1,9 +1,10 @@
 import React from "react";
+import { BasicPage } from "../styledComps";
 
 export default function PastTests() {
   return (
-    <div className="PastTest">
+    <BasicPage>
       <h1>PastTests</h1>
-    </div>
+    </BasicPage>
   );
 }

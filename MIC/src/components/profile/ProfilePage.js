@@ -1,25 +1,24 @@
 import React from "react";
-import { CssBaseline, Button, Avatar, Container, Typography } from '@material-ui/core';
+import { CssBaseline, Button, Container, Typography } from '@mui/material';
+import { Paper, ProfileAvatar } from "../styledComps";
 
 import SignIn from "./SignIn";
-import useStyles from "../style";
 
-import fire from "../fire";
+import { auth } from "../fire";
+import { signOut } from "@firebase/auth";
 
 export default function ProfilePage () {
-  const classes = useStyles();
-
   const username = sessionStorage.getItem("username")
   const email = sessionStorage.getItem("email")
 
   return(
     <Container component="main" maxWidth="xs">
       <CssBaseline/>
-      <div className={classes.paper}>
+      <Paper>
         { username !== null && username !== undefined ?
-          <Avatar className={classes.pAvatar}>
+          <ProfileAvatar size="100px">
             {username.match(/(\b\S)?/g).join("").toUpperCase()}
-          </Avatar>:
+          </ProfileAvatar>:
           <SignIn/>
         }
         { username !== null && username !== undefined ? 
@@ -31,7 +30,7 @@ export default function ProfilePage () {
               {email}
             </Typography>
             <Button onClick={() => {
-                      fire.auth().signOut()
+                      signOut(auth)
                         .then((user) => {
                             window.location.reload();
                         })
@@ -49,7 +48,7 @@ export default function ProfilePage () {
           :
           null
         }
-      </div>
+      </Paper>
     </Container>
   );
 }

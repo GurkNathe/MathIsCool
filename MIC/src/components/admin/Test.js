@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BasicPage from '../custom/BasicPage';
+import { Accord, BasicPage } from "../styledComps";
 import Select from "react-select"
 
 export default function FlexLayoutGrid() {
@@ -17,6 +17,7 @@ export default function FlexLayoutGrid() {
         options={options}
         onChange={(event) => {setState(event.value)}}
       />
+      <Accord key={1} title="Test" content="Testing this"/>
     </BasicPage>
   );
 

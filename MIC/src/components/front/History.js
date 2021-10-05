@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import Page from "./Page";
+import { Page } from "../styledComps";
 
 import getWeb from "./getWeb";
 import getPage from "./getPage";

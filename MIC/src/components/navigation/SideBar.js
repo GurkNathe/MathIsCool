@@ -1,21 +1,17 @@
 import React, { useState } from "react";
-import { Drawer, Button, ClickAwayListener, Avatar, Typography, Grid } from "@material-ui/core";
-import { Menu } from "@material-ui/icons";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import { Link } from "react-router-dom";
-
+import { Drawer, Button, ClickAwayListener, Grid } from "@mui/material";
+import { Menu } from "@mui/icons-material";
+import { LinkButton, ProfileAvatar, ClosedNav, FullNav, Title, NavOptions, Profile } from "../styledComps";
 import FrontBack from "./FrontBack";
 import CoachTools from "./CoachTools";
 import Admin from "./Admin";
-import Profile from "../custom/Profile";
-import useStyles from "../style";
 
-import fire from "../fire";
+import { onAuthStateChanged } from "@firebase/auth";
+import { auth } from "../fire";
 
 //NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
 
 export default function SideBar() {
-   const classes = useStyles();
    const [open, setOpen] = useState(false);
    const [name, setName] = useState(1);
    const [xsVal, setXs] = useState(window.innerWidth > 540 ? null : 3);
@@ -24,7 +20,7 @@ export default function SideBar() {
    const username = sessionStorage.getItem("username");
 
    if(name === 1){
-      fire.auth().onAuthStateChanged((use) => {
+      onAuthStateChanged(auth, (use) => {
          setName(use);
       })
    }
@@ -34,49 +30,48 @@ export default function SideBar() {
    }
 
    return(
-      <div className={classes.outer}>
+      <FullNav>
          {width !== window.innerWidth ? setWidth(window.innerWidth) : null}
          {xsVal !== (window.innerWidth > 540 ? null : 3) ? setXs(window.innerWidth > 540 ? null : 3) : null}
          <Drawer open={open} anchor="top">
             <ClickAwayListener onClickAway={() => setOpen(false)}>
-               <div className={classes.in}>
+               <NavOptions>
                   <Grid container>
                      <Grid item xs={xsVal}>
                         <FrontBack onClick={onClick}/>
                      </Grid>
                      <Grid item xs={xsVal}>
-                        { fire.auth().currentUser ? <CoachTools onClick={onClick}/> : null }
+                        { auth.currentUser ? <CoachTools onClick={onClick}/> : null }
                      </Grid>
                      <Grid item xs={xsVal}>
-                        { fire.auth().currentUser ? fire.auth().currentUser.photoURL ? <Admin onClick={onClick}/> : null : null}
+                        { auth.currentUser ? auth.currentUser.photoURL ? <Admin onClick={onClick}/> : null : null}
                      </Grid>
                      <Profile setOpen={setOpen}/>
                   </Grid>
-               </div>
+               </NavOptions>
             </ClickAwayListener>
          </Drawer>
-         <div className={classes.closed}>
+         <ClosedNav>
             <Button onClick={() => setOpen(true)}>
                <Menu style={{color:"white"}}/>
             </Button>
-            <Typography style={{color:"white", display:"flex", alignItems:"center", fontSize:"2.5rem", fontFamily:"math"}}>
+            <Title>
                Math Is Cool
-            </Typography>
+            </Title>
             <div style={{marginTop:"10px", marginBottom:"10px", marginLeft:"auto", marginRight:"10px"}}>
                {username ?
-                  <Avatar className={classes.avatar}>
-                     <Link to="/profile" className={classes.link} onClick={() => {setOpen(false)}}>
-                        <Button>
-                        {username.match(/(\b\S)?/g).join("").toUpperCase()}
-                        </Button>
-                     </Link>
-                  </Avatar>:
-                  <Link to="/profile" className={classes.link} onClick={() => {setOpen(false)}}>
-                     <AccountCircleIcon className={classes.avatar2}/>
-                  </Link>
+                  <ProfileAvatar size="40px">
+                     <LinkButton
+                        regBut={true}
+                        to="/profile"
+                        onClick={() => {setOpen(false)}}
+                        text={username.match(/(\b\S)?/g).join("").toUpperCase()}
+                        />
+                  </ProfileAvatar>:
+                  <LinkButton to="/profile" onClick={() => {setOpen(false)}} avatar={true}/>
                }
             </div>
-         </div>
-      </div>
+         </ClosedNav>
+      </FullNav>
    );
 };

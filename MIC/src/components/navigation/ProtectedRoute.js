@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Route, Redirect } from "react-router-dom";
 import ReactLoading from "react-loading";
-import fire from "../fire";
+import { onAuthStateChanged } from "@firebase/auth";
+import { auth } from "../fire";
 
 export default function PrivateRoute(props) {
   const [user, setUser] = useState(1);
   const [loading, setLoading] = useState(true);
 
   if(user === 1){
-    fire.auth().onAuthStateChanged((use) => {
+    onAuthStateChanged(auth, (use) => {
       setUser(use);
     })
   }

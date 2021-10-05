@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-
-import { Avatar, Button, CssBaseline, TextField, Grid, Typography, Container } from "@material-ui/core";
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { CssBaseline, TextField, Grid, Typography, Container } from "@mui/material";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useHistory, Link } from "react-router-dom";
+import { Form, LockAvatar, Paper, Submit } from '../styledComps';
+import { createUserWithEmailAndPassword, sendEmailVerification, onAuthStateChanged, updateProfile } from "@firebase/auth";
+import { auth } from "../fire";
 
-import fire from "../fire";
-import useStyles from "../style";
-
+//! Bug that allows you to change username, something wrong with onSubmit
 export default function SignUp() {
   const history = useHistory();
-  const classes = useStyles();
   const [up, setUp] = useState({email: " ", username: " ", password: " ", confirm: " ", error: null});
 
   const onChange = (event, type) => {
@@ -68,9 +67,9 @@ export default function SignUp() {
       return;
     } else {
       //Sign's a person up using an email and password, and send email confirmation.
-      fire.auth().createUserWithEmailAndPassword(up.email, up.password)
+      createUserWithEmailAndPassword(auth, up.email, up.password)
         .then(() => {
-          fire.auth().currentUser.sendEmailVerification()
+          sendEmailVerification(auth.currentUser);
           sessionStorage.setItem("email", up.email);
           sessionStorage.setItem("username", up.username)
           history.push({
@@ -88,10 +87,11 @@ export default function SignUp() {
             setError(error.code)
         });
       
+      //! need to enclose so no unwanted display name changes happen
       //Adds person's username
-      const unsub = fire.auth().onAuthStateChanged((user) => {
+      const unsub = onAuthStateChanged(auth, (user) => {
         if(user){
-          user.updateProfile({
+          updateProfile(user, {
             displayName: up.username
           }).then(() => {
           }).catch((error) => {
@@ -107,148 +107,97 @@ export default function SignUp() {
   return (
     <Container component="main" maxWidth="xs" style={{marginBottom:"40px"}}>
       <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.sAvatar}>
+      <Paper>
+        <LockAvatar>
           <LockOutlinedIcon />
-        </Avatar>
+        </LockAvatar>
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
+        <Form noValidate>
           <Grid container spacing={2}>
 
             <Grid item xs={12}>
-              {(up.error) ? 
-                <TextField
-                  error
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="username"
-                  label="Username"
-                  name="username"
-                  helperText={up.error === "NoUser" ? 
-                                "Please enter a valid username." :
-                                null
-                              }
-                  autoFocus
-                  onChange={(event) => onChange(event, "username")}
-                /> :
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="username"
-                  label="Username"
-                  name="username"
-                  autoFocus
-                  onChange={(event) => onChange(event, "username")}
-                />
-              }
+              <TextField
+                error={up.error}
+                variant="outlined"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                helperText={up.error === "NoUser" ? 
+                              "Please enter a valid username." :
+                              null
+                            }
+                autoFocus
+                onChange={(event) => onChange(event, "username")}
+              />
             </Grid>
             
             <Grid item xs={12}>
-              {(up.error) ? 
-                <TextField
-                  error
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  helperText={up.error === "auth/invalid-email" ? 
-                                "Please enter a valid email address." : 
-                                up.error === "auth/email-already-in-use" ? 
-                                  "Email already taken." : 
-                                  null
-                              }
-                  onChange={(event) => onChange(event, "email")}
-                /> :
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  onChange={(event) => onChange(event, "email")}
-                />
-              }
+              <TextField
+                error={up.error}
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                helperText={up.error === "auth/invalid-email" ? 
+                              "Please enter a valid email address." : 
+                              up.error === "auth/email-already-in-use" ? 
+                                "Email already taken." : 
+                                null
+                            }
+                onChange={(event) => onChange(event, "email")}
+              />
             </Grid>
 
             <Grid item xs={12}>
-              {(up.error) ? 
-                <TextField
-                  error
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={(event) => onChange(event, "password")}
-                /> :
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={(event) => onChange(event, "password")}
-                />
-              }
+              <TextField
+                error={up.error}
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                onChange={(event) => onChange(event, "password")}
+              />
             </Grid>
 
-            <Grid item xs={12}>
-              {(up.error) ? 
-                <TextField
-                  error
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="confirm-pass"
-                  label="Confirm Password"
-                  type="password"
-                  id="confirm-pass"
-                  helperText={up.error === "NoMatch" ? 
-                                "Passwords did not match." : 
-                                up.error === "auth/weak-password" ? 
-                                  "Password should be at least 6 characters" : 
-                                  null
-                              }
-                  onChange={(event) => onChange(event, "confirm")}
-                /> : 
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="confirm-pass"
-                  label="Confirm Password"
-                  type="password"
-                  id="confirm-pass"
-                  onChange={(event) => onChange(event, "confirm")}
-                />
-              }
+            <Grid item xs={12}> 
+              <TextField
+                error={up.error}
+                variant="outlined"
+                required
+                fullWidth
+                name="confirm-pass"
+                label="Confirm Password"
+                type="password"
+                id="confirm-pass"
+                helperText={up.error === "NoMatch" ? 
+                              "Passwords did not match." : 
+                              up.error === "auth/weak-password" ? 
+                                "Password should be at least 6 characters" : 
+                                null
+                            }
+                onChange={(event) => onChange(event, "confirm")}
+              />
             </Grid>
             
           </Grid>
-          <Button
+          <Submit
             fullWidth
             variant="contained"
-            color="primary"
-            className={classes.submit}
             onClick={onSubmit}
           >
             Sign Up
-          </Button>
+          </Submit>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link to="/login">
@@ -256,8 +205,8 @@ export default function SignUp() {
               </Link>
             </Grid>
           </Grid>
-        </form>
-      </div>
+        </Form>
+      </Paper>
     </Container>
   );
 }

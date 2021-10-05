@@ -1,42 +1,17 @@
 import React from "react";
-import { Button, Typography } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import useStyles from "../style";
+import { Header, LinkButton, All } from "../styledComps";
 
-export default function Admin(props){
-
-   const classes = useStyles();
-
+export default function Admin(props) {
    return(
-      <div className={classes.all}>
-         <Typography className={classes.sHeader}>
+      <All>
+         <Header>
             Admin
-         </Typography>
-         <div style={{paddingLeft:"20px"}}>
-            <div>
-               <Link to="/admin/import-content" className={classes.link} onClick={props.onClick}>
-                  <Button className={classes.homeButton}>
-                     Import Content
-                  </Button>
-               </Link>
-               <Link to="/admin/add-admin" className={classes.link} onClick={props.onClick}>
-                  <Button className={classes.homeButton}>
-                     Add Admin
-                  </Button>
-               </Link>
-               <Link to="/admin/mark-masters" className={classes.link} onClick={props.onClick}>
-                  <Button className={classes.homeButton}>
-                     Mark Masters
-                  </Button>
-               </Link>
-               <Link to="/admin/manage-comps" className={classes.link} onClick={props.onClick}>
-                  <Button className={classes.homeButton}>
-                     Manage Competitions
-                  </Button>
-               </Link>
-            </div>
-         </div>
-      </div>
+         </Header>     
+         <LinkButton to="/admin/import-content" onClick={props.onClick} text="Import Content"/>
+         <LinkButton to="/admin/add-admin" onClick={props.onClick} text="Add Admin"/>
+         <LinkButton to="/admin/mark-masters" onClick={props.onClick} text="Mark Masters"/>
+         <LinkButton to="/admin/manage-comps" onClick={props.onClick} text="Manage Competitions"/>
+      </All>
    );
 }
                

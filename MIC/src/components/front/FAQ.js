@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Accord from "../custom/Accord";
+import { Accord, BasicPage } from '../styledComps';
 import getWeb from "./getWeb";
 import getPage from "./getPage";
-import useStyles from "../style";
 
 export default function FAQ() {
-  const classes = useStyles();
   const title = "faq";
   const [faq, setFAQ] = useState(getPage(title, "records"));
 
@@ -32,28 +30,24 @@ export default function FAQ() {
   }
 
   return (
-    <div className={classes.root}>
-      <div className={classes.second}>
-        <div className={classes.inner}>
-          <h1 style={{fontStyle:"italic"}}>FAQ</h1>
-          {
-            test.map((group, index) => {
-              return(
-                <div key={index}>
-                  <p><b>{cats[index]}</b></p>
-                  {
-                    Object.values(group).map((quest, ind) => {
-                      return(
-                        <Accord key={ind} title={quest.question} content={quest.answer}/>
-                      )
-                    })
-                  }
-                </div>
-              )
-            })
-          }
-        </div>
-      </div>
-    </div>
+    <BasicPage>
+      <h1 style={{fontStyle:"italic"}}>FAQ</h1>
+      {
+        test.map((group, index) => {
+          return(
+            <div key={index}>
+              <p><b>{cats[index]}</b></p>
+              {
+                Object.values(group).map((quest, ind) => {
+                  return(
+                    <Accord key={ind} title={quest.question} content={quest.answer}/>
+                  )
+                })
+              }
+            </div>
+          )
+        })
+      }
+    </BasicPage>
   );
 }

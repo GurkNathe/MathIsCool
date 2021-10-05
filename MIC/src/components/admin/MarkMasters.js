@@ -2,20 +2,21 @@ import React, { useState } from 'react'
 import ReactLoading from 'react-loading';
 import { useHistory } from 'react-router';
 
-import BasicPage from '../custom/BasicPage';
-import fire from "../fire";
+import { BasicPage } from '../styledComps';
 import options from "../back/options.json";
 import DataTable from "../custom/DataTable";
+import { doc, getDoc, getDocs, collection } from "@firebase/firestore";
+import { db } from "../fire";
 
 //gets every compeition currently available
 //TODO: tweak this to know which compeitions to not get
 async function getComps(){
   try{
     //getting all competitions
-    const comps = await fire.firestore().collection("competitions").get();
-
+    const comps = await getDocs(collection(db, "competitions"));
+    
     //getting masters schools
-    const masters = await fire.firestore().collection("masters").doc("teams").get();
+    const masters = await getDoc(doc(db, "masters", "teams"));
     const master = masters ? masters.data() : null;
     
     //creating an Array version of the competions

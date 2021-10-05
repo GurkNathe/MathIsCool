@@ -1,36 +1,18 @@
 import React, { useState } from 'react';
-import { Button, TextField, Grid, Typography, Container, makeStyles } from "@material-ui/core";
+import { TextField, Grid, Typography, Container } from "@mui/material";
+import { Form, Paper, Submit } from "../styledComps";
+import { db } from "../fire";
+import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-import fire from "../fire";
 
-//TODO: change to style.js
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
 
 //Adds new admin to firestore
-async function addAdmin(uid){
-  const admins = fire.firestore().collection("roles").doc("admin");
-  const admin = await admins.get().then((doc) => {
+async function addAdmin(uid) {
+  const docRef = doc(db, "roles", "admin")
+  const admin = await getDoc(docRef).then((doc) => {
     var uids = doc.data().admins;
     if(!uids.includes(uid)){
-      fire.firestore().collection("roles").doc("admin").update({
+      updateDoc(docRef, {
         admins: [
           ...uids,
           uid
@@ -43,7 +25,6 @@ async function addAdmin(uid){
 }
 
 export default function AddAdmin() {
-  const classes = useStyles();
   const [uid, setUid] = useState("");
   const [error, setError] = useState(false);
   
@@ -67,11 +48,11 @@ export default function AddAdmin() {
 
   return (
     <Container component="main" maxWidth="xs">
-      <div className={classes.paper}>
+      <Paper>
         <Typography component="h1" variant="h5">
           Enter UID of User
         </Typography>
-        <form id="user" className={classes.form} noValidate>
+        <Form id="user" noValidate>
           <Grid item xs={12}>
             <TextField  
               error={error}
@@ -85,17 +66,15 @@ export default function AddAdmin() {
               onChange={onEmail}
             />
           </Grid>
-          <Button
+          <Submit
             fullWidth
             variant="contained"
-            color="primary"
-            className={classes.submit}
             onClick={onSubmit}
           >
             Add Admin
-          </Button>
-        </form>
-      </div>
+          </Submit>
+        </Form>
+      </Paper>
     </Container>
   );
 }
