@@ -111,206 +111,200 @@ export default function TeamRegister(){
                sessionStorage.setItem("filteredComps", JSON.stringify(options.locations));
             }
          }
-         setLocals(options.locations);
+         if(locals === null)
+            setLocals(options.locations);
       });
    }, []);
    
    const onChange = (newValue, type) => {
+      console.log(options.locations)
       switch (type) {
-        case "location":
-          if(newValue != null){
-              setChoice((prevState) => ({
-                ...prevState,
-                loc: newValue,
-                error: false,
-              }));
-          } else {
-              setChoice((prevState) => ({
-                ...prevState,
-                loc: null,
-                error: false,
-              }));
-          }
-          break;
-        case "level":
-          if(newValue != null){
-            //reset options
-            options.locations = locals;
-
-            setChoice((prevState) => ({
-              ...prevState,
-              lev: newValue,
-              loc: null,
-              error: false,
-            }));
-
-            let temp = [];
-
-            //gets the value of each level option
-            let value = "";
-            for(const i in options.level){
-              if(options.level[i].label === newValue){
-                  value = options.level[i].value
-                  break;
-              }
+         case "location":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  loc: newValue,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  loc: null,
+                  error: false,
+               }));
             }
+            break;
+         case "level":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  lev: newValue,
+                  loc: null,
+                  error: false,
+               }));
 
-            //TODO: might need to change options.location to a state
-            // for removing locations that don't have the grade associated with it
-            for(const i in options.locations){
-              for(const j in comps){
-                  //checks if same location
-                  if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
-                    //checks if level is in the grade range for selected location
-                    if(newValue !== null && comps[j].grade.indexOf(value) !== -1){
-                        //checks if option is already included
-                        if(!temp.includes(options.locations[i])){
-                          temp.push(options.locations[i])
-                        }
-                    }
+               //reset options
+               options.locations = locals;
+
+               let temp = [];
+
+               //gets the value of each level option
+               let value = "";
+               for(const i in options.level){
+                  if(options.level[i].label === newValue.value){
+                        value = options.level[i].value
+                        break;
                   }
-              }
+               }
+
+               //TODO: might need to change options.location to a state
+               // for removing locations that don't have the grade associated with it
+               for(const i in options.locations){
+                  for(const j in comps){
+                        //checks if same location
+                        if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
+                           //checks if level is in the grade range for selected location
+                           if(newValue !== null && comps[j].grade.indexOf(value) !== -1){
+                                 //checks if option is already included
+                                 if(!temp.includes(options.locations[i])){
+                                    temp.push(options.locations[i])
+                                 }
+                           }
+                        }
+                  }
+               }
+
+               options.locations = temp;
+               if (choice.school) {
+                  //getting school id for chosen school
+                  let id = choice.school.value;
+                  
+                  //checking if school is able to sign up for masters
+                  for(const option in masters.teams){
+                     if(masters.teams[option].grade === newValue.value && masters.teams[option].schoolID === id){
+                        options.locations.push({"value": "Masters", "label": "Masters"});
+                        break;
+                     }
+                  }
+               }
+               console.log(locals)
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  lev: null,
+                  loc: null,
+                  error: false,
+               }));
+
+               //resets the available locations if field is cleared
+               options.locations = locals;
             }
+            break;
+         case "school":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  school: newValue,
+                  loc: null,
+                  error: false,
+               }));
 
-            options.locations = temp;
+               //deletes any masters in location options "reseting options"
+               for(const option in options.locations){
+                  options.locations = options.locations.filter((value, index, arr) => {
+                     return arr[index].value !== "Masters"
+                  })
+               }
+               
+               //getting school id for chosen school
+               let id = newValue.value;
 
-            //getting school id for chosen school
-            let id = null;
-            for(const option in options.school){
-              if(options.school[option].label === choice.school.value){
-                  id = options.school[option].value;
-              }
+               //checking if school is able to sign up for masters
+               for(const option in masters.teams){
+                  if(masters.teams[option].grade === choice.lev.value && masters.teams[option].schoolID === id){
+                     options.locations.push({"value": "Masters", "label": "Masters"});
+                     break;
+                  }
+               }
+
+            } else {
+               //deletes any masters in location options "reseting options"
+               for(const option in options.locations){
+                  options.locations = options.locations.filter((value, index, arr) => {
+                     return arr[index].value !== "Masters"
+                  })
+               }
+
+               setChoice((prevState) => ({
+                  ...prevState,
+                  school: null,
+                  loc: null,
+                  error: false,
+               }));
             }
-            
-            //checking if school is able to sign up for masters
-            for(const option in masters.teams){
-              if(masters.teams[option].grade === newValue && masters.teams[option].schoolID === id){
-                  options.locations.push({"value": "Masters", "label": "Masters"});
-                  break;
-              }
+            break;
+         case "team":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  team: newValue,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  team: null,
+                  error: false,
+               }));
             }
-              
-          } else {
-            setChoice((prevState) => ({
-              ...prevState,
-              lev: null,
-              loc: null,
-              error: false,
-            }));
-
-            //resets the available locations if field is cleared
-            options.locations = locals;
-          }
-          break;
-        case "school":
-          if(newValue != null){
-              //deletes any masters in location options "reseting options"
-              for(const option in options.locations){
-                options.locations = options.locations.filter((value, index, arr) => {
-                    return arr[index].value !== "Masters"
-                })
-              }
-              
-              //getting school id for chosen school
-              let id = null;
-              for(const option in options.school){
-                if(options.school[option].label === newValue){
-                    id = options.school[option].value;
-                }
-              }
-
-              //checking if school is able to sign up for masters
-              for(const option in masters.teams){
-                if(masters.teams[option].grade === choice.lev.value && masters.teams[option].schoolID === id){
-                    options.locations.push({"value": "Masters", "label": "Masters"});
-                    break;
-                }
-              }
-
-              setChoice((prevState) => ({
-                ...prevState,
-                school: newValue,
-                loc: null,
-                error: false,
-              }));
-          } else {
-              //deletes any masters in location options "reseting options"
-              for(const option in options.locations){
-                options.locations = options.locations.filter((value, index, arr) => {
-                    return arr[index].value !== "Masters"
-                })
-              }
-
-              setChoice((prevState) => ({
-                ...prevState,
-                school: null,
-                loc: null,
-                error: false,
-              }));
-          }
-          break;
-        case "team":
-          if(newValue != null){
-              setChoice((prevState) => ({
-                ...prevState,
-                team: newValue,
-                error: false,
-              }));
-          } else {
-              setChoice((prevState) => ({
-                ...prevState,
-                team: null,
-                error: false,
-              }));
-          }
-          break;
-        case "indiv":
-          if(newValue != null){
-              setChoice((prevState) => ({
-                ...prevState,
-                indiv: newValue,
-                error: false,
-              }));
-          } else {
-              setChoice((prevState) => ({
-                ...prevState,
-                indiv: null,
-                error: false,
-              }));
-          }
-          break;
-        case "coach":
-          if(newValue != null){
-              setChoice((prevState) => ({
-                ...prevState,
-                coach: newValue.target.value,
-                error: false,
-              }));
-          } else {
-              setChoice((prevState) => ({
-                ...prevState,
-                coach: "",
-                error: false,
-              }));
-          }
-          break;
-        case "email":
-          if(newValue != null){
-              setChoice((prevState) => ({
-                ...prevState,
-                email: newValue.target.value,
-                error: false,
-              }));
-          } else {
-              setChoice((prevState) => ({
-                ...prevState,
-                email: "",
-                error: false,
-              }));
-          }
-          break;
-        default:
-          console.log(newValue, type)
+            break;
+         case "indiv":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  indiv: newValue,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  indiv: null,
+                  error: false,
+               }));
+            }
+            break;
+         case "coach":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  coach: newValue.target.value,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  coach: "",
+                  error: false,
+               }));
+            }
+            break;
+         case "email":
+            if(newValue != null){
+               setChoice((prevState) => ({
+                  ...prevState,
+                  email: newValue.target.value,
+                  error: false,
+               }));
+            } else {
+               setChoice((prevState) => ({
+                  ...prevState,
+                  email: "",
+                  error: false,
+               }));
+            }
+            break;
+         default:
+            console.log(newValue, type)
       }
    };
 
