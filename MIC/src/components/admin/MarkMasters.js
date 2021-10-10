@@ -122,42 +122,41 @@ export default function MarkMasters() {
 
   return (
     <BasicPage>
-      
       {!comps.loading ? 
-        <>
-          {Object.values(comps.comp).map((data, index) => {
-            if(data.site !== "masters"){
-              var grades = []
-              for(const item in options.level){
-                for(const char in data.grade.substr(1)){
-                  if(options.level[item].value === data.grade.substr(1)[char]){
-                      grades.push(options.level[item].label)
-                      break;
+         <>
+            {Object.values(comps.comp).map((data, index) => {
+               if(data.site !== "masters"){
+                  var grades = []
+                  for(const item in options.level){
+                     for(const char in data.grade.substr(1)){
+                        if(options.level[item].value === data.grade.substr(1)[char]){
+                              grades.push(options.level[item].label)
+                              break;
+                        }
+                     }
                   }
-                }
-              }
-              var grade = grades.length > 2 ? grades.join(", ") : grades.join(" and ");
-              grade = grades.length > 2 ? grade.substring(0, grade.lastIndexOf(", ")) + ", and " + grade.substring(grade.lastIndexOf(", ")+2, grade.length) : grade;
+                  var grade = grades.length > 2 ? grades.join(", ") : grades.join(" and ");
+                  grade = grades.length > 2 ? grade.substring(0, grade.lastIndexOf(", ")) + ", and " + grade.substring(grade.lastIndexOf(", ")+2, grade.length) : grade;
 
-              rows.push({
-                id: index,
-                site: data.site.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
-                level: grade,
-                date: data.compDate,
-                status: data.status,
-                page: data
-              })
-            }
-            return null;
-          })}
-          <DataTable 
+                  rows.push({
+                     id: index,
+                     site: data.site.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase()))),
+                     level: grade,
+                     date: data.compDate,
+                     status: data.status,
+                     page: data
+                  })
+               }
+               return null;
+            })}
+            <DataTable 
             columns={columns}
             rows={rows}
-          />
-        </> :
-        <div style={{position:"fixed", top:"45%", left:"45%"}}>
-          <ReactLoading type="spinningBubbles" color="#000" style={{width:"50px", height:"50px"}}/>
-        </div>
+            />
+         </> :
+         <div style={{position:"fixed", top:"45%", left:"45%"}}>
+            <ReactLoading type="spinningBubbles" color="#000" style={{width:"50px", height:"50px"}}/>
+         </div>
       }
     </BasicPage>
   )

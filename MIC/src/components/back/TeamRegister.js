@@ -76,7 +76,6 @@ export default function TeamRegister(){
 
    let compId = null; //used to store the id of the competition being signed up for
    let longest = getLongest(0); //used for storing the width of the longest string that can be selected in the drop-downs
-   let schoolData = {value: null, label: null, div: null} //used to store the data of the selected school
    let url = ""; //used to store the url for the Google Form
 
    useEffect(() => {
@@ -113,26 +112,10 @@ export default function TeamRegister(){
          if(locals === null)
             setLocals(options.locations);
       });
-   }, []);
+   }, [locals]);
    
-   const onChange = (newValue, type) => {
-      console.log(options.locations)
+   const onChange = (newValue, type, field) => {
       switch (type) {
-         case "location":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  loc: newValue,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  loc: null,
-                  error: false,
-               }));
-            }
-            break;
          case "level":
             if(newValue != null){
                setChoice((prevState) => ({
@@ -186,7 +169,6 @@ export default function TeamRegister(){
                      }
                   }
                }
-               console.log(locals)
             } else {
                setChoice((prevState) => ({
                   ...prevState,
@@ -209,11 +191,9 @@ export default function TeamRegister(){
                }));
 
                //deletes any masters in location options "reseting options"
-               for(const option in options.locations){
-                  options.locations = options.locations.filter((value, index, arr) => {
-                     return arr[index].value !== "Masters"
-                  })
-               }
+               options.locations = options.locations.filter((value, index, arr) => {
+                  return arr[index].value !== "Masters"
+               })
                
                //getting school id for chosen school
                let id = newValue.value;
@@ -228,11 +208,9 @@ export default function TeamRegister(){
 
             } else {
                //deletes any masters in location options "reseting options"
-               for(const option in options.locations){
-                  options.locations = options.locations.filter((value, index, arr) => {
-                     return arr[index].value !== "Masters"
-                  })
-               }
+               options.locations = options.locations.filter((value, index, arr) => {
+                  return arr[index].value !== "Masters"
+               })
 
                setChoice((prevState) => ({
                   ...prevState,
@@ -242,65 +220,12 @@ export default function TeamRegister(){
                }));
             }
             break;
-         case "team":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  team: newValue,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  team: null,
-                  error: false,
-               }));
-            }
-            break;
-         case "indiv":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  indiv: newValue,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  indiv: null,
-                  error: false,
-               }));
-            }
-            break;
-         case "coach":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  coach: newValue.target.value,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  coach: "",
-                  error: false,
-               }));
-            }
-            break;
-         case "email":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  email: newValue.target.value,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  email: "",
-                  error: false,
-               }));
-            }
+         case "general":
+            setChoice((prevState) => ({
+               ...prevState,
+               [field]: newValue,
+               error: false,
+            }));
             break;
          default:
             console.log(newValue, type)
@@ -393,7 +318,7 @@ export default function TeamRegister(){
                title="Competition Level"
                options={options.level}
                text="Select Your Grade Level"
-               onChange={(event, newValue) => onChange(newValue, "level")}
+               onChange={(event, newValue) => onChange(newValue, "level", "")}
                width={longest}
                value={choice.lev}
                error={choice.error}
@@ -403,7 +328,7 @@ export default function TeamRegister(){
                title="School Registering"
                options={options.school}
                text="Select Your School"
-               onChange={(event, newValue) => onChange(newValue, "school")}
+               onChange={(event, newValue) => onChange(newValue, "school", "")}
                width={longest}
                value={choice.school}
                error={choice.error}
@@ -417,7 +342,7 @@ export default function TeamRegister(){
                         "No locations for this competition level." : 
                         "Select Competition Location"
                      }
-               onChange={(event, newValue) => onChange(newValue, "location")}
+               onChange={(event, newValue) => onChange(newValue, "general", "loc")}
                width={longest}
                value={choice.loc}
                error={choice.error}
@@ -427,7 +352,7 @@ export default function TeamRegister(){
                title="Number Teams"
                options={options.numteam}
                text="Select Number of Teams"
-               onChange={(event, newValue) => onChange(newValue, "team")}
+               onChange={(event, newValue) => onChange(newValue, "general", "team")}
                width={longest}
                value={choice.team}
                error={choice.error}
@@ -437,7 +362,7 @@ export default function TeamRegister(){
                title="Number Individuals"
                options={options.numteam}
                text="Select Number of Individuals"
-               onChange={(event, newValue) => onChange(newValue, "indiv")}
+               onChange={(event, newValue) => onChange(newValue, "general", "indiv")}
                width={longest}
                value={choice.indiv}
                error={choice.error}
@@ -457,7 +382,7 @@ export default function TeamRegister(){
                   required
                   label="Coach Name(s)"
                   value={choice.coach}
-                  onChange={(event) => onChange(event, "coach")}
+                  onChange={(event) => onChange(event.target.value, "general", "coach")}
                   style={{ width: longest, maxWidth: "65vw", marginRight: 0 }}
                >
                </TextField>
@@ -477,7 +402,7 @@ export default function TeamRegister(){
                   margin="normal"
                   label="Other Emails"
                   value={choice.email}
-                  onChange={(event) => onChange(event, "email")}
+                  onChange={(event) => onChange(event.target.value, "general", "email")}
                   style={{ width: longest, maxWidth: "65vw", marginRight: 0 }}
                >
                </TextField>

@@ -430,8 +430,6 @@ const GoogleForm = (props) => {
 // 404 page
 const NotFound = () => {
 
-  const back = { image: 'http://i.giphy.com/l117HrgEinjIA.gif' };
-
   return (
     <div style={{
       position: "absolute",
@@ -471,7 +469,7 @@ const NotFound = () => {
 
 const Profile = (props) => {
 
-  const username = sessionStorage.getItem("username");
+  const username = props.username;
   
   return(
     <div style={{marginTop:"10px", marginBottom:"10px", marginLeft:"auto", marginRight:"10px"}}>

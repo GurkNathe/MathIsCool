@@ -44,8 +44,6 @@ export default function Table(props) {
    const [alert, setAlert] = useState(false);
    const [clicked, setClicked] = useState(false);
 
-   console.log(students);
-
    if(props.teams > 10)
       props.teams = 10;
    if(props.individuals > 10)
@@ -71,12 +69,13 @@ export default function Table(props) {
 
    useEffect(() => {
       if(students === 1){
-      getComps().then((doc) => {
-         if(doc.data().registration[props.regId] !== undefined && doc.data().registration[props.regId].names !== undefined)
-            sessionStorage.setItem("students", JSON.stringify(doc.data().registration[props.regId].names));
+         getComps().then((doc) => {
+            if (doc.data().registration[props.regId] !== undefined && doc.data().registration[props.regId].names !== undefined) {
+               sessionStorage.setItem("students", JSON.stringify(doc.data().registration[props.regId].names));
+            }
             setStudents(doc.data().registration[props.regId].names);
-      })
-      setLoading(false)
+         })
+         setLoading(false)
       }
    }, [getComps, students, props.regId])
 
@@ -105,7 +104,7 @@ export default function Table(props) {
       if (typeof newValue === "object") {
          newValue = newValue.value;
       }
-      
+
       setStudents((prevState) => ({
          ...prevState,
          [index]:{

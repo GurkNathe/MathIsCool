@@ -32,18 +32,19 @@ export default function SignIn() {
       .then(() => {
         return signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          sessionStorage.setItem("email", email);
-          sessionStorage.setItem("username", userCredential.user.displayName)
-          history.push({
-            pathname: "/",
-            state: {
-              alert: false,
-              severity: null,
-              message: null,
-              duration: null
-            }
-          })
-        })
+            sessionStorage.setItem("email", email);
+            sessionStorage.setItem("username", userCredential.user.displayName)
+            history.push({
+               pathname: "/",
+               state: {
+               alert: false,
+               severity: null,
+               message: null,
+               duration: null
+               }
+            })
+            window.location.reload();
+         })
         .catch((error) => {
           setError(error)
         })

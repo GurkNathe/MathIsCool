@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Drawer, Button, ClickAwayListener, Grid } from "@mui/material";
 import { Menu } from "@mui/icons-material";
-import { LinkButton, ProfileAvatar, ClosedNav, FullNav, Title, NavOptions, Profile } from "../styledComps";
+import { ClosedNav, FullNav, Title, NavOptions, Profile } from "../styledComps";
 import FrontBack from "./FrontBack";
 import CoachTools from "./CoachTools";
 import Admin from "./Admin";
@@ -17,7 +17,7 @@ export default function SideBar() {
    const [xsVal, setXs] = useState(window.innerWidth > 540 ? null : 3);
    const [width, setWidth] = useState(window.innerWidth);
 
-   const username = sessionStorage.getItem("username");
+   let username = sessionStorage.getItem("username");
 
    if(name === 1){
       onAuthStateChanged(auth, (use) => {
@@ -46,7 +46,7 @@ export default function SideBar() {
                      <Grid item xs={xsVal}>
                         { auth.currentUser ? auth.currentUser.photoURL ? <Admin onClick={onClick}/> : null : null}
                      </Grid>
-                     <Profile setOpen={setOpen}/>
+                     <Profile username={username} setOpen={setOpen}/>
                   </Grid>
                </NavOptions>
             </ClickAwayListener>
@@ -58,19 +58,7 @@ export default function SideBar() {
             <Title>
                Math Is Cool
             </Title>
-            <div style={{marginTop:"10px", marginBottom:"10px", marginLeft:"auto", marginRight:"10px"}}>
-               {username ?
-                  <ProfileAvatar size="40px">
-                     <LinkButton
-                        regBut={true}
-                        to="/profile"
-                        onClick={() => {setOpen(false)}}
-                        text={username.match(/(\b\S)?/g).join("").toUpperCase()}
-                        />
-                  </ProfileAvatar>:
-                  <LinkButton to="/profile" onClick={() => {setOpen(false)}} avatar={true}/>
-               }
-            </div>
+            <Profile username={username} setOpen={setOpen}/>
          </ClosedNav>
       </FullNav>
    );
