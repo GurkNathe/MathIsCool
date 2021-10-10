@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Snackbar, Alert } from "@mui/material";
 import { LayerOne, LayerTwo, LayerThree, ImageSet, Image } from "../styledComps.js";
-
+import { useHistory } from "react-router-dom";
 import { math, lake, train, wp, donate } from "../assets.js";
 
 import getWeb from "./getWeb";
 import getPage from "./getPage";
 
 export default function Home(props) {
+  const history = useHistory();
   const title = "news";
   const [news, setNews] = useState(getPage(title, "records"));
   const [open, setOpen] = useState(props.location.state ? props.location.state.alert : false);
-  
+
   //holding names of articles
   var test = []
 
@@ -19,6 +20,11 @@ export default function Home(props) {
     getWeb(title).then((result) => {
       result !== undefined ? setNews(result.records) : setNews(news);
     })
+    if (open) { // used to close snackbar if no clicking happens
+      setTimeout(() => {
+        handleClose();
+      }, props.location.state.duration)
+    }
   }, [news])
 
   //getting article names
@@ -33,25 +39,23 @@ export default function Home(props) {
     test[i] = news[test[i]];
   }
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway')
-      return;
+  const handleClose = () => {
     setOpen(false);
+    history.replace({ state: undefined });
   }
 
   return(
     <LayerOne>
-      { props.location.state ?
+      { props.location.state ? 
         <Snackbar 
           open={open} 
           onClose={handleClose} 
-          autoHideDuration={props.location.state.duration} 
           anchorOrigin={{vertical:'top', horizontal:'center'}}
         >
           <Alert severity={props.location.state.severity} variant="filled">
             {props.location.state.message}
           </Alert>
-        </Snackbar>:
+        </Snackbar> :
         null
       }
       <LayerTwo>

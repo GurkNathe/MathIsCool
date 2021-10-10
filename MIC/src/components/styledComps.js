@@ -55,6 +55,7 @@ const LayerOne = styled("div")({
   display: "flex", 
   flexDirection:"row"
 })
+
 // for default home page's
 const LayerTwo = styled("div")({
   margin:"2%", 
@@ -64,6 +65,7 @@ const LayerTwo = styled("div")({
   maxHeight:"100%", 
   maxWidth:"100%"
 })
+
 // for default home page's
 const LayerThree = styled("div")({
   marginLeft:"1%", 
@@ -365,7 +367,7 @@ const Accord = (props) => {
           <p>{props.title}</p>
        </Grid>
        <Autocomplete
-          options={props.options ? props.options.map((option) => option.label) : []}
+          options={props.options ? props.options.map((option) => option) : []}
           value={props.value}
           onChange={props.onChange}
           disabled={props.disabled}

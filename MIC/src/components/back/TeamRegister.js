@@ -19,11 +19,11 @@ async function getComps(title){
    if(!sessionStorage.getItem(title + "Data") || !sessionStorage.getItem("mastersData")){
 
       //getting the 'web' collection from firestore
-      const doc = await getDocs(collection(db, title), where('status', '==', 'reg'));
+      const competitions = await getDocs(collection(db, title), where('status', '==', 'reg'));
       const masters = await getDoc(doc(db, "masters", "teams"));
 
       //adding open competitions to holding variable
-      doc.forEach((item) => {
+      competitions.forEach((item) => {
          comps = {
             ...comps,
             [item.id]: item.data()
@@ -31,7 +31,7 @@ async function getComps(title){
       })
 
       //checking to make sure it actually got data
-      if(doc.empty){
+      if(competitions.empty){
          return;
       }
 
@@ -117,200 +117,200 @@ export default function TeamRegister(){
    
    const onChange = (newValue, type) => {
       switch (type) {
-         case "location":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  loc: newValue,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  loc: null,
-                  error: false,
-               }));
+        case "location":
+          if(newValue != null){
+              setChoice((prevState) => ({
+                ...prevState,
+                loc: newValue,
+                error: false,
+              }));
+          } else {
+              setChoice((prevState) => ({
+                ...prevState,
+                loc: null,
+                error: false,
+              }));
+          }
+          break;
+        case "level":
+          if(newValue != null){
+            //reset options
+            options.locations = locals;
+
+            setChoice((prevState) => ({
+              ...prevState,
+              lev: newValue,
+              loc: null,
+              error: false,
+            }));
+
+            let temp = [];
+
+            //gets the value of each level option
+            let value = "";
+            for(const i in options.level){
+              if(options.level[i].label === newValue){
+                  value = options.level[i].value
+                  break;
+              }
             }
-            break;
-         case "level":
-            if(newValue != null){
-               //reset options
-               options.locations = locals;
 
-               setChoice((prevState) => ({
-                  ...prevState,
-                  lev: newValue,
-                  loc: null,
-                  error: false,
-               }));
-
-               let temp = [];
-
-               //gets the value of each level option
-               let value = "";
-               for(const i in options.level){
-                  if(options.level[i].label === newValue){
-                     value = options.level[i].value
-                     break;
-                  }
-               }
-
-               //TODO: might need to change options.location to a state
-               // for removing locations that don't have the grade associated with it
-               for(const i in options.locations){
-                  for(const j in comps){
-                     //checks if same location
-                     if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
-                        //checks if level is in the grade range for selected location
-                        if(newValue !== null && comps[j].grade.indexOf(value) !== -1){
-                           //checks if option is already included
-                           if(!temp.includes(options.locations[i])){
-                              temp.push(options.locations[i])
-                           }
+            //TODO: might need to change options.location to a state
+            // for removing locations that don't have the grade associated with it
+            for(const i in options.locations){
+              for(const j in comps){
+                  //checks if same location
+                  if(options.locations[i].value.toUpperCase() === comps[j].site.toUpperCase()){
+                    //checks if level is in the grade range for selected location
+                    if(newValue !== null && comps[j].grade.indexOf(value) !== -1){
+                        //checks if option is already included
+                        if(!temp.includes(options.locations[i])){
+                          temp.push(options.locations[i])
                         }
-                     }
+                    }
                   }
-               }
-
-               options.locations = temp;
-
-               //getting school id for chosen school
-               let id = null;
-               for(const option in options.school){
-                  if(options.school[option].label === choice.school){
-                     id = options.school[option].value;
-                  }
-               }
-               
-               //checking if school is able to sign up for masters
-               for(const option in masters.teams){
-                  if(masters.teams[option].grade === newValue && masters.teams[option].schoolID === id){
-                     options.locations.push({"value": "Masters", "label": "Masters"});
-                     break;
-                  }
-               }
-               
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  lev: null,
-                  loc: null,
-                  error: false,
-               }));
-
-               //resets the available locations if field is cleared
-               options.locations = locals;
+              }
             }
-            break;
-         case "school":
-            if(newValue != null){
-               //deletes any masters in location options "reseting options"
-               for(const option in options.locations){
-                  options.locations = options.locations.filter((value, index, arr) => {
-                     return arr[index].value !== "Masters"
-                  })
-               }
-               
-               //getting school id for chosen school
-               let id = null;
-               for(const option in options.school){
-                  if(options.school[option].label === newValue){
-                     id = options.school[option].value;
-                  }
-               }
 
-               //checking if school is able to sign up for masters
-               for(const option in masters.teams){
-                  if(masters.teams[option].grade === choice.lev && masters.teams[option].schoolID === id){
-                     options.locations.push({"value": "Masters", "label": "Masters"});
-                     break;
-                  }
-               }
+            options.locations = temp;
 
-               setChoice((prevState) => ({
-                  ...prevState,
-                  school: newValue,
-                  loc: null,
-                  error: false,
-               }));
-            } else {
-               //deletes any masters in location options "reseting options"
-               for(const option in options.locations){
-                  options.locations = options.locations.filter((value, index, arr) => {
-                     return arr[index].value !== "Masters"
-                  })
-               }
+            //getting school id for chosen school
+            let id = null;
+            for(const option in options.school){
+              if(options.school[option].label === choice.school.value){
+                  id = options.school[option].value;
+              }
+            }
+            
+            //checking if school is able to sign up for masters
+            for(const option in masters.teams){
+              if(masters.teams[option].grade === newValue && masters.teams[option].schoolID === id){
+                  options.locations.push({"value": "Masters", "label": "Masters"});
+                  break;
+              }
+            }
+              
+          } else {
+            setChoice((prevState) => ({
+              ...prevState,
+              lev: null,
+              loc: null,
+              error: false,
+            }));
 
-               setChoice((prevState) => ({
-                  ...prevState,
-                  school: null,
-                  loc: null,
-                  error: false,
-               }));
-            }
-            break;
-         case "team":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  team: newValue,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  team: null,
-                  error: false,
-               }));
-            }
-            break;
-         case "indiv":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  indiv: newValue,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  indiv: null,
-                  error: false,
-               }));
-            }
-            break;
-         case "coach":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  coach: newValue.target.value,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  coach: "",
-                  error: false,
-               }));
-            }
-            break;
-         case "email":
-            if(newValue != null){
-               setChoice((prevState) => ({
-                  ...prevState,
-                  email: newValue.target.value,
-                  error: false,
-               }));
-            } else {
-               setChoice((prevState) => ({
-                  ...prevState,
-                  email: "",
-                  error: false,
-               }));
-            }
-            break;
-         default:
-            console.log(newValue, type)
+            //resets the available locations if field is cleared
+            options.locations = locals;
+          }
+          break;
+        case "school":
+          if(newValue != null){
+              //deletes any masters in location options "reseting options"
+              for(const option in options.locations){
+                options.locations = options.locations.filter((value, index, arr) => {
+                    return arr[index].value !== "Masters"
+                })
+              }
+              
+              //getting school id for chosen school
+              let id = null;
+              for(const option in options.school){
+                if(options.school[option].label === newValue){
+                    id = options.school[option].value;
+                }
+              }
+
+              //checking if school is able to sign up for masters
+              for(const option in masters.teams){
+                if(masters.teams[option].grade === choice.lev.value && masters.teams[option].schoolID === id){
+                    options.locations.push({"value": "Masters", "label": "Masters"});
+                    break;
+                }
+              }
+
+              setChoice((prevState) => ({
+                ...prevState,
+                school: newValue,
+                loc: null,
+                error: false,
+              }));
+          } else {
+              //deletes any masters in location options "reseting options"
+              for(const option in options.locations){
+                options.locations = options.locations.filter((value, index, arr) => {
+                    return arr[index].value !== "Masters"
+                })
+              }
+
+              setChoice((prevState) => ({
+                ...prevState,
+                school: null,
+                loc: null,
+                error: false,
+              }));
+          }
+          break;
+        case "team":
+          if(newValue != null){
+              setChoice((prevState) => ({
+                ...prevState,
+                team: newValue,
+                error: false,
+              }));
+          } else {
+              setChoice((prevState) => ({
+                ...prevState,
+                team: null,
+                error: false,
+              }));
+          }
+          break;
+        case "indiv":
+          if(newValue != null){
+              setChoice((prevState) => ({
+                ...prevState,
+                indiv: newValue,
+                error: false,
+              }));
+          } else {
+              setChoice((prevState) => ({
+                ...prevState,
+                indiv: null,
+                error: false,
+              }));
+          }
+          break;
+        case "coach":
+          if(newValue != null){
+              setChoice((prevState) => ({
+                ...prevState,
+                coach: newValue.target.value,
+                error: false,
+              }));
+          } else {
+              setChoice((prevState) => ({
+                ...prevState,
+                coach: "",
+                error: false,
+              }));
+          }
+          break;
+        case "email":
+          if(newValue != null){
+              setChoice((prevState) => ({
+                ...prevState,
+                email: newValue.target.value,
+                error: false,
+              }));
+          } else {
+              setChoice((prevState) => ({
+                ...prevState,
+                email: "",
+                error: false,
+              }));
+          }
+          break;
+        default:
+          console.log(newValue, type)
       }
    };
 
@@ -319,8 +319,7 @@ export default function TeamRegister(){
 
       compId = setCompID(choice);
       const error = setError(choice);
-      setSchoolData();
-      setURL(choice, schoolData);
+      setURL(choice);
 
       if(!error){
          history.push({
@@ -337,12 +336,12 @@ export default function TeamRegister(){
       //gets the proper grade level displays
       let id = null;
       comp_loop:
-      for(const i in comps){
+      for (const i in comps) {
          var grade = comps[i].grade.substr(1)
          var grades = []
          for(const item in options.level){
-            for(const char in grade){
-               if(options.level[item].value === grade[char]){
+            for (const char in grade) {
+               if (options.level[item].value === grade[char]) {
                   grades.push(options.level[item].label)
                   break;
                }
@@ -350,7 +349,7 @@ export default function TeamRegister(){
          }
          
          for(const j in grades){
-            if(grades[j] === choice.lev && choice.loc.toUpperCase() === comps[i].site.toUpperCase()){
+            if(grades[j] === choice.lev.value && choice.loc.value.toUpperCase() === comps[i].site.toUpperCase()){
                id = i;
                break comp_loop;
             }
@@ -376,23 +375,9 @@ export default function TeamRegister(){
    }
 
    //sets iframe url for filling google form
-   const setURL = (choice, schoolData) => {
+   const setURL = (choice) => {
       const uid = auth.currentUser.uid; //!might need to do something with this, since it might not be fast enough.
-      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc}&entry.1929366142=${choice.lev}&entry.680121242=${choice.team}&entry.641937550=${choice.indiv}&entry.1389254068=${schoolData.value + " " + schoolData.label + " - " + schoolData.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.1445326839=${compId}`
-   }
-
-   //Getting all the data for that school
-   const setSchoolData = () => {
-      for(const option in options.school){
-         if(options.school[option].label === choice.school){
-            schoolData = {
-               value: options.school[option].value,
-               label: options.school[option].label,
-               div: options.school[option].div,
-            }
-            break;
-         }
-      }
+      url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc.value}&entry.1929366142=${choice.lev.value}&entry.680121242=${choice.team.value}&entry.641937550=${choice.indiv.value}&entry.1389254068=${choice.school.value + " " + choice.school.label + " - " + choice.school.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.1445326839=${compId}`
    }
 
    return(
