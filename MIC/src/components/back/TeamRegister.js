@@ -43,7 +43,6 @@ async function getComps(title){
    }
 }
 
-//!! ISSUE WITH LOCATION LIMITING
 export default function TeamRegister(){
    const history = useHistory();
    
@@ -370,7 +369,7 @@ export default function TeamRegister(){
 
    //sets iframe url for filling google form
    const setURL = (choice) => {
-      const uid = auth.currentUser.uid; //!might need to do something with this, since it might not be fast enough.
+      const uid = auth.currentUser.uid;
       url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${choice.coach}&entry.74786596=${uid}&entry.62573940=${choice.loc.value}&entry.1929366142=${choice.lev.value}&entry.680121242=${choice.team.value}&entry.641937550=${choice.indiv.value}&entry.1389254068=${choice.school.value + " " + choice.school.label + " - " + choice.school.div}&entry.1720714498=${user.email + ", " + choice.email}&entry.1445326839=${compId}`
    }
 
