@@ -1,8 +1,8 @@
 import React from 'react'
-import { Button, Grid, Typography } from '@material-ui/core';
+import { Button, Grid, Typography } from '@mui/material';
 import { Redirect } from "react-router-dom";
 
-import { BasicPage } from '../styledComps';
+import { BasicPage, color } from '../styledComps';
 import options from '../back/options.json';
 import DataTable from "../custom/DataTable";
 import { doc, setDoc } from "@firebase/firestore";
@@ -133,7 +133,7 @@ export default function MastersTeams(props) {
       headerName: 'Status',
       description:"Status",
       flex: 1,
-      editable: false,
+      editable: true,
       renderCell: (params) => (
         <select defaultValue={params.row.status} id={params.row.id} onChange={(event) => {params.row.status = event.target.value}}>
           <option value="Team">Team</option>
@@ -192,8 +192,8 @@ export default function MastersTeams(props) {
               <Button
                   fullWidth
                   variant="contained"
-                  color="primary"
                   onClick={onSubmit}
+                  style={{backgroundColor:color}}
               >
                 Submit
               </Button>

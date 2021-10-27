@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { LocalizationProvider } from "@mui/lab";
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 //Different components for front-end website
 import Competitions from "./components/front/Competitions";
@@ -85,35 +87,37 @@ export default function App() {
   }, [])
 
   return (
-    <div id="app">
-      <Router basename="/">
-          <SideBar/>
-          <Switch>
-            <Route path="/test" exact component={Test}/>
-            <Route path="/" exact render={(props) => <Home {...props}/>}/>
-            <Route path="/about/history" exact component={History}/>
-            <Route path="/about/contacts" exact component={Contacts}/>
-            <Route path="/about/locations" exact component={Locations}/>
-            <Route path="/information/rules" exact component={Rules}/>
-            <Route path="/information/fees" exact component={Fees}/>
-            <Route path="/information/faq" exact component={FAQ}/>
-            <Route path="/information/past-tests" exact component={PastTests}/>
-            <Route path="/competitions" exact component={Competitions}/>
-            <Route path="/login" exact component={SignIn}/>
-            <Route path="/login/signup" exact component={SignUp}/>
-            <Route path="/profile" exact component={ProfilePage}/>
-            <Route path="/login/forgot-password" exact component={ForgotPass}/>
-            <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
-            <ProtectedRoute path="/team-register/confirm/" exact component={GoogleForm}/>
-            <ProtectedRoute path="/enter-names" exact component={Names}/>
-            <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
-            <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>
-            <AdminRoute path="/admin/mark-masters" exact component={MarkMasters}/>
-            <AdminRoute path="/admin/mark-masters/teams" exact component={MastersTeams}/>
-            <AdminRoute path="/admin/manage-comps" exact component={ManageCompetitions}/>
-            <Route component={NotFound}/>
-          </Switch>
-      </Router>
-    </div>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <div id="app">
+        <Router basename="/">
+            <SideBar/>
+            <Switch>
+              <Route path="/test" exact component={Test}/>
+              <Route path="/" exact render={(props) => <Home {...props}/>}/>
+              <Route path="/about/history" exact component={History}/>
+              <Route path="/about/contacts" exact component={Contacts}/>
+              <Route path="/about/locations" exact component={Locations}/>
+              <Route path="/information/rules" exact component={Rules}/>
+              <Route path="/information/fees" exact component={Fees}/>
+              <Route path="/information/faq" exact component={FAQ}/>
+              <Route path="/information/past-tests" exact component={PastTests}/>
+              <Route path="/competitions" exact component={Competitions}/>
+              <Route path="/login" exact component={SignIn}/>
+              <Route path="/login/signup" exact component={SignUp}/>
+              <Route path="/profile" exact component={ProfilePage}/>
+              <Route path="/login/forgot-password" exact component={ForgotPass}/>
+              <ProtectedRoute path="/team-register" exact component={TeamRegister}/>
+              <ProtectedRoute path="/team-register/confirm/" exact component={GoogleForm}/>
+              <ProtectedRoute path="/enter-names" exact component={Names}/>
+              <AdminRoute path="/admin/import-content" exact component={ImportContent}/>
+              <AdminRoute path="/admin/add-admin" exact component={AddAdmin}/>
+              <AdminRoute path="/admin/mark-masters" exact component={MarkMasters}/>
+              <AdminRoute path="/admin/mark-masters/teams" exact component={MastersTeams}/>
+              <AdminRoute path="/admin/manage-comps" exact component={ManageCompetitions}/>
+              <Route component={NotFound}/>
+            </Switch>
+        </Router>
+        </div>
+    </LocalizationProvider>
   );
 }
