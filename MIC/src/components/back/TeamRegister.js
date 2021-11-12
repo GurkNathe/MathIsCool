@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { TextField, Button, Grid } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import { TeamForm, Auto, BasicPage } from "../styledComps";
@@ -9,56 +9,66 @@ import { auth, db } from "../fire";
 
 let options = require("./options");
 
-//gets the competitions that are open (i.e. status == reg)
-async function getComps(title) {
-	//holds the competitions
-	var comps = {};
+//! Issue with 9-10, 11-12 registration: competition id isn't being found
 
-	//checks if load variable in local storage is true, meaning database can be pulled
-	if (
-		!sessionStorage.getItem(title + "Data") ||
-		!sessionStorage.getItem("mastersData")
-	) {
-		//getting the 'web' collection from firestore
-		const competitions = await getDocs(
-			collection(db, title),
-			where("status", "==", "reg")
-		);
-		const masters = await getDoc(doc(db, "masters", "teams"));
+//! Issue with selecting locations and schools: locations don't seem to be
+//! being found, schools can't be selected without level, causing nullPointerException
 
-		//adding open competitions to holding variable
-		competitions.forEach((item) => {
-			comps = {
-				...comps,
-				[item.id]: item.data(),
-			};
-		});
-
-		//checking to make sure it actually got data
-		if (competitions.empty) {
-			return;
-		}
-
-		//adding web page html/data to local storage
-		sessionStorage.setItem(title + "Data", JSON.stringify(comps));
-		sessionStorage.setItem(
-			"mastersData",
-			masters ? JSON.stringify(masters.data()) : null
-		);
-
-		return [comps, masters ? masters.data() : null];
-	}
-}
-
-export default function TeamRegister() {
+export default function TeamRegister(props) {
 	const history = useHistory();
 
+	//gets the competitions that are open (i.e. status == reg)
+	const getComps = async (title) => {
+		//holds the competitions
+		var comps = {};
+
+		//checks if load variable in local storage is true, meaning database can be pulled
+		if (
+			!sessionStorage.getItem(title + "Data") ||
+			!sessionStorage.getItem("mastersData")
+		) {
+			//getting the 'web' collection from firestore
+			const competitions = await getDocs(
+				collection(db, title),
+				where("status", "==", "reg")
+			);
+			const masters = await getDoc(doc(db, "masters", "teams"));
+
+			//adding open competitions to holding variable
+			competitions.forEach((item) => {
+				comps = {
+					...comps,
+					[item.id]: item.data(),
+				};
+			});
+
+			//checking to make sure it actually got data
+			if (competitions.empty) {
+				return;
+			}
+
+			//adding web page html/data to local storage
+			sessionStorage.setItem(title + "Data", JSON.stringify(comps));
+			sessionStorage.setItem(
+				"mastersData",
+				masters ? JSON.stringify(masters.data()) : null
+			);
+
+			return [comps, masters ? masters.data() : null];
+		}
+	};
+
+	// all open competitions
 	const [comps, setComps] = useState(
 		JSON.parse(sessionStorage.getItem("competitionsData"))
-	); //all open competitions
+	);
+
+	// stores the masters data
 	const [masters, setMasters] = useState(
 		JSON.parse(sessionStorage.getItem("mastersData"))
-	); //stores the masters data
+	);
+
+	// input variables
 	const [choice, setChoice] = useState({
 		loc: null,
 		lev: null,
@@ -68,17 +78,22 @@ export default function TeamRegister() {
 		email: "",
 		coach: "",
 		error: false,
-	}); //input variables
+	});
+
+	// used to store the locations, does not change
 	const [locals, setLocals] = useState(
 		JSON.parse(sessionStorage.getItem("filteredComps"))
-	); //used to store the locations, does not change
+	);
 
+	const [stated, setStated] = useState(false);
+
+	// stores email and username of user
 	const user = {
 		email: sessionStorage.getItem("email"),
 		name: sessionStorage.getItem("username"),
-	}; //stores email and username of user
+	};
 
-	//gets the value for width of text fields
+	// gets the value for width of text fields
 	const getLongest = (longest) => {
 		//finding length of longest string in options and resize search box accordingly
 		for (const option in options) {
@@ -95,7 +110,172 @@ export default function TeamRegister() {
 	let longest = getLongest(0); //used for storing the width of the longest string that can be selected in the drop-downs
 	let url = ""; //used to store the url for the Google Form
 
+	const onChange = useCallback(
+		(newValue, type, field) => {
+			switch (type) {
+				case "level":
+					if (newValue != null) {
+						setChoice((prevState) => ({
+							...prevState,
+							lev: newValue,
+							loc: null,
+							error: false,
+						}));
+
+						//reset options
+						options.locations = locals;
+
+						let temp = [];
+
+						//gets the value of each level option
+						let value = "";
+						for (const i in options.level) {
+							if (options.level[i].label === newValue.value) {
+								value = options.level[i].value;
+								break;
+							}
+						}
+
+						//TODO: might need to change options.location to a state
+						// for removing locations that don't have the grade associated with it
+						for (const i in options.locations) {
+							for (const j in comps) {
+								//checks if same location
+								if (
+									options.locations[i].value.toUpperCase() ===
+									comps[j].site.toUpperCase()
+								) {
+									//checks if level is in the grade range for selected location
+									if (
+										newValue !== null &&
+										comps[j].grade.indexOf(value) !== -1
+									) {
+										//checks if option is already included
+										if (!temp.includes(options.locations[i])) {
+											temp.push(options.locations[i]);
+										}
+									}
+								}
+							}
+						}
+
+						options.locations = temp;
+						if (choice.school) {
+							//getting school id for chosen school
+							let id = choice.school.value;
+
+							//checking if school is able to sign up for masters
+							for (const option in masters.teams) {
+								if (
+									masters.teams[option].grade === newValue.value &&
+									masters.teams[option].schoolID === id
+								) {
+									options.locations.push({
+										value: "Masters",
+										label: "Masters",
+									});
+									break;
+								}
+							}
+						}
+					} else {
+						setChoice((prevState) => ({
+							...prevState,
+							lev: null,
+							loc: null,
+							error: false,
+						}));
+
+						//resets the available locations if field is cleared
+						options.locations = locals;
+					}
+					break;
+				case "school":
+					if (newValue != null) {
+						setChoice((prevState) => ({
+							...prevState,
+							school: newValue,
+							loc: null,
+							error: false,
+						}));
+
+						//deletes any masters in location options "reseting options"
+						options.locations = options.locations.filter(
+							(value, index, arr) => {
+								return arr[index].value !== "Masters";
+							}
+						);
+
+						//getting school id for chosen school
+						let id = newValue.value;
+
+						//checking if school is able to sign up for masters
+						for (const option in masters.teams) {
+							if (
+								masters.teams[option].grade === choice.lev.value &&
+								masters.teams[option].schoolID === id
+							) {
+								options.locations.push({ value: "Masters", label: "Masters" });
+								break;
+							}
+						}
+					} else {
+						//deletes any masters in location options "reseting options"
+						options.locations = options.locations.filter(
+							(value, index, arr) => {
+								return arr[index].value !== "Masters";
+							}
+						);
+
+						setChoice((prevState) => ({
+							...prevState,
+							school: null,
+							loc: null,
+							error: false,
+						}));
+					}
+					break;
+				case "general":
+					setChoice((prevState) => ({
+						...prevState,
+						[field]: newValue,
+						error: false,
+					}));
+					break;
+				default:
+					console.log(newValue, type);
+			}
+		},
+		[choice, comps, masters, setChoice, locals]
+	);
+
 	useEffect(() => {
+		// setting values if redirected from competition calendar
+		if (
+			history.location.state !== null &&
+			history.location.state !== undefined &&
+			!stated
+		) {
+			if (
+				history.location.state.level !== null &&
+				history.location.state.level !== undefined
+			) {
+				onChange(history.location.state.level, "level", "lev");
+				if (
+					history.location.state.location !== null &&
+					history.location.state.location !== undefined
+				) {
+					onChange(
+						history.location.state.location.replace(/\w\S*/g, (w) =>
+							w.replace(/^\w/, (c) => c.toUpperCase())
+						),
+						"general",
+						"loc"
+					);
+				}
+				setStated(true);
+			}
+		}
 		getComps("competitions").then((result) => {
 			if (result !== undefined) {
 				setComps(result[0]);
@@ -131,141 +311,15 @@ export default function TeamRegister() {
 			}
 			if (locals === null) setLocals(options.locations);
 		});
-	}, [locals]);
-
-	const onChange = (newValue, type, field) => {
-		switch (type) {
-			case "level":
-				if (newValue != null) {
-					setChoice((prevState) => ({
-						...prevState,
-						lev: newValue,
-						loc: null,
-						error: false,
-					}));
-
-					//reset options
-					options.locations = locals;
-
-					let temp = [];
-
-					//gets the value of each level option
-					let value = "";
-					for (const i in options.level) {
-						if (options.level[i].label === newValue.value) {
-							value = options.level[i].value;
-							break;
-						}
-					}
-
-					//TODO: might need to change options.location to a state
-					// for removing locations that don't have the grade associated with it
-					for (const i in options.locations) {
-						for (const j in comps) {
-							//checks if same location
-							if (
-								options.locations[i].value.toUpperCase() ===
-								comps[j].site.toUpperCase()
-							) {
-								//checks if level is in the grade range for selected location
-								if (newValue !== null && comps[j].grade.indexOf(value) !== -1) {
-									//checks if option is already included
-									if (!temp.includes(options.locations[i])) {
-										temp.push(options.locations[i]);
-									}
-								}
-							}
-						}
-					}
-
-					options.locations = temp;
-					if (choice.school) {
-						//getting school id for chosen school
-						let id = choice.school.value;
-
-						//checking if school is able to sign up for masters
-						for (const option in masters.teams) {
-							if (
-								masters.teams[option].grade === newValue.value &&
-								masters.teams[option].schoolID === id
-							) {
-								options.locations.push({ value: "Masters", label: "Masters" });
-								break;
-							}
-						}
-					}
-				} else {
-					setChoice((prevState) => ({
-						...prevState,
-						lev: null,
-						loc: null,
-						error: false,
-					}));
-
-					//resets the available locations if field is cleared
-					options.locations = locals;
-				}
-				break;
-			case "school":
-				if (newValue != null) {
-					setChoice((prevState) => ({
-						...prevState,
-						school: newValue,
-						loc: null,
-						error: false,
-					}));
-
-					//deletes any masters in location options "reseting options"
-					options.locations = options.locations.filter((value, index, arr) => {
-						return arr[index].value !== "Masters";
-					});
-
-					//getting school id for chosen school
-					let id = newValue.value;
-
-					//checking if school is able to sign up for masters
-					for (const option in masters.teams) {
-						if (
-							masters.teams[option].grade === choice.lev.value &&
-							masters.teams[option].schoolID === id
-						) {
-							options.locations.push({ value: "Masters", label: "Masters" });
-							break;
-						}
-					}
-				} else {
-					//deletes any masters in location options "reseting options"
-					options.locations = options.locations.filter((value, index, arr) => {
-						return arr[index].value !== "Masters";
-					});
-
-					setChoice((prevState) => ({
-						...prevState,
-						school: null,
-						loc: null,
-						error: false,
-					}));
-				}
-				break;
-			case "general":
-				setChoice((prevState) => ({
-					...prevState,
-					[field]: newValue,
-					error: false,
-				}));
-				break;
-			default:
-				console.log(newValue, type);
-		}
-	};
+	}, [locals, onChange, history.location.state]);
 
 	//checks data to make sure things are filled out, and redirects to the goole form with prefilled info.
 	const onSubmit = () => {
 		compId = setCompID(choice);
 		const error = setError(choice);
-		setURL(choice);
 
 		if (!error) {
+			setURL(choice);
 			history.push({
 				pathname: `/team-register/confirm/`,
 				state: {

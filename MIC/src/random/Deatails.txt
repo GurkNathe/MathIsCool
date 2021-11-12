@@ -1,0 +1,3 @@
+schTeams = max number of teams for competition
+compDate = date of competition
+regDate = registration deadline
