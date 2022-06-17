@@ -325,6 +325,17 @@ const TableDiv = styled("div")({
 	padding: "10px",
 });
 
+const Td = styled("td")({
+	border: "1px solid black",
+	borderCollapse: "collapse",
+	paddingLeft: "5px",
+});
+
+const Th = styled("th")({
+	border: "1px solid black",
+	borderCollapse: "collapse",
+});
+
 // Button that links to a page
 const LinkButton = (props) => {
 	return (
@@ -589,6 +600,8 @@ export {
 	NavOptions,
 	TableDiv,
 	TableTop,
+	Td,
+	Th,
 	LinkButton,
 	Accord,
 	Auto,

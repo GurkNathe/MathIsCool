@@ -7,7 +7,7 @@ import options from "../back/options.json";
 import { getDocs, getDoc, collection, doc } from "@firebase/firestore";
 import { db } from "../fire";
 
-//!! Not configured for mobile yet
+//!! Not configured for mobile
 
 export default function Competitions() {
 	const history = useHistory();
@@ -233,6 +233,8 @@ export default function Competitions() {
 											on {item.compDate}
 										</Button>
 									);
+								} else {
+									return null;
 								}
 						  })
 						: null}
@@ -253,18 +255,23 @@ export default function Competitions() {
 									{Object.keys(sites.records).map((item, index) => {
 										if (item === comp.site) {
 											return (
-												<span>
+												<span key={index}>
 													{sites.records[item].name} (
-													<a target="_blank" href={sites.records[item].mapUrl}>
+													<a
+														target="_blank"
+														rel="noreferrer"
+														href={sites.records[item].mapUrl}>
 														map
 													</a>
 													) <br />
 													{sites.records[item].street} <br />
-													{sites.records[item].city == 0
+													{sites.records[item].city === 0
 														? null
 														: sites.records[item].city}
 												</span>
 											);
+										} else {
+											return null;
 										}
 									})}
 								</p>

@@ -9,11 +9,6 @@ import { auth, db } from "../fire";
 
 let options = require("./options");
 
-//! Issue with 9-10, 11-12 registration: competition id isn't being found
-
-//! Issue with selecting locations and schools: locations don't seem to be
-//! being found, schools can't be selected without level, causing nullPointerException
-
 export default function TeamRegister(props) {
 	const history = useHistory();
 
@@ -210,13 +205,18 @@ export default function TeamRegister(props) {
 						let id = newValue.value;
 
 						//checking if school is able to sign up for masters
-						for (const option in masters.teams) {
-							if (
-								masters.teams[option].grade === choice.lev.value &&
-								masters.teams[option].schoolID === id
-							) {
-								options.locations.push({ value: "Masters", label: "Masters" });
-								break;
+						if (choice.lev !== null) {
+							for (const option in masters.teams) {
+								if (
+									masters.teams[option].grade === choice.lev.value &&
+									masters.teams[option].schoolID === id
+								) {
+									options.locations.push({
+										value: "Masters",
+										label: "Masters",
+									});
+									break;
+								}
 							}
 						}
 					} else {
@@ -276,6 +276,11 @@ export default function TeamRegister(props) {
 				setStated(true);
 			}
 		}
+
+		// Deletes the state so it doesn't keep the state after a redirect
+		delete history.location.state;
+		history.replace({ ...history.location, state: null });
+
 		getComps("competitions").then((result) => {
 			if (result !== undefined) {
 				setComps(result[0]);
@@ -311,14 +316,14 @@ export default function TeamRegister(props) {
 			}
 			if (locals === null) setLocals(options.locations);
 		});
-	}, [locals, onChange, history.location.state]);
+	}, [locals, onChange, history.location.state, stated]);
 
 	//checks data to make sure things are filled out, and redirects to the goole form with prefilled info.
 	const onSubmit = () => {
-		compId = setCompID(choice);
 		const error = setError(choice);
 
 		if (!error) {
+			compId = setCompID(choice);
 			setURL(choice);
 			history.push({
 				pathname: `/team-register/confirm/`,
@@ -339,7 +344,7 @@ export default function TeamRegister(props) {
 			for (const item in options.level) {
 				for (const char in grade) {
 					if (options.level[item].value === grade[char]) {
-						grades.push(options.level[item].label);
+						grades.push(options.level[item].value);
 						break;
 					}
 				}

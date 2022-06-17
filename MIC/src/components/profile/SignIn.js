@@ -44,6 +44,7 @@ export default function SignIn() {
 					.then((userCredential) => {
 						sessionStorage.setItem("email", email);
 						sessionStorage.setItem("username", userCredential.user.displayName);
+						sessionStorage.setItem("school", userCredential.user.phoneNumber);
 						history.push({
 							pathname: "/",
 							state: {

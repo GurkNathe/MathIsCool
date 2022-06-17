@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField, Autocomplete } from "@mui/material";
 import { DatePicker } from "@mui/lab";
-import { BasicPage, Auto, color } from "../styledComps";
+import { BasicPage, color } from "../styledComps";
 import DataTable from "../custom/DataTable";
 import options from "../back/options.json";
 
@@ -10,106 +10,85 @@ import { db } from "../fire";
 
 //Not functional, just testing things right now
 
+// columns for the table
+const columns = [
+	{
+		field: "id",
+		headerName: "ID",
+		description: "ID",
+		flex: 1,
+		hide: true,
+		editable: false,
+	},
+	{
+		field: "site",
+		headerName: "Location",
+		description: "Location",
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "level",
+		headerName: "Level",
+		description: "Grade Level",
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "date",
+		headerName: "Date",
+		description: "Competition date.",
+		flex: 1,
+		editable: false,
+		type: "date",
+	},
+	{
+		field: "status",
+		headerName: "Status",
+		description: "Status",
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "mapurl",
+		headerName: "Map URL",
+		description: "Map URL",
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "notes",
+		headerName: `Director's  Notes`,
+		description: `Director's  Notes`,
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "schools",
+		headerName: `View Schools`,
+		description: `View Schools`,
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "names",
+		headerName: `View Names`,
+		description: `View Names`,
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "emails",
+		headerName: `View Email List`,
+		description: `View Email List`,
+		flex: 1,
+		editable: false,
+	},
+];
+
 // Location, level, date, status, map URL, Directors notes, view schools, names, emails
 
 export default function ManageCompetitions() {
-	// columns for the table
-	const columns = [
-		{
-			field: "id",
-			headerName: "ID",
-			description: "ID",
-			flex: 1,
-			hide: true,
-			editable: false,
-		},
-		{
-			field: "site",
-			headerName: "Location",
-			description: "Location",
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "level",
-			headerName: "Level",
-			description: "Grade Level",
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "date",
-			headerName: "Date",
-			description: "Competition date.",
-			flex: 1,
-			editable: false,
-			type: "date",
-		},
-		{
-			field: "status",
-			headerName: "Status",
-			description: "Status",
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "mapurl",
-			headerName: "Map URL",
-			description: "Map URL",
-			flex: 1,
-			editable: true,
-		},
-		{
-			field: "notes",
-			headerName: `Director's  Notes`,
-			description: `Director's  Notes`,
-			flex: 1,
-			editable: true,
-		},
-		{
-			field: "schools",
-			headerName: `View Schools`,
-			description: `View Schools`,
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "names",
-			headerName: `View Names`,
-			description: `View Names`,
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "emails",
-			headerName: `View Email List`,
-			description: `View Email List`,
-			flex: 1,
-			editable: false,
-		},
-	];
-
-	//gets every compeition currently available
-	const getComps = async () => {
-		try {
-			//getting all competitions
-			const comps = await getDocs(collection(db, "competitions"));
-
-			//creating an Array version of the competions
-			var competitions = [];
-			comps.forEach((doc) => {
-				competitions.push(doc.data());
-			});
-
-			//prevents the need for multiple reads in one session
-			sessionStorage.setItem("mastersComps", JSON.stringify(competitions));
-
-			return competitions;
-		} catch (error) {
-			return error;
-		}
-	};
-
 	// formats competitions for the table
 	const formatComps = (comps) => {
 		if (comps !== undefined && comps !== null) {
@@ -138,6 +117,7 @@ export default function ManageCompetitions() {
 				comp.id = index;
 				comp.level = grade;
 				comp.date = new Date(comp.compDate);
+				comp.mapurl = comp.mapURL;
 			});
 		}
 		return comps;
@@ -151,21 +131,49 @@ export default function ManageCompetitions() {
 
 	// data from user input
 	const [newComp, setComp] = useState({
+		compDate: "",
+		contact: "",
+		email: "",
+		grade: "",
 		id:
 			rowState.comp !== null && rowState.comp !== undefined
 				? rowState.comp.length + 1
 				: 1,
-		site: null,
-		level: null,
-		date: null,
-		status: null,
-		mapurl: null,
-		notes: null,
-		schools: null,
-		names: null,
-		emails: null,
+		level: "",
+		mapURL: "",
+		maxTeams: "",
+		regDate: "",
+		regstration: {},
+		schTeams: "",
+		schedule: "",
+		site: "",
+		status: "",
+		timestamp: "",
+		user: "",
+		year: "",
 		error: false,
 	});
+
+	//gets every compeition currently available
+	const getComps = async () => {
+		try {
+			//getting all competitions
+			const comps = await getDocs(collection(db, "competitions"));
+
+			//creating an Array version of the competions
+			let competitions = [];
+			comps.forEach((doc) => {
+				competitions.push(doc.data());
+			});
+
+			//prevents the need for multiple reads in one session
+			sessionStorage.setItem("mastersComps", JSON.stringify(competitions));
+
+			return competitions;
+		} catch (error) {
+			return error;
+		}
+	};
 
 	// options for competition status
 	const registrationStates = [
@@ -181,48 +189,57 @@ export default function ManageCompetitions() {
 	let rows = [];
 
 	//gets the competitions to mark
-	if (rowState.comp === null || rowState.comp === undefined) {
-		getComps().then((result) => {
+	useEffect(() => {
+		if (rowState.comp === null || rowState.comp === undefined) {
+			getComps().then((result) => {
+				setRow((prev) => ({
+					...prev,
+					comp: formatComps(result),
+					loading: false,
+				}));
+				setComp((prev) => ({
+					...prev,
+					id: result.length + 1,
+				}));
+			});
+		} else if (rowState.loading) {
 			setRow((prev) => ({
 				...prev,
-				comp: formatComps(result),
 				loading: false,
 			}));
-			setComp((prev) => ({
-				...prev,
-				id: result.length + 1,
-			}));
-		});
-	} else if (rowState.loading) {
-		setRow((prev) => ({
-			...prev,
-			loading: false,
-		}));
-	}
+		}
+	}, [rowState.comp, rowState.loading]);
 
 	// adds competition to the table
 	const onAdd = () => {
 		if (
-			newComp.site !== null &&
-			newComp.level !== null &&
-			newComp.date !== null &&
-			newComp.status !== null
+			!Object.values(newComp).includes(null) ||
+			!Object.values(newComp).includes("") ||
+			!Object.values(newComp).includes(" ")
 		) {
+			// TODO: remove error field
 			setRow((prevState) => ({
 				...prevState,
 				comp: [...prevState.comp, newComp],
 			}));
 			setComp({
+				compDate: "",
+				contact: "",
+				email: "",
+				grade: "",
 				id: newComp.id + 1,
-				site: null,
-				level: null,
-				date: null,
-				status: null,
-				mapurl: null,
-				notes: null,
-				schools: null,
-				names: null,
-				emails: null,
+				level: "",
+				mapURL: "",
+				maxTeams: "",
+				regDate: "",
+				regstration: {},
+				schTeams: "",
+				schedule: "",
+				site: "",
+				status: "",
+				timestamp: "",
+				user: "",
+				year: "",
 				error: false,
 			});
 		} else {
@@ -232,7 +249,7 @@ export default function ManageCompetitions() {
 
 	// adds new competition to the database
 	const onSubmit = () => {
-		console.log(newComp);
+		console.log(rowState);
 	};
 
 	return (
@@ -242,6 +259,7 @@ export default function ManageCompetitions() {
 						if (data.id !== newComp.id) {
 							rows.push(data);
 						}
+						return null;
 				  })
 				: null}
 			<DataTable pagination columns={columns} rows={rows} />
@@ -259,66 +277,149 @@ export default function ManageCompetitions() {
 			</Grid>
 			<hr />
 			<div style={{ paddingTop: "1px" }}>
-				<div style={{ display: "flex" }}>
-					<Auto
-						options={options.locations}
-						text="Competition Location"
-						onChange={(event, newValue) => {
-							if (newValue !== null) {
-								setComp({ ...newComp, site: newValue.value });
-							}
-						}}
-						width={300}
-						value={newComp.site}
-						error={newComp.site === null && newComp.error}
-					/>
-					<Auto
-						options={options.level}
-						text="Competition Level"
-						onChange={(event, newValue) => {
-							if (newValue !== null) {
-								setComp({ ...newComp, level: newValue.label });
-							}
-						}}
-						width={300}
-						value={newComp.level}
-						error={newComp.level === null && newComp.error}
-					/>
-					<DatePicker
-						views={["day"]}
-						label="Competition Date"
-						value={newComp.date}
-						onChange={(newValue) => {
-							if (newValue !== null) {
-								setComp({ ...newComp, date: newValue });
-							}
-						}}
-						renderInput={(params) => (
-							<TextField
-								{...params}
-								error={newComp.date === null && newComp.error}
-								required
-								helperText={
-									newComp.date === null && newComp.error
-										? "Please fill out to continue."
-										: null
+				<Grid container>
+					<Grid item sm={3}>
+						<TextField
+							label="Contact"
+							value={newComp.contact}
+							onChange={(e) => setComp({ ...newComp, contact: e.target.value })}
+						/>
+						<TextField
+							label="Email"
+							value={newComp.email}
+							onChange={(e) => setComp({ ...newComp, email: e.target.value })}
+						/>
+						<DatePicker
+							views={["day"]}
+							label="Competition Date"
+							value={newComp.date}
+							onChange={(newValue) => {
+								if (newValue !== null) {
+									setComp({ ...newComp, date: newValue });
 								}
-							/>
-						)}
-					/>
-					<Auto
-						options={registrationStates}
-						text="Registration Status"
-						onChange={(event, newValue) => {
-							if (newValue !== null) {
-								setComp({ ...newComp, status: newValue });
+							}}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									error={newComp.date === null && newComp.error}
+									required
+									helperText={
+										newComp.date === null && newComp.error
+											? "Please fill out to continue."
+											: null
+									}
+									sx={{
+										width: "210px",
+										alignSelf: "center",
+									}}
+								/>
+							)}
+						/>
+					</Grid>
+					<Grid item sm={3}>
+						<TextField
+							label="Map URL"
+							value={newComp.mapurl}
+							onChange={(e) => setComp({ ...newComp, mapurl: e.target.value })}
+						/>
+						<TextField
+							label="Max Teams"
+							value={newComp.maxTeams}
+							onChange={(e) =>
+								setComp({ ...newComp, maxTeams: e.target.value })
 							}
-						}}
-						width={300}
-						value={newComp.status}
-						error={newComp.status === null && newComp.error}
-					/>
-				</div>
+						/>
+						<TextField
+							label="Registration Date"
+							value={newComp.regDate}
+							onChange={(e) => setComp({ ...newComp, regDate: e.target.value })}
+						/>
+					</Grid>
+					<Grid item sm={3}>
+						<TextField
+							label="School Teams"
+							value={newComp.schTeams}
+							onChange={(e) =>
+								setComp({ ...newComp, schTeams: e.target.value })
+							}
+						/>
+						<TextField
+							label="Schedule"
+							value={newComp.schedule}
+							onChange={(e) =>
+								setComp({ ...newComp, schedule: e.target.value })
+							}
+						/>
+						<TextField
+							label="Year"
+							value={newComp.year}
+							onChange={(e) => setComp({ ...newComp, year: e.target.value })}
+						/>
+					</Grid>
+					<Grid item sm={3}>
+						<Autocomplete
+							options={registrationStates}
+							onChange={(event, newValue) => {
+								setComp({ ...newComp, status: newValue });
+							}}
+							value={newComp.status}
+							freeSolo
+							sx={{
+								width: "210px",
+							}}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label="Registration Status"
+									variant="outlined"
+									required
+								/>
+							)}
+						/>
+						<Autocomplete
+							options={options.level}
+							onChange={(event, newValue) => {
+								if (newValue !== null) {
+									setComp({ ...newComp, level: newValue.label });
+								}
+							}}
+							value={newComp.level}
+							freeSolo
+							sx={{
+								width: "210px",
+							}}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label="Grade"
+									variant="outlined"
+									required
+								/>
+							)}
+						/>
+						<Autocomplete
+							options={options.locations}
+							onChange={(event, newValue) => {
+								if (newValue !== null) {
+									setComp({ ...newComp, site: newValue.value });
+								}
+							}}
+							value={newComp.site}
+							freeSolo
+							sx={{
+								width: "210px",
+							}}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label="Competition Location"
+									variant="outlined"
+									required
+								/>
+							)}
+						/>
+					</Grid>
+				</Grid>
 				<Grid container style={{ paddingTop: 5, paddingBottom: 5 }}>
 					<Grid item sm={3} width="100px">
 						<Button
