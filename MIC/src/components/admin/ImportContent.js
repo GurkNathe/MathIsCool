@@ -1,122 +1,101 @@
 import React, { useState } from "react";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 import { db } from "../fire";
-import { doc, setDoc } from "@firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "@firebase/firestore";
+import { Auto } from "../styledComps";
+import getWeb from "../front/getWeb";
+
+import CodeEditor from "@uiw/react-textarea-code-editor";
 
 export default function ImportContent() {
-  const [table, setTable] = useState({string: "", name: "new"});
-  const [page, setPage] = useState( {string: "", name: "new"});
-  
-  const saveTable = () => {
-    if (table.string.length > 0) {
+	const [info, setInfo] = useState("");
+	const [webName, setWebName] = useState("");
 
-      //  make a map of records from the table.string
-      let lines = table.string.split('\n');
-      let fields = lines[0].split('\t');
-      let records = {};
-      let n = 0;
+	// Options for what pages can be manipulated
+	const pageOptions = ["History", "Contacts", "Rules", "Fees"];
 
-      for (let i = 1; i < lines.length; i++) {
-        let line = lines[i].split('\t');
-        let record = {};
-        for (let j = 0; j < line.length; j++) {
-          let val = line[j];
-          if (val.length === 0) {
-            val = null;
-          } else if (val.toLowerCase() === "false") {
-            val = false;
-          } else if (val.toLowerCase() === "true") {
-            val = true;
-          } else if (!isNaN(val)) {
-            val = Number(val) 
-          } else {
-            val = val.replace (/~/g, '\n')
-          }
-          record[fields[j]] = val;
-        }
-        if (record.key === null) record.key = "key";
-        records[record.key] = record;
-        n++;
-      }
+	const baseConv = ["history", "whotocall", "rules", "fees"];
 
-      
-      setDoc(doc(db, "web", table.name), {n: n, timestamp: (new Date().toString().slice(4,24)), records: records})
-        .then(() => {
-          setTable({string: "", name: table.name})
-          alert('Wrote ' + n + ' records');
-        })  
-        .catch((error) => {
-          console.error("Error writing document: ", error);
-        });
-    }  
-  }
-  
-  const savePage = () => {
-    if (page.string.length > 0) {
-      setDoc(doc(db, "web", page.name), {
-          value: (page.string).replace(/~/g, '\n'), 
-          timestamp: (new Date().toString().slice(4,24))
-        })
-        .then(() => {
-          console.log((page.string).replace(/~/g, '\n'));
-          setPage({string: "", name: page.name});
-          alert ('Wrote Page: ' + page.name);
-        })  
-        .catch((error) => {
-          console.error("Error writing document: ", error);
-        });
-    }  
-  }
+	// Gets the HTML for selected page
+	const getPageContent = (name) => {
+		if (name === "") {
+			setInfo("");
+			return;
+		}
 
-  return (
-    <div style={{ margin: '10px' }}> 
-      
-      <h1>Import Table Content</h1>
+		// Get index of choice
+		let webName = "";
+		for (let i = 0; i < pageOptions.length; i++) {
+			if (pageOptions[i] === name) {
+				webName = baseConv[i];
+				setWebName(webName);
+				break;
+			}
+		}
 
-      <textarea 
-        onChange={(ev) => setTable({string: ev.target.value, name: table.name})}
-        value={table.string}
-        cols={120}
-        rows={15}
-        autoFocus={true}
-      />
+		// Gets the HTML data for the page
+		if (sessionStorage.getItem(webName))
+			setInfo(JSON.parse(sessionStorage.getItem(webName))["value"]);
+		else
+			getWeb(webName).then((response) => {
+				console.log(response);
+				setInfo(response.value);
+			});
+	};
 
-      <p>
-        <span onChange={(ev) => setTable({string: table.string, name: ev.target.value})}>
-         <input type="radio" value="faq" name="table" /> FAQ &emsp;
-         <input type="radio" value="news" name="table" /> News &emsp;
-         <input type="radio" value="sites" name="table" /> Sites &emsp;
-         <input type="radio" value="samples" name="table" /> Samples &emsp;
-         <input type="radio" value="competitions" name="table" /> Competitions &emsp;
-         <input type="radio" value="schools" name="table" /> Schools &emsp;
-        </span>
-        <Button variant="outlined" color="primary" size="medium" onClick={saveTable}>
-          Import Table
-        </Button>
-      </p>
-      
-      <hr></hr>
+	// Saves the new HTML to the database
+	const savePage = () => {
+		if (webName !== "" && info !== "") {
+			const page = doc(db, "web", webName);
+			getDoc(page)
+				.then((doc) => {
+					updateDoc(page, {
+						timestamp: new Date(Date.now()),
+						value: info,
+					});
+				})
+				.catch((error) => console.error(error));
+		}
+	};
 
-      <h1>Import Page Content</h1>
+	return (
+		<div style={{ margin: "10px" }}>
+			<h1>Import Page Content</h1>
 
-      <textarea 
-        onChange={(ev) => setPage({string: ev.target.value, name: page.name})}
-        value={page.string}
-        cols={120}
-        rows={15}
-      />
- 
-      <p>
-        <span onChange={(ev) => setPage({string: page.string, name: ev.target.value})}>
-         <input type="radio" value="rules" name="page" /> Rules &emsp;
-         <input type="radio" value="history" name="page" /> History &emsp;
-         <input type="radio" value="whotocall" name="page" /> WhoToCall &emsp;
-         <input type="radio" value="fees" name="page" /> Fees &emsp;
-        </span>
-        <Button variant="outlined" color="primary" size="medium" onClick={savePage}>
-          Import Page
-        </Button>
-      </p>
-    </div>
-  );
+			<div
+				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
+				<Auto
+					options={pageOptions}
+					onChange={(event) => getPageContent(event.target.textContent)}
+					width={200}
+					text="Select Page"
+				/>
+				<Button
+					variant="outlined"
+					color="primary"
+					size="medium"
+					onClick={savePage}
+					style={{ marginLeft: "10px" }}>
+					Save Page
+				</Button>
+			</div>
+
+			<CodeEditor
+				value={info}
+				language="html"
+				placeholder="No page selected."
+				onChange={(event) => setInfo(event.target.value)}
+				padding={15}
+				style={{
+					minHeight: "100px",
+					fontSize: 12,
+					backgroundColor: "#f5f5f5",
+					fontFamily:
+						"ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+					border: "1px solid black",
+					borderRadius: "5px",
+				}}
+			/>
+		</div>
+	);
 }

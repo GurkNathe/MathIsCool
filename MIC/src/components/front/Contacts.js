@@ -6,17 +6,14 @@ import getWeb from "./getWeb";
 import getPage from "./getPage";
 
 export default function Contacts() {
-  const title = "whotocall";
-  const [page, setPage] = useState(getPage(title, "value"));
-  
+	const title = "whotocall";
+	const [page, setPage] = useState(getPage(title, "value"));
 
-  useEffect(() => {
-    getWeb(title).then((result) => {
-      result !== undefined ? setPage(result.value) : setPage(page);
-    })
-  }, [page])
+	useEffect(() => {
+		getWeb(title).then((result) => {
+			result !== undefined ? setPage(result.value) : setPage(page);
+		});
+	}, [page]);
 
-  return (
-    <Page title="Contacts" page={page}/>
-  );
+	return <Page title="Contacts" page={page} />;
 }
