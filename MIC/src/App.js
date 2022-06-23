@@ -34,6 +34,7 @@ import AddAdmin from "./components/admin/AddAdmin";
 import MarkMasters from "./components/admin/MarkMasters";
 import MastersTeams from "./components/custom/MastersTeams";
 import ManageCompetitions from "./components/admin/ManageCompetitions";
+import ManageHome from "./components/admin/ManageHome";
 
 import Test from "./components/admin/Test";
 
@@ -140,6 +141,11 @@ export default function App() {
 							path="/admin/manage-comps"
 							exact
 							component={ManageCompetitions}
+						/>
+						<AdminRoute
+							path="/admin/manage-home"
+							exact
+							component={ManageHome}
 						/>
 						<Route component={NotFound} />
 					</Switch>

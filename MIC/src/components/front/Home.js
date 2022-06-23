@@ -13,6 +13,7 @@ import { math, lake, train, wp, donate } from "../assets.js";
 import getWeb from "./getWeb";
 import getPage from "./getPage";
 
+// TODO: sort articles by priority
 export default function Home(props) {
 	const history = useHistory();
 	const title = "news";
