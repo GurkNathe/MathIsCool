@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { Auto } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 import CodeEditor from "@uiw/react-textarea-code-editor";
+
+// TODO: Get if functional
 
 export default function ManageFAQ() {
 	const [info, setInfo] = useState({
@@ -82,7 +84,11 @@ export default function ManageFAQ() {
 		getDoc(page)
 			.then((doc) => {
 				let data = doc.data();
-
+				let question = {
+					...info,
+					timestamp: new Date(Date.now()),
+					user: auth.currentUser.uid,
+				};
 				console.log(data);
 				// updateDoc(page, data);
 			})
@@ -193,6 +199,32 @@ export default function ManageFAQ() {
 				)}
 			</div>
 
+			<div
+				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
+				<TextField
+					value={info.key}
+					onChange={(event) =>
+						setInfo((prev) => ({ ...prev, key: event.target.value }))
+					}
+					label="Key"
+					variant="outlined"
+					style={{ marginRight: "10px" }}
+				/>
+				<Auto
+					options={["false", "true"]}
+					onChange={(event) => {
+						setInfo((prev) => ({
+							...prev,
+							visible: /^\s*(true|1|on)\s*$/i.test(event.target.textContent),
+						}));
+					}}
+					width={120}
+					text="Visibility"
+					value={info.visible.toString()}
+				/>
+			</div>
+
+			<Typography>Question</Typography>
 			<CodeEditor
 				value={info.question}
 				language="html"
@@ -200,7 +232,7 @@ export default function ManageFAQ() {
 				onChange={(event) =>
 					setInfo((prev) => ({
 						...prev,
-						article: event.target.value,
+						question: event.target.value,
 					}))
 				}
 				padding={15}
@@ -215,6 +247,8 @@ export default function ManageFAQ() {
 					marginBottom: "10px",
 				}}
 			/>
+
+			<Typography>Answer</Typography>
 			<CodeEditor
 				value={info.answer}
 				language="html"
@@ -222,7 +256,7 @@ export default function ManageFAQ() {
 				onChange={(event) =>
 					setInfo((prev) => ({
 						...prev,
-						article: event.target.value,
+						answer: event.target.value,
 					}))
 				}
 				padding={15}
