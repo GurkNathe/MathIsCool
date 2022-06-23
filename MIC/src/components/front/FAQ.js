@@ -28,7 +28,7 @@ export default function FAQ() {
 			cats.push(faq[i].question);
 		}
 	}
-
+	console.log(test, cats);
 	return (
 		<BasicPage>
 			<h1 style={{ fontStyle: "italic" }}>FAQ</h1>

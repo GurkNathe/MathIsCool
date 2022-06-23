@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { db, auth } from "../fire";
-import { doc, getDoc, updateDoc, setDoc } from "@firebase/firestore";
+import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { Auto } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 import CodeEditor from "@uiw/react-textarea-code-editor";
 
-export default function ImportContent() {
+//TODO: Unselect option when Undo Option for Delete Article is clicked
+
+export default function ManageHome() {
+	// Information of the article selected/created
 	const [info, setInfo] = useState({
 		key: "",
 		article: "",
@@ -17,8 +20,13 @@ export default function ImportContent() {
 		user: undefined,
 		visible: false,
 	});
+	// Used to store the data for each article
 	const [records, setRecords] = useState([]);
+
+	// Used to store the names of the aricles that can be selected
 	const [options, setOptions] = useState([]);
+
+	// Used to tell what options for modifying articles have been selected
 	const [newArt, setNewArt] = useState({
 		picked: false,
 		clicked: false,
@@ -26,7 +34,7 @@ export default function ImportContent() {
 	});
 
 	useEffect(() => {
-		// Gets the HTML data for the page
+		// Gets the article data for the page
 		if (sessionStorage.getItem("news")) {
 			let homeRecs = JSON.parse(sessionStorage.getItem("news"))["records"];
 			setRecords(homeRecs);
@@ -78,6 +86,7 @@ export default function ImportContent() {
 		}
 	};
 
+	// Saves the selected or created article
 	const saveArticle = () => {
 		const page = doc(db, "web", "news");
 		getDoc(page)
@@ -105,6 +114,7 @@ export default function ImportContent() {
 			.catch((error) => console.error(error));
 	};
 
+	// Deletes the selected article
 	const deleteArticle = () => {
 		const page = doc(db, "web", "news");
 		getDoc(page)
@@ -113,8 +123,7 @@ export default function ImportContent() {
 				delete data.records[info.key];
 				data.n--;
 				data.timestamp = new Date(Date.now());
-				console.log(data);
-				// updateDoc(page, data);
+				updateDoc(page, data);
 			})
 			.catch((error) => console.error(error));
 	};
@@ -163,7 +172,7 @@ export default function ImportContent() {
 							size="medium"
 							onClick={saveArticle}
 							style={{ marginLeft: "10px" }}>
-							Save Page
+							Save Article
 						</Button>
 						{!newArt.picked ? (
 							<Button
@@ -190,24 +199,22 @@ export default function ImportContent() {
 							size="medium"
 							onClick={deleteArticle}
 							style={{ marginLeft: "10px" }}>
-							Delete Page
+							Delete Article
 						</Button>
-						{!newArt.picked ? (
-							<Button
-								variant="outlined"
-								color="primary"
-								size="medium"
-								onClick={() =>
-									setNewArt((prev) => ({
-										...prev,
-										clicked: false,
-										delete: false,
-									}))
-								}
-								style={{ marginLeft: "10px" }}>
-								Undo Option
-							</Button>
-						) : null}
+						<Button
+							variant="outlined"
+							color="primary"
+							size="medium"
+							onClick={() =>
+								setNewArt((prev) => ({
+									...prev,
+									clicked: false,
+									delete: false,
+								}))
+							}
+							style={{ marginLeft: "10px" }}>
+							Undo Option
+						</Button>
 					</>
 				)}
 			</div>
@@ -249,7 +256,7 @@ export default function ImportContent() {
 			<CodeEditor
 				value={info.article}
 				language="html"
-				placeholder="No page selected."
+				placeholder="No article selected."
 				onChange={(event) =>
 					setInfo((prev) => ({
 						...prev,

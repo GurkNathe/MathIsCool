@@ -13,9 +13,10 @@ export default function Admin(props) {
 
 	const tabs = [
 		[
-			{ to: "/admin/import-content", text: "Import Pages" },
-			{ to: "/admin/manage-comps", text: "Manage Competitions" },
+			{ to: "/admin/import-content", text: "Manage HTML Pages" },
 			{ to: "/admin/manage-home", text: "Manage Homepage" },
+			{ to: "/admin/manage-faq", text: "Manage FAQ" },
+			{ to: "/admin/manage-comps", text: "Manage Competitions" },
 			{ to: "/admin/other", text: "Others" },
 		],
 	];

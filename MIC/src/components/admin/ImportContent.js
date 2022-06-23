@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import { db } from "../fire";
-import { doc, getDoc, updateDoc, setDoc } from "@firebase/firestore";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-markup";
+import "prismjs/themes/prism.css";
+
+import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { Auto } from "../styledComps";
 import getWeb from "../front/getWeb";
-
-import CodeEditor from "@uiw/react-textarea-code-editor";
 
 export default function ImportContent() {
 	const [info, setInfo] = useState("");
@@ -38,7 +43,6 @@ export default function ImportContent() {
 			setInfo(JSON.parse(sessionStorage.getItem(webName))["value"]);
 		else
 			getWeb(webName).then((response) => {
-				console.log(response);
 				setInfo(response.value);
 			});
 	};
@@ -79,19 +83,17 @@ export default function ImportContent() {
 					Save Page
 				</Button>
 			</div>
-
-			<CodeEditor
+			<Editor
 				value={info}
-				language="html"
+				tabSize={4}
 				placeholder="No page selected."
-				onChange={(event) => setInfo(event.target.value)}
-				padding={15}
+				onValueChange={(info) => setInfo(info)}
+				highlight={(info) => highlight(info, languages.markup)}
+				padding={10}
 				style={{
-					minHeight: "100px",
+					fontFamily: '"Fira code", "Fira Mono", monospace',
 					fontSize: 12,
-					backgroundColor: "#f5f5f5",
-					fontFamily:
-						"ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+					minHeight: "100px",
 					border: "1px solid black",
 					borderRadius: "5px",
 				}}
