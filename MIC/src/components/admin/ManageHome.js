@@ -7,8 +7,6 @@ import getWeb from "../front/getWeb";
 
 import CodeEditor from "@uiw/react-textarea-code-editor";
 
-//TODO: Unselect option when Undo Option for Delete Article is clicked
-
 export default function ManageHome() {
 	// Information of the article selected/created
 	const [info, setInfo] = useState({
@@ -109,6 +107,7 @@ export default function ManageHome() {
 					data.records[article.key] = article;
 					data.timestamp = new Date(Date.now());
 				}
+				sessionStorage.setItem("news", JSON.stringify(data));
 				updateDoc(page, data);
 			})
 			.catch((error) => console.error(error));
@@ -123,6 +122,7 @@ export default function ManageHome() {
 				delete data.records[info.key];
 				data.n--;
 				data.timestamp = new Date(Date.now());
+				sessionStorage.setItem("news", JSON.stringify(data));
 				updateDoc(page, data);
 			})
 			.catch((error) => console.error(error));

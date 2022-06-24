@@ -7,19 +7,24 @@ import getWeb from "../front/getWeb";
 
 import CodeEditor from "@uiw/react-textarea-code-editor";
 
-// TODO: Get if functional
-
 export default function ManageFAQ() {
+	// Information of the question selected/created
 	const [info, setInfo] = useState({
 		key: Number(),
 		question: "",
 		answer: "",
 		timestamp: "",
 		user: undefined,
-		visible: false,
+		visible: "false",
 	});
+
+	// Used to store the data for all questions
 	const [records, setRecords] = useState([]);
+
+	// Used to store the keys of the questions that can be selected
 	const [options, setOptions] = useState([]);
+
+	// Used to tell what options for modifying questions have been selected
 	const [newArt, setNewArt] = useState({
 		picked: false,
 		clicked: false,
@@ -27,7 +32,7 @@ export default function ManageFAQ() {
 	});
 
 	useEffect(() => {
-		// Gets the HTML data for the page
+		// Gets the question data for the page
 		if (sessionStorage.getItem("faq")) {
 			let homeRecs = JSON.parse(sessionStorage.getItem("faq")).records;
 			setRecords(homeRecs);
@@ -48,7 +53,7 @@ export default function ManageFAQ() {
 		}
 	}, []);
 
-	// Handles the data filling upon selecting an article
+	// Handles the data filling upon selecting a question
 	const selectArticle = (e) => {
 		if (e) {
 			setInfo((prev) => ({
@@ -56,7 +61,8 @@ export default function ManageFAQ() {
 				key: Number(records[e].key),
 				question: records[e].question,
 				answer: records[e].answer,
-				visible: records[e].visible,
+				visible:
+					records[e].visible === null ? "false" : records[e].visible.toString(),
 			}));
 			setNewArt((prev) => ({
 				...prev,
@@ -70,7 +76,7 @@ export default function ManageFAQ() {
 				answer: "",
 				timestamp: "",
 				user: undefined,
-				visible: false,
+				visible: "false",
 			}));
 			setNewArt((prev) => ({
 				...prev,
@@ -79,7 +85,8 @@ export default function ManageFAQ() {
 		}
 	};
 
-	const saveArticle = () => {
+	// Saves the selected or created question
+	const saveQuestion = () => {
 		const page = doc(db, "web", "faq");
 		getDoc(page)
 			.then((doc) => {
@@ -88,26 +95,77 @@ export default function ManageFAQ() {
 					...info,
 					timestamp: new Date(Date.now()),
 					user: auth.currentUser.uid,
+					key: Number(info.key),
+					visible: /^\s*(true|1|on)\s*$/i.test(info.visible),
 				};
-				console.log(data);
-				// updateDoc(page, data);
+				if (newArt.clicked) {
+					// If a new question is being added
+					data.n++;
+					data.timestamp = new Date(Date.now());
+					data.records[question.key] = question;
+				} else if (newArt.picked) {
+					// If an old question is being updated
+					data.records[question.key] = question;
+					data.timestamp = new Date(Date.now());
+				}
+				// Inserting the option if it isn't already there
+				let tempOps = options;
+				if (!tempOps.includes(info.key.toString())) {
+					tempOps.push(info.key.toString());
+				}
+				tempOps.sort();
+				// Updating/adding question to local records
+				records[info.key] = question;
+
+				// Updating local information
+				setOptions(tempOps);
+				setRecords(records);
+
+				// Adding information to session information
+				sessionStorage.setItem("faq", JSON.stringify(data));
+
+				// Updating database
+				updateDoc(page, data);
 			})
 			.catch((error) => console.error(error));
 	};
 
-	const deleteArticle = () => {
+	const deleteQuestion = () => {
 		const page = doc(db, "web", "faq");
 		getDoc(page)
 			.then((doc) => {
 				let data = doc.data();
 
-				console.log(data);
-				// updateDoc(page, data);
+				// Deleting the record from the database data
+				delete data.records[info.key];
+
+				// Deleting the record from local data
+				delete records[info.key];
+
+				// Deleting the option from local options
+				for (let i = 0; i < options.length; i++) {
+					if (options[i] == info.key) {
+						options.splice(i, 1);
+						break;
+					}
+				}
+				// Decreasing number of records in database
+				data.n--;
+				data.timestamp = new Date(Date.now());
+
+				// Updating records and options on local side
+				setRecords(records);
+				setOptions(options);
+
+				// Updating session information
+				sessionStorage.setItem("faq", JSON.stringify(data));
+
+				// Updating database
+				updateDoc(page, data);
 			})
 			.catch((error) => console.error(error));
 	};
 
-	console.log(info);
 	return (
 		<div style={{ margin: "10px" }}>
 			<h1>FAQ Questions</h1>
@@ -150,7 +208,7 @@ export default function ManageFAQ() {
 							variant="outlined"
 							color="primary"
 							size="medium"
-							onClick={saveArticle}
+							onClick={saveQuestion}
 							style={{ marginLeft: "10px" }}>
 							Save Question
 						</Button>
@@ -177,7 +235,7 @@ export default function ManageFAQ() {
 							variant="outlined"
 							color="primary"
 							size="medium"
-							onClick={deleteArticle}
+							onClick={deleteQuestion}
 							style={{ marginLeft: "10px" }}>
 							Delete Question
 						</Button>
@@ -201,26 +259,31 @@ export default function ManageFAQ() {
 
 			<div
 				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				<TextField
-					value={info.key}
-					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, key: event.target.value }))
-					}
-					label="Key"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-				/>
+				{newArt.clicked ? (
+					<TextField
+						value={info.key}
+						onChange={(event) =>
+							setInfo((prev) => ({ ...prev, key: event.target.value }))
+						}
+						helperText={`This will overwrite any question with the key ${
+							info.key === "" ? 0 : info.key
+						}.`}
+						label="Key"
+						variant="outlined"
+						style={{ marginRight: "10px" }}
+					/>
+				) : null}
 				<Auto
 					options={["false", "true"]}
 					onChange={(event) => {
 						setInfo((prev) => ({
 							...prev,
-							visible: /^\s*(true|1|on)\s*$/i.test(event.target.textContent),
+							visible: event.target.textContent,
 						}));
 					}}
 					width={120}
 					text="Visibility"
-					value={info.visible.toString()}
+					value={info.visible}
 				/>
 			</div>
 
