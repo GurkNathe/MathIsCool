@@ -9,6 +9,8 @@ import {
 	Grid,
 	TextField,
 	Autocomplete,
+	Snackbar,
+	Alert,
 } from "@mui/material";
 import { ExpandMore, AccountCircle } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -406,6 +408,55 @@ const Auto = (props) => {
 	);
 };
 
+/**
+ * @param props title, options, value, onChange, disabled, error, helperText, text, style
+ */
+const Drop = (props) => {
+	return (
+		<div style={{ display: "flex" }}>
+			<Grid item sm={3}>
+				<p>{props.title}</p>
+			</Grid>
+			<Autocomplete
+				options={props.options ? props.options.map((option) => option) : []}
+				value={props.value}
+				onChange={props.onChange}
+				disabled={props.disabled}
+				freeSolo
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						error={props.error}
+						helperText={props.helperText}
+						label={props.text}
+						variant="outlined"
+						required
+						style={props.style}
+					/>
+				)}
+			/>
+		</div>
+	);
+};
+
+/**
+ *
+ * @param {*} props open, handleClose, type, message
+ * @returns
+ */
+const Alerts = (props) => {
+	return (
+		<Snackbar
+			open={props.open}
+			onClose={props.handleClose}
+			anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+			<Alert severity={props.type} variant="filled">
+				{props.message}
+			</Alert>
+		</Snackbar>
+	);
+};
+
 // website default page style
 const BasicPage = (props) => {
 	return (
@@ -611,4 +662,6 @@ export {
 	NotFound,
 	Profile,
 	Student,
+	Drop,
+	Alerts,
 };

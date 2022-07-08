@@ -38,46 +38,51 @@ export default function Locations() {
 			<LayerTwo>
 				<LayerThree>
 					<h1 style={{ fontStyle: "italic" }}>Locations</h1>
-					<>
-						<h3>WEST</h3>
-						{locations.map((doc) => {
-							return doc.region === "west" ? (
-								<span key={doc.name}>
-									<a href={doc.mapUrl}>{doc.name}</a> -{doc.street}, {doc.city}
-									<br />
-								</span>
-							) : null;
-						})}
-						<h3>CENTRAL</h3>
-						{locations.map((doc) => {
-							return doc.region === "central" ? (
-								<span key={doc.name}>
-									<a href={doc.mapUrl}>{doc.name}</a> -{doc.street}, {doc.city}
-									<br />
-								</span>
-							) : null;
-						})}
-						<h3>EAST</h3>
-						{locations.map((doc) => {
-							return doc.region === "east" ? (
-								<span key={doc.name}>
-									<a href={doc.mapUrl}>{doc.name}</a> -{doc.street}, {doc.city}
-									<br />
-								</span>
-							) : null;
-						})}
-						<h3>MASTERS</h3>
-						{locations.map((doc) => {
-							return doc.region === "masters" ? (
-								<span key={doc.name}>
-									<a href={doc.mapUrl}>{doc.name}</a> -{doc.street}
-									{doc.city === " " ? null : ","} {doc.city}
-									<br />
-								</span>
-							) : null;
-						})}
-					</>
-					<Map src={map} alt="map" />
+					<div style={{ display: "flex" }}>
+						<div style={{ marginRight: "10px" }}>
+							<h3>WEST</h3>
+							{locations.map((doc) => {
+								return doc.region === "west" ? (
+									<span key={doc.name}>
+										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street},{" "}
+										{doc.city}
+										<br />
+									</span>
+								) : null;
+							})}
+							<h3>CENTRAL</h3>
+							{locations.map((doc) => {
+								return doc.region === "central" ? (
+									<span key={doc.name}>
+										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street},{" "}
+										{doc.city}
+										<br />
+									</span>
+								) : null;
+							})}
+							<h3>EAST</h3>
+							{locations.map((doc) => {
+								return doc.region === "east" ? (
+									<span key={doc.name}>
+										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street},{" "}
+										{doc.city}
+										<br />
+									</span>
+								) : null;
+							})}
+							<h3>MASTERS</h3>
+							{locations.map((doc) => {
+								return doc.region === "masters" ? (
+									<span key={doc.name}>
+										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street}
+										{doc.city === " " ? null : ","} {doc.city}
+										<br />
+									</span>
+								) : null;
+							})}
+						</div>
+						<Map src={map} alt="map" />
+					</div>
 				</LayerThree>
 			</LayerTwo>
 		</LayerOne>

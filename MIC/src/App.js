@@ -36,6 +36,8 @@ import MastersTeams from "./components/custom/MastersTeams";
 import ManageCompetitions from "./components/admin/ManageCompetitions";
 import ManageHome from "./components/admin/ManageHome";
 import ManageFAQ from "./components/admin/ManageFAQ";
+import ManagePastTests from "./components/admin/ManagePastTests";
+import ManageSites from "./components/admin/ManageSites";
 
 import Test from "./components/admin/Test";
 
@@ -149,6 +151,16 @@ export default function App() {
 							component={ManageHome}
 						/>
 						<AdminRoute path="/admin/manage-faq" exact component={ManageFAQ} />
+						<AdminRoute
+							path="/admin/manage-pasttests"
+							exact
+							component={ManagePastTests}
+						/>
+						<AdminRoute
+							path="/admin/manage-sites"
+							exact
+							component={ManageSites}
+						/>
 						<Route component={NotFound} />
 					</Switch>
 				</Router>
