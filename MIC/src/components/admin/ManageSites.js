@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
-import { Drop } from "../styledComps";
+import { Drop, Alerts } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ManageSites() {
-	// Information of the question selected/created
+	// Information of the site selected/created
 	const [info, setInfo] = useState({
 		city: "",
 		key: "",
@@ -20,13 +20,26 @@ export default function ManageSites() {
 		user: undefined,
 	});
 
-	// Used to store the data for all questions
+	// Error handling
+	const [errors, setErrors] = useState({
+		key: false,
+		city: false,
+		mapUrl: false,
+		name: false,
+		region: false,
+		show: false,
+		street: false,
+		failed: false,
+		success: false,
+	});
+
+	// Used to store the data for all sites
 	const [records, setRecords] = useState([]);
 
-	// Used to store the keys of the questions that can be selected
+	// Used to store the keys of the sites that can be selected
 	const [options, setOptions] = useState([]);
 
-	// Used to tell what options for modifying questions have been selected
+	// Used to tell what options for modifying sites have been selected
 	const [newArt, setNewArt] = useState({
 		picked: false,
 		clicked: false,
@@ -34,7 +47,7 @@ export default function ManageSites() {
 	});
 
 	useEffect(() => {
-		// Gets the question data for the page
+		// Gets the site data for the page
 		if (sessionStorage.getItem("sites")) {
 			let homeRecs = JSON.parse(sessionStorage.getItem("sites")).records;
 			setRecords(homeRecs);
@@ -42,6 +55,7 @@ export default function ManageSites() {
 			for (const record in homeRecs) {
 				titles.push(record);
 			}
+			titles.sort();
 			setOptions(titles);
 		} else {
 			getWeb("sites").then((response) => {
@@ -50,13 +64,34 @@ export default function ManageSites() {
 				for (const record in response.records) {
 					titles.push(record);
 				}
+				titles.sort();
 				setOptions(titles);
 			});
 		}
 	}, []);
 
-	// Handles the data filling upon selecting a question
-	const selectArticle = (e) => {
+	// Object comparison function
+	// From: https://stackoverflow.com/a/5859028
+	const compare = (obj1, obj2) => {
+		for (let prop in obj1) {
+			if (obj1.hasOwnProperty(prop)) {
+				if (obj1[prop] !== obj2[prop]) {
+					return false;
+				}
+			}
+		}
+		for (let prop in obj2) {
+			if (obj2.hasOwnProperty(prop)) {
+				if (obj1[prop] !== obj2[prop]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+
+	// Handles the data filling upon selecting a site
+	const selectSite = (e) => {
 		if (e) {
 			const selectedLoc = records[e];
 			setInfo((prev) => ({
@@ -74,6 +109,16 @@ export default function ManageSites() {
 				...prev,
 				picked: true,
 			}));
+			setErrors((prev) => ({
+				...prev,
+				key: true,
+				city: true,
+				mapUrl: true,
+				name: true,
+				region: true,
+				show: true,
+				street: true,
+			}));
 		} else {
 			setInfo((prev) => ({
 				...prev,
@@ -88,6 +133,16 @@ export default function ManageSites() {
 				timestamp: "",
 				user: undefined,
 			}));
+			setErrors((prev) => ({
+				...prev,
+				key: false,
+				city: false,
+				mapUrl: false,
+				name: false,
+				region: false,
+				show: false,
+				street: false,
+			}));
 			setNewArt((prev) => ({
 				...prev,
 				picked: false,
@@ -95,36 +150,147 @@ export default function ManageSites() {
 		}
 	};
 
-	// Saves the selected or created question
-	const saveQuestion = () => {
-		const page = doc(db, "web", "sites");
-		getDoc(page)
-			.then((doc) => {
-				let data = doc.data();
-				console.log(data);
-			})
-			.catch((error) => console.error(error));
-	};
+	// Saves the selected or created site
+	const saveSite = () => {
+		if (
+			errors.key &&
+			errors.city &&
+			errors.mapUrl &&
+			errors.name &&
+			errors.region &&
+			errors.show &&
+			errors.street
+		) {
+			const page = doc(db, "web", "sites");
+			getDoc(page)
+				.then((doc) => {
+					let data = doc.data();
+					let site = {
+						...info,
+						timestamp: new Date(Date.now()),
+						user: auth.currentUser.uid,
+					};
+					if (newArt.clicked) {
+						// If a new site is being added
+						if (!compare(data.records, records)) {
+							data.n++;
+						}
+						data.timestamp = new Date(Date.now());
+						data.records[site.key] = site;
+					} else if (newArt.picked) {
+						// If an old site is being updated
+						data.records[site.key] = site;
+						data.timestamp = new Date(Date.now());
+					}
 
-	const deleteQuestion = () => {
-		const page = doc(db, "web", "sites");
-		getDoc(page)
-			.then((doc) => {
-				let data = doc.data();
-				console.log(data);
-			})
-			.catch((error) => console.error(error));
+					updateDoc(page, data).then(() => {
+						sessionStorage.setItem("sites", JSON.stringify(data));
+						setErrors((prev) => ({
+							...prev,
+							success: true,
+						}));
+						if (!options.includes(info.key)) {
+							options.push(info.key);
+						}
+						options.sort();
+						records[info.key] = info;
+						setInfo({
+							city: "",
+							key: "",
+							mapUrl: "",
+							name: "",
+							phone: "",
+							region: "",
+							show: "",
+							street: "",
+							timestamp: "",
+							user: undefined,
+						});
+					});
+				})
+				.catch((error) => console.error(error));
+		} else {
+			setErrors((prev) => ({
+				...prev,
+				failed: true,
+			}));
+		}
+	};
+	const deleteSite = () => {
+		if (
+			errors.key &&
+			errors.city &&
+			errors.mapUrl &&
+			errors.name &&
+			errors.region &&
+			errors.show &&
+			errors.street
+		) {
+			const page = doc(db, "web", "sites");
+			getDoc(page)
+				.then((doc) => {
+					let data = doc.data();
+					delete data.records[info.key];
+					data.n--;
+					data.timestamp = new Date(Date.now());
+					updateDoc(page, data).then(() => {
+						sessionStorage.setItem("sites", JSON.stringify(data));
+						setErrors((prev) => ({
+							...prev,
+							success: true,
+						}));
+						delete records[info.key];
+						const newOps = options.filter((value) => {
+							return value !== info.key;
+						});
+						setOptions(newOps);
+						setInfo({
+							city: "",
+							key: "",
+							mapUrl: "",
+							name: "",
+							phone: "",
+							region: "",
+							show: "",
+							street: "",
+							timestamp: "",
+							user: undefined,
+						});
+					});
+				})
+				.catch((error) => console.error(error));
+		} else {
+			setErrors((prev) => ({
+				...prev,
+				failed: true,
+			}));
+		}
 	};
 
 	return (
 		<div style={{ margin: "10px" }}>
 			<h1>Site Location Information</h1>
-
+			<Alerts
+				open={errors.failed || errors.success}
+				handleClose={() =>
+					setErrors((prev) => ({
+						...prev,
+						failed: false,
+						success: false,
+					}))
+				}
+				type={errors.success ? "success" : "error"}
+				message={
+					errors.success
+						? "Successfully updated sites data."
+						: "Please make sure every field is properly filled in."
+				}
+			/>
 			<div
 				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
 				<Drop
 					options={options}
-					onChange={(event) => selectArticle(event.target.textContent)}
+					onChange={(event) => selectSite(event.target.textContent)}
 					text="Select Location to Edit"
 					disabled={newArt.clicked}
 					style={{ width: 200 }}
@@ -158,7 +324,7 @@ export default function ManageSites() {
 							variant="outlined"
 							color="primary"
 							size="medium"
-							onClick={saveQuestion}
+							onClick={saveSite}
 							style={{ marginLeft: "10px" }}>
 							Save Location
 						</Button>
@@ -167,13 +333,13 @@ export default function ManageSites() {
 								variant="outlined"
 								color="primary"
 								size="medium"
-								onClick={() =>
+								onClick={() => {
 									setNewArt((prev) => ({
 										...prev,
 										clicked: false,
 										delete: false,
-									}))
-								}
+									}));
+								}}
 								style={{ marginLeft: "10px" }}>
 								Undo Option
 							</Button>
@@ -185,7 +351,7 @@ export default function ManageSites() {
 							variant="outlined"
 							color="primary"
 							size="medium"
-							onClick={deleteQuestion}
+							onClick={deleteSite}
 							style={{ marginLeft: "10px" }}>
 							Delete Location
 						</Button>
@@ -196,6 +362,7 @@ export default function ManageSites() {
 							onClick={() => {
 								setNewArt((prev) => ({
 									...prev,
+									picked: false,
 									clicked: false,
 									delete: false,
 								}));
@@ -212,43 +379,59 @@ export default function ManageSites() {
 				{newArt.clicked ? (
 					<TextField
 						value={info.key}
-						onChange={(event) =>
-							setInfo((prev) => ({ ...prev, key: event.target.value }))
-						}
-						helperText={`This will overwrite any question with the key "${
+						onChange={(event) => {
+							setInfo((prev) => ({ ...prev, key: event.target.value }));
+							event.target.value.length > 0
+								? setErrors((prev) => ({ ...prev, key: true }))
+								: setErrors((prev) => ({ ...prev, key: false }));
+						}}
+						helperText={`This will overwrite any site with the key "${
 							info.key === "" ? 0 : info.key
 						}".`}
 						label="Key"
 						variant="outlined"
 						style={{ marginRight: "10px" }}
+						error={errors.failed && !errors.key}
 					/>
 				) : null}
 				<TextField
 					value={info.city}
-					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, city: event.target.value }))
-					}
+					onChange={(event) => {
+						setInfo((prev) => ({ ...prev, city: event.target.value }));
+						event.target.value.length > 0
+							? setErrors((prev) => ({ ...prev, city: true }))
+							: setErrors((prev) => ({ ...prev, city: false }));
+					}}
 					label="City"
 					variant="outlined"
 					style={{ marginRight: "10px" }}
+					error={errors.failed && !errors.city}
 				/>
 				<TextField
 					value={info.mapUrl}
-					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, mapUrl: event.target.value }))
-					}
+					onChange={(event) => {
+						setInfo((prev) => ({ ...prev, mapUrl: event.target.value }));
+						event.target.value.length > 0
+							? setErrors((prev) => ({ ...prev, mapUrl: true }))
+							: setErrors((prev) => ({ ...prev, mapUrl: false }));
+					}}
 					label="Map URL"
 					variant="outlined"
 					style={{ marginRight: "10px" }}
+					error={errors.failed && !errors.mapUrl}
 				/>
 				<TextField
 					value={info.name}
-					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, name: event.target.value }))
-					}
+					onChange={(event) => {
+						setInfo((prev) => ({ ...prev, name: event.target.value }));
+						event.target.value.length > 0
+							? setErrors((prev) => ({ ...prev, name: true }))
+							: setErrors((prev) => ({ ...prev, name: false }));
+					}}
 					label="Name"
 					variant="outlined"
 					style={{ marginRight: "10px" }}
+					error={errors.failed && !errors.name}
 				/>
 				<TextField
 					value={info.phone}
@@ -261,12 +444,16 @@ export default function ManageSites() {
 				/>
 				<TextField
 					value={info.street}
-					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, street: event.target.value }))
-					}
+					onChange={(event) => {
+						setInfo((prev) => ({ ...prev, street: event.target.value }));
+						event.target.value.length > 0
+							? setErrors((prev) => ({ ...prev, street: true }))
+							: setErrors((prev) => ({ ...prev, street: false }));
+					}}
 					label="Street"
 					variant="outlined"
 					style={{ marginRight: "10px" }}
+					error={errors.failed && !errors.street}
 				/>
 				<Drop
 					options={["false", "true"]}
@@ -275,10 +462,14 @@ export default function ManageSites() {
 							...prev,
 							show: event.target.textContent,
 						}));
+						event.target.textContent.length > 0
+							? setErrors((prev) => ({ ...prev, show: true }))
+							: setErrors((prev) => ({ ...prev, show: false }));
 					}}
 					text="Visibility"
 					value={info.show}
 					style={{ marginRight: "10px", width: 120 }}
+					error={errors.failed && !errors.show}
 				/>
 				<Drop
 					options={["west", "east", "central", "masters"]}
@@ -287,11 +478,14 @@ export default function ManageSites() {
 							...prev,
 							region: event.target.textContent,
 						}));
+						event.target.textContent.length > 0
+							? setErrors((prev) => ({ ...prev, region: true }))
+							: setErrors((prev) => ({ ...prev, region: false }));
 					}}
-					width={120}
 					text="Region"
 					value={info.region}
 					style={{ width: 120 }}
+					error={errors.failed && !errors.region}
 				/>
 			</div>
 		</div>

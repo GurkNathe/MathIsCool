@@ -10,7 +10,7 @@ import Add from "@mui/icons-material/Add";
 import DownloadDoneIcon from "@mui/icons-material/DownloadDone";
 import { db, auth, storage } from "../fire";
 import { doc, updateDoc } from "@firebase/firestore";
-import { ref, uploadBytesResumable, resume } from "@firebase/storage";
+import { ref, uploadBytesResumable } from "@firebase/storage";
 import { Drop, Alerts } from "../styledComps";
 import getWeb from "../front/getWeb";
 
@@ -94,7 +94,6 @@ export default function ManagePastTests() {
 		}
 	};
 
-	// TODO: edit database rules
 	// Saves the selected test to the database
 	const saveTest = () => {
 		if (
@@ -163,6 +162,7 @@ export default function ManagePastTests() {
 						...prev,
 						success: good,
 					}));
+					sessionStorage.setItem("samples", JSON.stringify(samps.records));
 				})
 				.catch((error) => {
 					console.error(error);

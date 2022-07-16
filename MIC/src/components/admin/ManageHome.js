@@ -107,8 +107,9 @@ export default function ManageHome() {
 					data.records[article.key] = article;
 					data.timestamp = new Date(Date.now());
 				}
-				sessionStorage.setItem("news", JSON.stringify(data));
-				updateDoc(page, data);
+				updateDoc(page, data).then(() =>
+					sessionStorage.setItem("news", JSON.stringify(data))
+				);
 			})
 			.catch((error) => console.error(error));
 	};
@@ -122,8 +123,10 @@ export default function ManageHome() {
 				delete data.records[info.key];
 				data.n--;
 				data.timestamp = new Date(Date.now());
-				sessionStorage.setItem("news", JSON.stringify(data));
-				updateDoc(page, data);
+
+				updateDoc(page, data).then(() =>
+					sessionStorage.setItem("news", JSON.stringify(data))
+				);
 			})
 			.catch((error) => console.error(error));
 	};
