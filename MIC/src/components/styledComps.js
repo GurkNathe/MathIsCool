@@ -423,6 +423,7 @@ const Drop = (props) => {
 				onChange={props.onChange}
 				disabled={props.disabled}
 				freeSolo
+				onInputChange={props.onInputChange}
 				renderInput={(params) => (
 					<TextField
 						{...params}

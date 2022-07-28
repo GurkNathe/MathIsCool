@@ -7,8 +7,6 @@ import options from "../back/options.json";
 import { getDocs, getDoc, collection, doc } from "@firebase/firestore";
 import { db } from "../fire";
 
-//!! Not configured for mobile
-
 export default function Competitions() {
 	const history = useHistory();
 

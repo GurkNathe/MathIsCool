@@ -6,6 +6,7 @@ import options from "./options.json";
 import { getDocs, collection } from "@firebase/firestore";
 import { auth, db } from "../fire";
 
+//!!! Some null pointer issue with entering values
 //TODO: if only individuals, remove Alternate option
 //returns the values of #individuals and #teams for each competition where the current user
 //signed up the chosen school
