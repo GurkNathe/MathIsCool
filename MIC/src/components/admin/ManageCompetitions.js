@@ -11,12 +11,11 @@ import {
 	doc,
 	addDoc,
 	deleteDoc,
+	updateDoc,
 } from "@firebase/firestore";
 import { db, auth } from "../fire";
 
-// TODO: Get submission and deletion finished and debugged.
-// TODO: Configure alerts for feedback.
-// TODO: mapurl issues.
+// TODO: mapurl issues?
 
 // columns for the table
 const columns = [
@@ -43,7 +42,7 @@ const columns = [
 		editable: false,
 	},
 	{
-		field: "date",
+		field: "compDate",
 		headerName: "Date",
 		description: "Competition date.",
 		flex: 1,
@@ -57,41 +56,35 @@ const columns = [
 		flex: 1,
 		editable: false,
 	},
-	{
-		field: "mapurl",
-		headerName: "Map URL",
-		description: "Map URL",
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "notes",
-		headerName: `Director's  Notes`,
-		description: `Director's  Notes`,
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "schools",
-		headerName: `View Schools`,
-		description: `View Schools`,
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "names",
-		headerName: `View Names`,
-		description: `View Names`,
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "emails",
-		headerName: `View Email List`,
-		description: `View Email List`,
-		flex: 1,
-		editable: false,
-	},
+	// ??? What to do with this?
+	// {
+	// 	field: "notes",
+	// 	headerName: `Director's  Notes`,
+	// 	description: `Director's  Notes`,
+	// 	flex: 1,
+	// 	editable: false,
+	// },
+	// {
+	// 	field: "schools",
+	// 	headerName: `View Schools`,
+	// 	description: `View Schools`,
+	// 	flex: 1,
+	// 	editable: false,
+	// },
+	// {
+	// 	field: "names",
+	// 	headerName: `View Names`,
+	// 	description: `View Names`,
+	// 	flex: 1,
+	// 	editable: false,
+	// },
+	// {
+	// 	field: "emails",
+	// 	headerName: `View Email List`,
+	// 	description: `View Email List`,
+	// 	flex: 1,
+	// 	editable: false,
+	// },
 ];
 
 // Location, level, date, status, map URL, Directors notes, view schools, names, emails
@@ -193,11 +186,20 @@ export default function ManageCompetitions() {
 		site: false,
 		status: false,
 		year: false,
+		// Checks if a submission was made
 		submitted: false,
-		success: false,
+		// Checks for complete form
 		notFull: false,
-		getError: false,
+		// Checks if a competition to delete was not selected
 		deleteError: false,
+		// Used for passing information to be used in alerts
+		extraInfo: "",
+		// Issue with adding/updating competition in database
+		upload: false,
+		// Successful deletion
+		deleteSucc: false,
+		// Failure to delete
+		deleteErr: false,
 	});
 
 	//gets every compeition currently available
@@ -329,54 +331,113 @@ export default function ManageCompetitions() {
 					(key) =>
 						key !== "submitted" &&
 						key !== "notFull" &&
-						key !== "getError" &&
 						key !== "success" &&
-						key !== "deleteError"
+						key !== "deleteError" &&
+						key !== "extraInfo" &&
+						key !== "upload" &&
+						key !== "deleteSucc" &&
+						key !== "deleteErr"
 				)
 				.map((key) => errors[key])
 				.every((value) => value)
 		) {
-			// Getting the competition reference
-			const page = collection(db, "competitions");
-
 			// Creating payload
 			let comp = {
-				...newComp,
+				compDate: newComp.compDate.toLocaleString("en-US").split(",")[0],
+				contact: newComp.contact,
+				email: newComp.email,
+				grade: newComp.grade,
+				maxTeams: Number(newComp.maxTeams),
+				regDate: newComp.regDate.toLocaleString("en-US").split(",")[0],
+				registration: {},
+				schTeams: Number(newComp.schTeams),
+				schedule: newComp.schedule,
+				site: newComp.site,
+				status: newComp.status,
+				year: newComp.year,
 				mapurl: newComp.mapurl === undefined ? "" : newComp.mapurl,
 				id: newComp.id + 1,
 				timestamp: new Date(Date.now()),
 				user: auth.currentUser.uid,
 			};
 
-			// Adding new/modified competition to database
-			addDoc(page, comp)
-				.then((val) => {
-					console.log(val);
+			// Adding new competition to database
+			if (!newComp.compId) {
+				// Getting the competition reference
+				const page = collection(db, "competitions");
 
-					// Inserting the option if it isn't already there
-					let tempComps = rowInfo.comps;
-					if (!tempComps.includes(comp.id.toString())) {
-						tempComps.push(comp.id.toString());
-					}
-					tempComps.sort();
+				// Adding new competition to database
+				addDoc(page, comp)
+					.then((val) => {
+						// Feedback for new competition
+						setErrors((prev) => ({
+							...prev,
+							extraInfo:
+								"Competition added with ID: " + val.id + " in the database.",
+						}));
 
-					// Updating/adding question to local records
-					setRowInfo((prev) => ({
-						...prev,
-						comps: tempComps,
-					}));
+						// !!! May need to remove/figure out a different method
+						// Inserting the option if it isn't already there
+						let tempComps = rowInfo.comps;
+						if (!tempComps.includes(comp.id.toString())) {
+							tempComps.push(comp.id.toString());
+						}
+						tempComps.sort();
 
-					// Adding competition information to list
-					let newComps = [...rowState.comp, comp];
+						// Updating/adding question to local records
+						setRowInfo((prev) => ({
+							...prev,
+							comps: tempComps,
+						}));
 
-					// Adding information to session information
-					sessionStorage.setItem("mastersComps", JSON.stringify(newComps));
-				})
-				.catch((error) => {
-					console.error(error);
-				});
+						// Adding competition information to list
+						let newComps = [...rowState.comp, comp];
+
+						// Adding information to session information
+						sessionStorage.setItem("mastersComps", JSON.stringify(newComps));
+						setRow((prev) => ({
+							...prev,
+							comp: newComps,
+						}));
+					})
+					.catch((error) => {
+						setErrors((prev) => ({
+							...prev,
+							upload: true,
+						}));
+						console.error(error);
+					});
+				// Updating competition
+			} else {
+				// Getting competition
+				const upComp = doc(db, "competitions", newComp.compId);
+				updateDoc(upComp, comp)
+					.then(() => {
+						setErrors((prev) => ({
+							...prev,
+							extraInfo: "Updated competition with ID: " + newComp.compId + ".",
+						}));
+
+						// !!! May need to remove/figure out a different method
+						// Adding competition information to list
+						let newComps = [...rowState.comp, comp];
+
+						// Adding information to session information
+						sessionStorage.setItem("mastersComps", JSON.stringify(newComps));
+						setRow((prev) => ({
+							...prev,
+							comp: newComps,
+						}));
+					})
+					.catch((error) => {
+						setErrors((prev) => ({
+							...prev,
+							upload: true,
+						}));
+						console.error(error);
+					});
+			}
 		} else {
-			console.log("fail");
 			setErrors((prev) => ({
 				...prev,
 				notFull: true,
@@ -391,9 +452,20 @@ export default function ManageCompetitions() {
 	// Deletes the selected competions from the database
 	const onDelete = async () => {
 		if (newComp.compId !== undefined) {
-			await deleteDoc(doc(db, "competitions", newComp.compId)).then(() => {
-				console.log("yes");
-			});
+			await deleteDoc(doc(db, "competitions", newComp.compId))
+				.then(() => {
+					setErrors((prev) => ({
+						...prev,
+						deleteSucc: true,
+					}));
+				})
+				.catch((error) => {
+					setErrors((prev) => ({
+						...prev,
+						deleteErr: true,
+					}));
+					console.error(error);
+				});
 		} else {
 			setErrors((prev) => ({
 				...prev,
@@ -412,14 +484,18 @@ export default function ManageCompetitions() {
 						...prev,
 						submitted: false,
 						notFull: false,
-						getError: false,
 						deleteError: false,
 						success: false,
+						upload: false,
+						deleteSucc: false,
+						deleteErr: false,
 					}))
 				}
 				type={
 					errors.submitted
 						? errors.notFull
+							? "error"
+							: errors.upload
 							? "error"
 							: "success"
 						: errors.deleteError
@@ -430,9 +506,17 @@ export default function ManageCompetitions() {
 					errors.submitted
 						? errors.notFull
 							? "Please fill out all required fields to successfully submit a competition."
-							: "testing"
+							: errors.upload
+							? "There was an issue uploading the competition to the database."
+							: errors.extraInfo.length !== 0
+							? errors.extraInfo
+							: "Submitted successfully."
 						: errors.deleteError
 						? "Please select a competition to delete."
+						: errors.deleteSucc
+						? "Successfully deleted competition."
+						: errors.deleteErr
+						? "There was an error trying to delete the selected competition."
 						: "Unknown error."
 				}
 			/>
@@ -445,7 +529,9 @@ export default function ManageCompetitions() {
 							...prev,
 							submitted: false,
 							notFull: false,
-							getError: false,
+							upload: false,
+							deleteSucc: false,
+							deleteErr: false,
 						}));
 					}}
 					onInputChange={(event) => onClear(event)}
@@ -453,6 +539,7 @@ export default function ManageCompetitions() {
 					value={rowInfo.comp}
 					style={{ width: "223px" }}
 					disabled={newArt.clicked}
+					helperText="Please click on an option."
 				/>
 				{!newArt.picked && !newArt.clicked && !newArt.delete ? (
 					<>
@@ -473,6 +560,7 @@ export default function ManageCompetitions() {
 							size="medium"
 							onClick={() => {
 								setNewArt((prev) => ({ ...prev, delete: true }));
+								onClear(null);
 							}}
 							style={{ marginLeft: "10px" }}>
 							Delete Article
@@ -493,13 +581,14 @@ export default function ManageCompetitions() {
 								variant="outlined"
 								color="primary"
 								size="medium"
-								onClick={() =>
+								onClick={() => {
 									setNewArt((prev) => ({
 										...prev,
 										clicked: false,
 										delete: false,
-									}))
-								}
+									}));
+									onClear(null);
+								}}
 								style={{ marginLeft: "10px" }}>
 								Undo Option
 							</Button>
@@ -519,13 +608,14 @@ export default function ManageCompetitions() {
 							variant="outlined"
 							color="primary"
 							size="medium"
-							onClick={() =>
+							onClick={() => {
 								setNewArt((prev) => ({
 									...prev,
 									clicked: false,
 									delete: false,
-								}))
-							}
+								}));
+								onClear(null);
+							}}
 							style={{ marginLeft: "10px" }}>
 							Undo Option
 						</Button>
