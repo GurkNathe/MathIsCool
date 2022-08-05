@@ -3,83 +3,76 @@ import {
 	Grid,
 	Button,
 	Typography,
-	Divider,
 	Snackbar,
 	Alert,
+	IconButton,
 } from "@mui/material";
-import ReactLoading from "react-loading";
-import { TableDiv, TableTop, Student } from "../styledComps";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { TableTop } from "../styledComps";
+import { DataGrid } from "@mui/x-data-grid";
+import genInfo from "../back/options.json";
 
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { db } from "../fire";
 
 //Used for Enter Names table
 
-//adds names to registration
-async function submitNames(id, regId, students) {
-	const comps = doc(db, "competitions", id);
-	console.log(regId);
-	const res = await getDoc(comps)
-		.then((doc) => {
-			updateDoc(comps, {
-				...doc.data(),
-				registration: {
-					...doc.data().registration,
-					[regId]: {
-						...doc.data().registration[regId],
-						names: students,
-					},
-				},
-			});
-			return true;
-		})
-		.catch((error) => {
-			console.log(error);
-			return false;
-		});
-	console.log(res);
-	return res;
-}
-
 /**
- * @param  {integer} teams
- * @param  {integer} individuals
+ * @param  {integer}  teams : number of teams
+ * @param  {integer}  individuals : number of individuals
+ * @param  {string}   title : competition title
+ * @param  {string}   id : competition id
+ * @param  {string}   regId : registration id
+ * @param  {integer}  page : current page/competition
+ * @param  {integer}  registers : total number of competitions registered for that are open
+ * @param  {function} changePage : changes the page/competition
+ * @param  {integer}  cachedData : cached student information
+ * @param  {function} setCachedData : sets the cached student information
  */
 export default function Table(props) {
-	const [students, setStudents] = useState(1);
+	// Holds the entered data for the current competition
+	const [students, setStudents] = useState(
+		props.cachedData[props.page] === undefined
+			? []
+			: props.cachedData[props.page]
+	);
+	// Used to indicate when everything is properly loaded
 	const [loading, setLoading] = useState(true);
+	// Used for submission feedback
 	const [alert, setAlert] = useState(false);
+	// Used for submission feedback
 	const [clicked, setClicked] = useState(false);
 
+	// Size limiting for number of teams allowed, and the number of individuals allowed
 	if (props.teams > 10) props.teams = 10;
 	if (props.individuals > 10) props.individuals = 10;
 
-	//number of spots to fill in people
+	// Number of spots to fill in people
 	const fills = Array.from(
 		{ length: props.teams * 4 + props.individuals + 2 },
 		(_, i) => i + 1
 	);
 
-	//array to hold options for what position the person has
-	var options = [
+	// Array to hold options for what position the person has
+	let options = [
 		{ value: "Individual", label: "Individual" },
 		{ value: "Alternate", label: "Alternate" },
 	];
 
-	//filling in the teams
+	// Filling in the teams
 	for (let i = 1; i <= props.teams; i++) {
 		options.push({ value: `Team ${i}`, label: `Team ${i}` });
 	}
 
-	//gets current names
+	// Gets current names
 	const getComps = useCallback(async () => {
-		const comps = doc(db, "competitions", props.id);
-		const names = await getDoc(comps);
+		const names = await getDoc(doc(db, "competitions", props.id));
 		return names;
 	}, [props.id]);
 
 	useEffect(() => {
-		if (students === 1) {
+		if (students.length === 0) {
 			getComps().then((doc) => {
 				if (
 					doc.data().registration[props.regId] !== undefined &&
@@ -96,6 +89,31 @@ export default function Table(props) {
 		}
 	}, [getComps, students, props.regId]);
 
+	// Adds names to registration
+	const submitNames = async (id, regId, students) => {
+		const comps = doc(db, "competitions", id);
+		const res = await getDoc(comps)
+			.then((doc) => {
+				updateDoc(comps, {
+					...doc.data(),
+					registration: {
+						...doc.data().registration,
+						[regId]: {
+							...doc.data().registration[regId],
+							names: students,
+						},
+					},
+				});
+				return true;
+			})
+			.catch((error) => {
+				console.error(error);
+				return false;
+			});
+		return res;
+	};
+
+	// Submits the names + info to the database
 	const onSubmit = () => {
 		submitNames(props.id, props.regId, students).then((result) => {
 			setAlert(result);
@@ -103,36 +121,87 @@ export default function Table(props) {
 		});
 	};
 
+	// Creates a new list of students if none have been submitted yet
 	if (!loading && students === undefined) {
-		var studs = {};
-		for (const i in fills) {
-			studs[i] = {
-				name: "",
-				grade: null,
-				level: null,
-				pos: null,
-			};
-		}
-		setStudents(studs);
+		setStudents(
+			Array(fills.length)
+				.fill()
+				.map((_, id) => ({
+					id: id,
+					name: "",
+					grade: "",
+					level: "",
+					pos: "",
+				}))
+		);
 	}
 
-	const onChange = (newValue, index, type) => {
-		if (typeof newValue === "object") {
-			newValue = newValue.value;
+	// Sets the formating for the data grid
+	const columns = [
+		{
+			field: "id",
+			headerName: "ID",
+			description: "ID",
+			flex: 1,
+			hide: true,
+			editable: false,
+		},
+		{
+			field: "name",
+			headerName: "Student Name",
+			description: "The name of the student.",
+			flex: 1,
+			editable: true,
+		},
+		{
+			field: "grade",
+			headerName: "Student grade",
+			description: "The grade the student is currently in.",
+			flex: 1,
+			editable: true,
+			type: "singleSelect",
+			valueOptions: genInfo.grade,
+		},
+		{
+			field: "level",
+			headerName: "Student Math Level",
+			description: "The math level of the student.",
+			flex: 1,
+			editable: true,
+			type: "singleSelect",
+			valueOptions: genInfo.stlev,
+		},
+		{
+			field: "pos",
+			headerName: "Student Position",
+			description:
+				"The position of the student (e.g., alternate, individual, team 1, etc.).",
+			flex: 1,
+			editable: true,
+			type: "singleSelect",
+			valueOptions: options,
+		},
+	];
+
+	// Updates the data with with the input values
+	const getStudent = (field) => {
+		let tempArray = students.filter((student) => student.id !== field.id);
+		for (let s of students) {
+			if (s.id === field.id) {
+				setStudents(
+					[
+						...tempArray,
+						{
+							...s,
+							[field.field]: field.value,
+						},
+					].sort((a, b) => {
+						return a.id - b.id;
+					})
+				);
+				break;
+			}
 		}
-
-		setStudents((prevState) => ({
-			...prevState,
-			[index]: {
-				...prevState[index],
-				[type]: newValue,
-			},
-		}));
-	};
-
-	const handleClose = (event, reason) => {
-		if (reason === "clickaway") return;
-		setClicked(false);
 	};
 
 	return (
@@ -140,71 +209,83 @@ export default function Table(props) {
 			<Snackbar
 				open={clicked}
 				autoHideDuration={3000}
-				onClose={handleClose}
+				onClose={() => setClicked(false)}
 				anchorOrigin={{ vertical: "top", horizontal: "center" }}>
 				<Alert
-					onClose={handleClose}
+					handleClose={() => setClicked(false)}
 					severity={alert ? "success" : "error"}
 					variant="filled">
 					Names{" "}
 					{alert
-						? "successfully submitted"
-						: "failed to submit, contact web master for help if you can't resolve the issue"}
-					.
+						? "successfully submitted."
+						: "failed to submit, try submitting again or contact the web master for help if submitting doesn't resolve the issue."}
 				</Alert>
 			</Snackbar>
-			{students !== undefined && students !== 1 ? (
-				<>
-					<Typography>{props.title}</Typography>
-					<TableDiv>
-						<table>
-							<thead>
-								<tr>
-									<th>Student Name</th>
-									<th>Student Grade</th>
-									<th>Student Math Level</th>
-									<th>Student Position</th>
-								</tr>
-							</thead>
-							<tbody>
-								{fills.map((doc, index) => {
-									return (
-										<Student
-											ops={options}
-											key={doc}
-											index={index}
-											onChange={onChange}
-											stud={students[index]}
-										/>
-									);
-								})}
-							</tbody>
-						</table>
-						<Grid container>
-							<Grid item sm={2}>
-								<Button
-									fullWidth
-									variant="contained"
-									style={{ backgroundColor: "#3f51b5" }}
-									onClick={onSubmit}>
-									Submit
-								</Button>
-							</Grid>
-						</Grid>
-					</TableDiv>
-					<br />
-					<Divider />
-					<br />
-				</>
-			) : !loading ? null : (
-				<div style={{ position: "fixed", top: "45%", left: "45%" }}>
-					<ReactLoading
-						type="spinningBubbles"
-						color="#000"
-						style={{ width: "50px", height: "50px" }}
+			{students !== undefined ? (
+				<div>
+					<Typography style={{ margin: "10px" }}>{props.title}</Typography>
+					<DataGrid
+						onCellEditCommit={(val) => {
+							getStudent(val);
+						}}
+						hideFooter
+						loading={loading}
+						autoHeight
+						columns={columns}
+						rows={students}
 					/>
+					<Grid container>
+						<Grid item sm={2}>
+							<Button
+								fullWidth
+								variant="contained"
+								style={{ backgroundColor: "#3f51b5" }}
+								onClick={onSubmit}>
+								Submit
+							</Button>
+						</Grid>
+						<Grid item sm={8} />
+						<Grid
+							item
+							sm={1}
+							sx={{ display: "flex", justifyContent: "center" }}>
+							<Typography>
+								Competition {props.page + 1}/{props.registers}
+							</Typography>
+						</Grid>
+						<Grid item sm={0.5}>
+							<IconButton
+								disabled={props.page === 0}
+								onClick={() => {
+									if (props.page > 0) {
+										props.changePage(props.page - 1);
+										let newCache = props.cachedData;
+										newCache[props.page] = students;
+										props.setCachedData(newCache);
+										setStudents(newCache[props.page - 1]);
+									}
+								}}>
+								<ArrowBackIosNewIcon />
+							</IconButton>
+						</Grid>
+						<Grid item sm={0.5}>
+							<IconButton
+								disabled={props.page === props.registers - 1}
+								onClick={() => {
+									if (props.page < props.registers - 1) {
+										props.changePage(props.page + 1);
+										let newCache = props.cachedData;
+										newCache[props.page] = students;
+										props.setCachedData(newCache);
+										setStudents(newCache[props.page + 1]);
+									}
+								}}>
+								<ArrowForwardIosIcon />
+							</IconButton>
+						</Grid>
+					</Grid>
 				</div>
-			)}
+			) : null}
 		</TableTop>
 	);
 }

@@ -196,21 +196,34 @@ export default function ProfilePage() {
 								</Button>
 							</div>
 						) : null}
-						<Button
-							onClick={() => {
-								signOut(auth)
-									.then((user) => {
-										window.location.reload();
-									})
-									.catch((error) => {
-										console.error(error);
-									});
-								sessionStorage.removeItem("username");
-								sessionStorage.removeItem("email");
-								sessionStorage.removeItem("school");
-							}}>
-							Logout
-						</Button>
+						<div>
+							<Button
+								onClick={() => {
+									signOut(auth)
+										.then((user) => {
+											window.location.reload();
+										})
+										.catch((error) => {
+											console.error(error);
+										});
+									sessionStorage.removeItem("username");
+									sessionStorage.removeItem("email");
+									sessionStorage.removeItem("school");
+								}}>
+								Logout
+							</Button>
+							{!auth.currentUser.emailVerified ? (
+								<Button
+									onClick={() => {
+										sendEmailVerification(auth.currentUser).then((result) => {
+											console.log("Verified email sent");
+											console.log(result);
+										});
+									}}>
+									Resend Email Confirmation
+								</Button>
+							) : null}
+						</div>
 					</>
 				) : null}
 			</Paper>

@@ -77,7 +77,7 @@ export default function SignUp() {
 			setError(null);
 			setError("NoMatch");
 			return;
-		} else if (up.username === " " || up.username === "") {
+		} else if (up.username.replace(/[^0-9a-z]/gi, "").length === 0) {
 			setError(null);
 			setError("NoUser");
 			return;

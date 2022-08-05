@@ -17,7 +17,6 @@ import {
 } from "@firebase/auth";
 import { auth } from "../fire";
 
-//TODO: links to other pages won't lay flat under submit button
 export default function SignIn() {
 	const history = useHistory();
 	const [email, setEmail] = useState(" ");

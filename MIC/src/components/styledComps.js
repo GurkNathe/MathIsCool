@@ -316,15 +316,17 @@ const NavOptions = styled("div")({
 const TableTop = styled("div")({
 	display: "flex",
 	flexDirection: "column",
+	width: "100%",
+	padding: "10px",
 });
 
 const TableDiv = styled("div")({
 	display: "flex",
-	flexDirection: "row",
+	flexDirection: "column",
 	flexWrap: "wrap",
 	justifyContent: "space-between",
 	alignItems: "center",
-	padding: "10px",
+	marginTop: "10px",
 });
 
 const Td = styled("td")({
