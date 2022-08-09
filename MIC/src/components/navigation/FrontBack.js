@@ -6,12 +6,13 @@ export default function FrontBack(props) {
 	const [open, setOpen] = useState(false);
 	const [away, setAway] = useState({ p1: true, p2: true });
 
+	// Used to handle the opening and closing of the accordion buttons in the navigation
 	const handleChange = (panel) => (event, isOpen) => {
 		setOpen(isOpen ? panel : false);
 		setAway({ p1: true, p2: true });
 	};
 
-	// used to generate the links under each accordion tab
+	// Used to generate the links under each accordion tab
 	const tabs = [
 		[
 			{ to: "/about/history", text: "History" },

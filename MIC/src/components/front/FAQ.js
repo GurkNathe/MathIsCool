@@ -7,8 +7,8 @@ export default function FAQ() {
 	const title = "faq";
 	const [faq, setFAQ] = useState(getPage(title, "records"));
 
-	var test = [];
-	var cats = [];
+	let test = [];
+	let cats = [];
 
 	useEffect(() => {
 		getWeb(title).then((result) => {

@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-	Grid,
-	Button,
-	Typography,
-	Snackbar,
-	Alert,
-	IconButton,
-} from "@mui/material";
+
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import Alert from "@mui/material/Alert";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { TableTop } from "../styledComps";
 import { DataGrid } from "@mui/x-data-grid";
-import genInfo from "../back/options.json";
 
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { db } from "../fire";
+
+import { TableTop } from "../styledComps";
+import genInfo from "../back/options.json";
 
 //Used for Enter Names table
 
@@ -234,7 +234,7 @@ export default function Table(props) {
 						columns={columns}
 						rows={students}
 					/>
-					<Grid container>
+					<Grid container sx={{ paddingTop: "10px" }}>
 						<Grid item sm={2}>
 							<Button
 								fullWidth

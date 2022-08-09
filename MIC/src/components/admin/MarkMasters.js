@@ -19,7 +19,7 @@ async function getComps() {
 		const master = masters ? masters.data() : null;
 
 		//creating an Array version of the competions
-		var competitions = [];
+		let competitions = [];
 		comps.forEach((doc) => {
 			competitions.push(doc.data());
 		});
@@ -95,7 +95,7 @@ export default function MarkMasters() {
 			),
 		},
 	];
-	var rows = [];
+	let rows = [];
 
 	//gets the competitions to mark
 	if (
@@ -135,7 +135,7 @@ export default function MarkMasters() {
 				<>
 					{Object.values(comps.comp).map((data, index) => {
 						if (data.site !== "masters") {
-							var grades = [];
+							let grades = [];
 							for (const item in options.level) {
 								for (const char in data.grade.substr(1)) {
 									if (
@@ -146,7 +146,7 @@ export default function MarkMasters() {
 									}
 								}
 							}
-							var grade =
+							let grade =
 								grades.length > 2 ? grades.join(", ") : grades.join(" and ");
 							grade =
 								grades.length > 2

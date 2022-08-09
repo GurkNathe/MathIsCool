@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Drawer, Button, ClickAwayListener, Grid } from "@mui/material";
 import { Menu } from "@mui/icons-material";
+import { onAuthStateChanged } from "@firebase/auth";
+import { auth } from "../fire";
+
 import { ClosedNav, FullNav, Title, NavOptions, Profile } from "../styledComps";
 import FrontBack from "./FrontBack";
 import CoachTools from "./CoachTools";
 import Admin from "./Admin";
-
-import { onAuthStateChanged } from "@firebase/auth";
-import { auth } from "../fire";
 
 //NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
 

@@ -18,7 +18,10 @@ export default function ProfilePage() {
 	const [userInfo, setUserInfo] = useState({
 		username: sessionStorage.getItem("username"),
 		email: sessionStorage.getItem("email"),
-		school: sessionStorage.getItem("school"),
+		school:
+			sessionStorage.getItem("school") === undefined
+				? ""
+				: sessionStorage.getItem("school"),
 	});
 
 	// Saves user information to auth database and
@@ -215,10 +218,14 @@ export default function ProfilePage() {
 							{!auth.currentUser.emailVerified ? (
 								<Button
 									onClick={() => {
-										sendEmailVerification(auth.currentUser).then((result) => {
-											console.log("Verified email sent");
-											console.log(result);
-										});
+										sendEmailVerification(auth.currentUser)
+											.then((result) => {
+												console.log("Verified email sent");
+												console.log(auth.currentUser);
+											})
+											.catch((error) => {
+												console.error(error);
+											});
 									}}>
 									Resend Email Confirmation
 								</Button>

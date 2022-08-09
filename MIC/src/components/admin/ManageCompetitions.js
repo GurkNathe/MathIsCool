@@ -97,7 +97,7 @@ export default function ManageCompetitions() {
 				comp.site = comp.site.replace(/\w\S*/g, (w) =>
 					w.replace(/^\w/, (c) => c.toUpperCase())
 				);
-				var grades = [];
+				let grades = [];
 				for (const item in options.level) {
 					for (const char in comp.grade.substr(1)) {
 						if (options.level[item].value === comp.grade.substr(1)[char]) {
@@ -106,7 +106,7 @@ export default function ManageCompetitions() {
 						}
 					}
 				}
-				var grade =
+				let grade =
 					grades.length > 2 ? grades.join(", ") : grades.join(" and ");
 				grade =
 					grades.length > 2

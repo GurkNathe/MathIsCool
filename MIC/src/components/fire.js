@@ -7,7 +7,7 @@ import { getStorage } from "@firebase/storage";
 
 require("dotenv").config({ path: "../../.env" });
 
-var config = {
+const config = {
 	apiKey: process.env.REACT_APP_apiKey,
 	authDomain: process.env.REACT_APP_authDomain,
 	databaseURL: process.env.REACT_APP_databaseURL,

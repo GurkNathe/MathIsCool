@@ -1,43 +1,46 @@
 import React, { useState } from "react";
-import { TextField, Grid, Typography, Container } from "@mui/material";
-import { Form, Paper, Submit } from "../styledComps";
+
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import { db } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-//Adds new admin to firestore
-async function addAdmin(uid) {
-	const docRef = doc(db, "roles", "admin");
-	const admin = await getDoc(docRef).then((doc) => {
-		var uids = doc.data().admins;
-		if (!uids.includes(uid)) {
-			updateDoc(docRef, {
-				admins: [...uids, uid],
-			});
-		}
-	});
-
-	return admin;
-}
+import { Form, Paper, Submit } from "../styledComps";
 
 export default function AddAdmin() {
 	const [uid, setUid] = useState("");
 	const [error, setError] = useState(false);
 
-	const onSubmit = () => {
-		var actual = true;
-		if (uid === "" || uid === null || uid === undefined) {
-			setError(true);
-			actual = false;
-		}
+	// Adds new admin to firestore
+	const addAdmin = async (uid) => {
+		const docRef = doc(db, "roles", "admin");
+		const admin = await getDoc(docRef).then((doc) => {
+			const uids = doc.data().admins;
+			if (!uids.includes(uid)) {
+				updateDoc(docRef, {
+					admins: [...uids, uid],
+				});
+			}
+		});
 
-		if (actual) {
+		return admin;
+	};
+
+	// Submission function that checks for a valid string
+	const onSubmit = () => {
+		if (uid !== "" && uid !== null && uid !== undefined) {
 			addAdmin(uid);
+		} else {
+			setError(true);
 		}
 	};
 
-	//gets current input uid
-	const onEmail = (event) => {
-		setUid(event.target.value);
+	// Gets current input uid
+	const onChange = (uid) => {
+		setUid(uid);
 		setError(false);
 	};
 
@@ -50,7 +53,7 @@ export default function AddAdmin() {
 				<Form id="user" noValidate>
 					<Grid item xs={12}>
 						<TextField
-							error={error}
+							error={!!error}
 							variant="outlined"
 							margin="normal"
 							required
@@ -58,7 +61,7 @@ export default function AddAdmin() {
 							label="UID"
 							helperText={error ? "Please enter a valid uid." : null}
 							autoFocus
-							onChange={onEmail}
+							onChange={(event) => onChange(event.target.value)}
 						/>
 					</Grid>
 					<Submit fullWidth variant="contained" onClick={onSubmit}>

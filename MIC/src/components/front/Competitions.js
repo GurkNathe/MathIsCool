@@ -85,7 +85,7 @@ export default function Competitions() {
 	// function that uses the competition to parse the grade value and formats
 	// the grade level into something more useable.
 	const getGrade = (comp) => {
-		var grades = [];
+		let grades = [];
 		for (const item in options.level) {
 			for (const char in comp.grade.substr(1)) {
 				if (options.level[item].value === comp.grade.substr(1)[char]) {
@@ -94,7 +94,7 @@ export default function Competitions() {
 				}
 			}
 		}
-		var grade = grades.length > 2 ? grades.join(", ") : grades.join(" and ");
+		let grade = grades.length > 2 ? grades.join(", ") : grades.join(" and ");
 		grade =
 			grades.length > 2
 				? grade.substring(0, grade.lastIndexOf(", ")) +

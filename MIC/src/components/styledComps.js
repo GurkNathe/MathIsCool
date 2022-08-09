@@ -1,17 +1,16 @@
 import { styled } from "@mui/material/styles";
-import {
-	Button,
-	Typography,
-	Avatar,
-	Accordion,
-	AccordionSummary,
-	AccordionDetails,
-	Grid,
-	TextField,
-	Autocomplete,
-	Snackbar,
-	Alert,
-} from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Alert from "@mui/material/Alert";
+import Autocomplete from "@mui/material/Autocomplete";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+
 import { ExpandMore, AccountCircle } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import image from "../assets/logo.5a82c15d88ad2d074447.png";
@@ -44,7 +43,7 @@ const All = styled("div")({
 	},
 });
 
-// team registration form
+// Team registration form
 const TeamForm = styled("form")(({ theme }) => ({
 	"& .MuiTextField-root": {
 		margin: theme.spacing(1),

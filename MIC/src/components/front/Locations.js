@@ -10,7 +10,7 @@ export default function Locations() {
 	const [loc, setLoc] = useState(getPage(title, "records"));
 
 	//holding names of sites
-	var locations = [];
+	let locations = [];
 
 	useEffect(() => {
 		getWeb(title).then((result) => {

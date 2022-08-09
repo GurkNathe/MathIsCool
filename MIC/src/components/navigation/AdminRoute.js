@@ -8,14 +8,11 @@ export default function AdminRoute(props) {
 	const [user, setUser] = useState(1);
 	const [loading, setLoading] = useState(true);
 
-	if (user === 1) {
+	useEffect(() => {
 		onAuthStateChanged(auth, (use) => {
 			setUser(use);
+			setLoading(false);
 		});
-	}
-
-	useEffect(() => {
-		if (user !== 1) setLoading(false);
 	}, [user]);
 
 	return (
@@ -40,7 +37,6 @@ export default function AdminRoute(props) {
 									alert: true,
 									severity: "error",
 									message: "You are not an admin.",
-									duration: 3000,
 								},
 							}}
 						/>
@@ -53,7 +49,6 @@ export default function AdminRoute(props) {
 								alert: true,
 								severity: "error",
 								message: "Please verify your email address.",
-								duration: 3000,
 							},
 						}}
 					/>
@@ -66,7 +61,6 @@ export default function AdminRoute(props) {
 							alert: true,
 							severity: "error",
 							message: "Please sign in.",
-							duration: 3000,
 						},
 					}}
 				/>

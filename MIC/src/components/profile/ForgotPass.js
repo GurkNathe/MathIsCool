@@ -1,75 +1,73 @@
-import React, { useState } from 'react';
-import { CssBaseline, TextField, Grid, Typography, Container } from "@mui/material";
-import { Paper, Form, Submit } from "../styledComps";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
 
 import { sendPasswordResetEmail } from "@firebase/auth";
 import { auth } from "../fire";
 
-import { useHistory } from "react-router-dom";
+import { Paper, Submit } from "../styledComps";
 
 export default function ForgotPass() {
-  const history = useHistory();
-  const [email, setEmail] = useState(" ");
-  const [error, setError] = useState(null);
+	const history = useHistory();
+	const [email, setEmail] = useState(" ");
+	const [error, setError] = useState(false);
 
-  //gets current input email
-  const onEmail = (event) => {
-    setEmail(event.target.value);
-    setError(null);
-  }
+	// Gets current input email
+	const onEmail = (emailAddress) => {
+		setEmail(emailAddress);
+		setError(false);
+	};
 
-  //will handle sending info to firebase and changing to loggedin page
-  const onSubmit = () => {
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
-        history.push({
-          pathname: "/",
-          state: {
-            alert: true,
-            severity: "info",
-            message: "A password reset email was sent to your email. Please click on the link and reset your password.",
-            duration: 5000
-          }
-        });
-      })
-      .catch((error) => {
-        setError(error)
-      })
-  };
+	// Sends an email to the user to reset their password
+	const onSubmit = async () => {
+		await sendPasswordResetEmail(auth, email)
+			.then(() => {
+				history.push({
+					pathname: "/",
+					state: {
+						alert: true,
+						severity: "info",
+						message:
+							"A password reset email was sent to your email. Please click on the link and reset your password.",
+					},
+				});
+			})
+			.catch((error) => {
+				setError(error);
+			});
+	};
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Paper>
-        <Typography component="h1" variant="h5">
-          Enter Email Address
-        </Typography>
-        <Form id="user" noValidate>
-          <Grid item xs={12}>
-            <TextField 
-                error={error}
-                variant="outlined" 
-                margin="normal" 
-                required 
-                fullWidth 
-                id="email" 
-                label="Email Address" 
-                name="email" 
-                autoComplete="email" 
-                helperText={error ? "Please enter a valid email address." : null}
-                autoFocus 
-                onChange={onEmail}
-              />
-          </Grid>
-          <Submit
-            fullWidth
-            variant="contained"
-            onClick={onSubmit}
-          >
-            Reset
-          </Submit>
-        </Form>
-      </Paper>
-    </Container>
-  );
+	return (
+		<Container component="main" maxWidth="xs">
+			<Paper>
+				<Typography component="h1" variant="h5">
+					Enter Email Address
+				</Typography>
+				<TextField
+					error={!!error}
+					variant="outlined"
+					margin="normal"
+					required
+					fullWidth
+					label="Email Address"
+					name="email"
+					autoComplete="email"
+					helperText={error ? "Please enter a valid email address." : null}
+					autoFocus
+					onKeyDown={(event) => {
+						if (event.key === "Enter") {
+							onSubmit();
+						}
+					}}
+					onChange={(event) => onEmail(event.target.value)}
+				/>
+				<Submit fullWidth variant="contained" onClick={onSubmit}>
+					Reset
+				</Submit>
+			</Paper>
+		</Container>
+	);
 }

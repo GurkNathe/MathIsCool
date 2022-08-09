@@ -1,16 +1,16 @@
 import { doc, getDoc } from "@firebase/firestore";
 import { db } from "../fire";
 
-//Used to get pre-login web page html/data
+// Used to get pre-login web page html/data
 export default async function getWeb(title) {
-	//checks if not in local storage, meaning database can be pulled
+	// Checks if not in session storage, meaning database can be pulled
 	if (!sessionStorage.getItem(title)) {
-		//getting the subcollection form 'web' collection from firestore
+		// Getting the subcollection form 'web' collection from firestore
 		try {
 			const ref = doc(db, "web", title);
 			const page = await getDoc(ref);
 
-			//checking to make sure it actually got data
+			// Checking to make sure it actually got data
 			if (page.empty) {
 				return;
 			}

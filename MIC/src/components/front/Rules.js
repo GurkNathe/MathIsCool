@@ -6,16 +6,18 @@ import getWeb from "./getWeb";
 import getPage from "./getPage";
 
 export default function Rules() {
-  const title = "rules";
-  const [page, setPage] = useState(getPage(title, "value"));
+	const title = "rules";
+	const [page, setPage] = useState(getPage(title, "value"));
 
-  useEffect(() => {
-    getWeb(title).then((result) => {
-      result !== undefined ? setPage(result.value) : setPage(page);
-    })
-  }, [page])
+	useEffect(() => {
+		getWeb(title)
+			.then((result) => {
+				result !== undefined ? setPage(result.value) : setPage(page);
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}, [page]);
 
-  return (
-    <Page title="Rules" page={page}/>
-  );
+	return <Page title="Rules" page={page} />;
 }

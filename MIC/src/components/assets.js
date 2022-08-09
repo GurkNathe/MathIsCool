@@ -6,16 +6,6 @@ import donate from "../assets/btn_donate_LG.webp";
 import video from "../assets/docs/MastersRegistration.mp4";
 import divisions from "../assets/docs/divisions.pdf";
 import div_alg from "../assets/docs/division_algorithm.pdf";
-import map from "../assets/img/sites/MIC_Regions.png"
+import map from "../assets/img/sites/MIC_Regions.png";
 
-export {
-  math, 
-  lake, 
-  train, 
-  wp, 
-  donate, 
-  video, 
-  divisions, 
-  div_alg,
-  map
-}
+export { math, lake, train, wp, donate, video, divisions, div_alg, map };

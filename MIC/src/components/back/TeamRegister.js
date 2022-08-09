@@ -15,7 +15,7 @@ export default function TeamRegister(props) {
 	//gets the competitions that are open (i.e. status == reg)
 	const getComps = async (title) => {
 		//holds the competitions
-		var comps = {};
+		let comps = {};
 
 		//checks if load variable in local storage is true, meaning database can be pulled
 		if (
@@ -286,7 +286,7 @@ export default function TeamRegister(props) {
 				setComps(result[0]);
 				setMasters(result[1]);
 
-				var temp = options.locations;
+				let temp = options.locations;
 
 				//filters the options based on the currently available competitions
 				if (result[0] !== null && result[0] !== undefined) {
@@ -300,6 +300,7 @@ export default function TeamRegister(props) {
 							}
 						}
 
+						// TODO: find another way to do this without warnings
 						if (!test) {
 							const ops = options.locations.filter((value, index, arr) => {
 								if (arr[index].value !== temp[i].value) return value;
@@ -339,8 +340,8 @@ export default function TeamRegister(props) {
 		//gets the proper grade level displays
 		let id = null;
 		comp_loop: for (const i in comps) {
-			var grade = comps[i].grade.substr(1);
-			var grades = [];
+			const grade = comps[i].grade.substr(1);
+			let grades = [];
 			for (const item in options.level) {
 				for (const char in grade) {
 					if (options.level[item].value === grade[char]) {
@@ -363,9 +364,9 @@ export default function TeamRegister(props) {
 		return id;
 	};
 
-	//Setting error if something is not filled out.
+	// Setting error if something is not filled out.
 	const setError = (choice) => {
-		var err = false;
+		let err = false;
 		for (const item in choice) {
 			if ((choice[item] === null || choice[item] === "") && item !== "email") {
 				setChoice((prevState) => ({
@@ -379,7 +380,7 @@ export default function TeamRegister(props) {
 		return err;
 	};
 
-	//sets iframe url for filling google form
+	// Sets iframe url for filling google form
 	const setURL = (choice) => {
 		const uid = auth.currentUser.uid;
 		url = `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${

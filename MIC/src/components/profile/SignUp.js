@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import {
-	CssBaseline,
-	TextField,
-	Grid,
-	Typography,
-	Container,
-} from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useHistory, Link } from "react-router-dom";
-import { Form, LockAvatar, Paper, Submit } from "../styledComps";
+
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+
 import {
 	createUserWithEmailAndPassword,
 	sendEmailVerification,
@@ -17,8 +15,11 @@ import {
 } from "@firebase/auth";
 import { auth } from "../fire";
 
+import { Form, LockAvatar, Paper, Submit } from "../styledComps";
+
 export default function SignUp() {
 	const history = useHistory();
+
 	// Holds the current state of the user sign up
 	const [up, setUp] = useState({
 		email: " ",
@@ -63,36 +64,33 @@ export default function SignUp() {
 					error: null,
 				}));
 				break;
+			case "error":
+				setUp((prevState) => ({
+					...prevState,
+					error: event,
+				}));
+				break;
 			default:
-				console.log(up);
+				break;
 		}
-	};
-
-	const setError = (error) => {
-		setUp((prevState) => ({
-			...prevState,
-			error: error,
-		}));
 	};
 
 	// Will handle sending info to firebase and changing to logged in page
 	const onSubmit = () => {
 		// Checks if password and confirmation password are the same.
 		if (up.password !== up.confirm) {
-			setError(null);
-			setError("NoMatch");
+			onChange("NoMatch", "error");
 			return;
 			// If a non-valid username was provided
 		} else if (up.username.replace(/[^0-9a-z]/gi, "").length === 0) {
-			setError(null);
-			setError("NoUser");
+			onChange("NoUser", "error");
 			return;
 		} else {
 			//Sign's a person up using an email and password, and send email confirmation.
 			createUserWithEmailAndPassword(auth, up.email, up.password)
-				.then(() => {
+				.then(async (result) => {
 					// Sends email verification
-					sendEmailVerification(auth.currentUser);
+					await sendEmailVerification(result.user);
 
 					// Sets session variables for user information
 					sessionStorage.setItem("email", up.email);
@@ -106,7 +104,7 @@ export default function SignUp() {
 							})
 								.then(() => {})
 								.catch((error) => {
-									setError(error.code);
+									onChange(error.code, "error");
 								});
 						}
 					});
@@ -129,19 +127,19 @@ export default function SignUp() {
 							alert: true,
 							severity: "info",
 							message: message,
-							duration: 20000,
 						},
 					});
 				})
 				.catch((error) => {
-					if (up.error === null) setError(error.code);
+					if (up.error === null) {
+						onChange(error.code, "error");
+					}
 				});
 		}
 	};
 
 	return (
 		<Container component="main" maxWidth="xs" style={{ marginBottom: "40px" }}>
-			<CssBaseline />
 			<Paper>
 				<LockAvatar>
 					<LockOutlinedIcon />

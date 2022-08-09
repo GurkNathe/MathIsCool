@@ -50,7 +50,6 @@ export default function SignIn() {
 								alert: false,
 								severity: null,
 								message: null,
-								duration: null,
 							},
 						});
 						window.location.reload();

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 
-//Different components for front-end website
+// Different components for front-end website
 import Competitions from "./components/front/Competitions";
 import Home from "./components/front/Home";
 import PastTests from "./components/front/PastTests";
@@ -14,20 +14,20 @@ import Rules from "./components/front/Rules";
 import Fees from "./components/front/Fees";
 import FAQ from "./components/front/FAQ";
 
-//Components that handle profile stuff
+// Components that handle profile stuff
 import ProfilePage from "./components/profile/ProfilePage";
 import ForgotPass from "./components/profile/ForgotPass";
 import SignUp from "./components/profile/SignUp";
 import SignIn from "./components/profile/SignIn";
 
-//Different components for logged-in website
+// Different components for logged-in website
 import SideBar from "./components/navigation/SideBar";
 import TeamRegister from "./components/back/TeamRegister";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
 import { GoogleForm, NotFound } from "./components/styledComps";
 import Names from "./components/back/Names";
 
-//Admin/Editor pages
+// Admin/Editor pages
 import ImportContent from "./components/admin/ImportContent";
 import AdminRoute from "./components/navigation/AdminRoute";
 import AddAdmin from "./components/admin/AddAdmin";
@@ -39,56 +39,54 @@ import ManageFAQ from "./components/admin/ManageFAQ";
 import ManagePastTests from "./components/admin/ManagePastTests";
 import ManageSites from "./components/admin/ManageSites";
 
+// Test page for developers to mess around with
 import Test from "./components/admin/Test";
 
-//Firebase stuff
 import { doc, getDoc } from "@firebase/firestore";
 import { onAuthStateChanged } from "@firebase/auth";
 import { db, auth } from "./components/fire";
 
-// Used to get pre-login web page html/data
-async function getUser() {
-	if (
-		!(sessionStorage.getItem("username") || sessionStorage.getItem("email"))
-	) {
-		//Adding non-compromising information to local storage for using in other components
-		const user = await auth.currentUser;
-		if (user !== undefined && user !== null) {
-			sessionStorage.setItem("username", user.displayName);
-			sessionStorage.setItem("email", user.email);
-		}
-	}
+export default function App() {
+	// Used to get basic user information
+	const getUser = async () => {
+		if (
+			!(sessionStorage.getItem("username") || sessionStorage.getItem("email"))
+		) {
+			// Adding non-compromising information to session storage for using in other components
+			const user = await auth.currentUser;
+			if (user !== undefined && user !== null) {
+				sessionStorage.setItem("username", user.displayName);
+				sessionStorage.setItem("email", user.email);
+			}
 
-	if (!Number(sessionStorage.getItem("checked"))) {
-		if (auth.currentUser !== null) {
-			const user = auth.currentUser;
-			if (!user.photoURL) {
-				const admins = doc(db, "roles", "admin");
-				const admin = await getDoc(admins).then((doc) => {
-					if (doc.data().admins.includes(user.uid)) {
-						onAuthStateChanged((user) => {
-							if (user) {
-								user
-									.updateProfile({
-										photoURL: user.uid,
-									})
-									.then(() => {})
-									.catch((error) => {
-										console.log(error);
-									});
+			// Checking if user is a new admin
+			if (!Number(sessionStorage.getItem("checked"))) {
+				if (user !== null) {
+					if (!user.photoURL) {
+						const admins = doc(db, "roles", "admin");
+						await getDoc(admins).then((doc) => {
+							if (doc.data().admins.includes(user.uid)) {
+								onAuthStateChanged((user) => {
+									if (user) {
+										user
+											.updateProfile({
+												photoURL: user.uid,
+											})
+											.catch((error) => {
+												console.log(error);
+											});
+									}
+								});
 							}
 						});
 					}
-				});
-				return admin;
+				}
+				sessionStorage.setItem("checked", 1);
 			}
-			sessionStorage.setItem("checked", 1);
 		}
-	}
-}
+	};
 
-export default function App() {
-	//used to get non-compromising user information
+	// Used to get non-compromising user information
 	useEffect(() => {
 		getUser();
 	}, []);
