@@ -9,24 +9,27 @@ export default function Locations() {
 	const title = "sites";
 	const [loc, setLoc] = useState(getPage(title, "records"));
 
-	//holding names of sites
-	let locations = [];
-
 	useEffect(() => {
 		getWeb(title).then((result) => {
 			result !== undefined ? setLoc(result.records) : setLoc(loc);
 		});
 	}, [loc]);
 
-	//getting site names
+	// Holding names of sites
+	let locations = [];
+
+	// Getting site names
 	for (const i in loc) {
-		locations.push(loc[i].name);
+		// Check if the site is supposed to be shown
+		if (loc[i].show) {
+			locations.push(loc[i].name);
+		}
 	}
 
-	//sorting site names
+	// Sorting site names
 	locations.sort();
 
-	//alphabetically ordering getting site names
+	// Alphabetically ordering site names
 	for (const i in locations) {
 		for (const j in loc) {
 			if (locations[i] === loc[j].name) locations[i] = loc[j];
@@ -44,7 +47,7 @@ export default function Locations() {
 							{locations.map((doc) => {
 								return doc.region === "west" ? (
 									<span key={doc.name}>
-										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street},{" "}
+										<a href={doc.mapUrl}>{doc.name}</a> - {doc.street},{" "}
 										{doc.city}
 										<br />
 									</span>
@@ -54,7 +57,7 @@ export default function Locations() {
 							{locations.map((doc) => {
 								return doc.region === "central" ? (
 									<span key={doc.name}>
-										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street},{" "}
+										<a href={doc.mapUrl}>{doc.name}</a> - {doc.street},{" "}
 										{doc.city}
 										<br />
 									</span>
@@ -64,7 +67,7 @@ export default function Locations() {
 							{locations.map((doc) => {
 								return doc.region === "east" ? (
 									<span key={doc.name}>
-										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street},{" "}
+										<a href={doc.mapUrl}>{doc.name}</a> - {doc.street},{" "}
 										{doc.city}
 										<br />
 									</span>
@@ -74,8 +77,9 @@ export default function Locations() {
 							{locations.map((doc) => {
 								return doc.region === "masters" ? (
 									<span key={doc.name}>
-										<a href={doc.mapUrl}>{doc.name}</a> -{doc.street}
-										{doc.city === " " ? null : ","} {doc.city}
+										<a href={doc.mapUrl}>{doc.name}</a> - {doc.street}
+										{doc.city === " " || doc.city === 0 ? null : ","}{" "}
+										{doc.city === " " || doc.city === 0 ? null : doc.city}
 										<br />
 									</span>
 								) : null;

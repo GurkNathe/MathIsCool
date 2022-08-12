@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Button, Container, Typography, TextField, Grid } from "@mui/material";
-import { Paper, ProfileAvatar } from "../styledComps";
 
-import SignIn from "./SignIn";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
 import { auth } from "../fire";
 import {
@@ -13,32 +15,41 @@ import {
 	onAuthStateChanged,
 } from "@firebase/auth";
 
+import SignIn from "./SignIn";
+import { Paper, ProfileAvatar } from "../styledComps";
+
 export default function ProfilePage() {
+	// Tells when a field has been changed
 	const [changed, setChanged] = useState(false);
+
+	// Load user information into state
 	const [userInfo, setUserInfo] = useState({
 		username: sessionStorage.getItem("username"),
 		email: sessionStorage.getItem("email"),
 		school:
-			sessionStorage.getItem("school") === undefined
+			sessionStorage.getItem("school") === undefined ||
+			sessionStorage.getItem("school") === null
 				? ""
 				: sessionStorage.getItem("school"),
 	});
 
 	// Saves user information to auth database and
 	const saveChanges = () => {
+		// Save changes to session storage
 		sessionStorage.setItem("username", userInfo.username);
 		sessionStorage.setItem("email", userInfo.email);
 		sessionStorage.setItem("school", userInfo.school);
 		setChanged(false);
 
+		// Updates user information
 		onAuthStateChanged(auth, (user) => {
 			if (user) {
 				updateProfile(user, {
 					displayName: userInfo.username,
 				});
-				updateEmail(user, userInfo.email);
-				// verify email
+				// Update email and send email verification if email changed
 				if (userInfo.email !== user.email) {
+					updateEmail(user, userInfo.email);
 					sendEmailVerification(user).then(() => {
 						console.log("Email sent");
 					});
@@ -47,6 +58,7 @@ export default function ProfilePage() {
 		});
 	};
 
+	// Used to cancel changes made to profile information
 	const cancel = () => {
 		setChanged(false);
 		setUserInfo({
@@ -203,7 +215,7 @@ export default function ProfilePage() {
 							<Button
 								onClick={() => {
 									signOut(auth)
-										.then((user) => {
+										.then(() => {
 											window.location.reload();
 										})
 										.catch((error) => {

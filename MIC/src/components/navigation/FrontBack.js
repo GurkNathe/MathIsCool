@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+
 import { Accordion, AccordionDetails, ClickAwayListener } from "@mui/material";
+
 import { LinkButton, All, Header, Summary } from "../styledComps";
 
 export default function FrontBack(props) {
@@ -7,7 +9,7 @@ export default function FrontBack(props) {
 	const [away, setAway] = useState({ p1: true, p2: true });
 
 	// Used to handle the opening and closing of the accordion buttons in the navigation
-	const handleChange = (panel) => (event, isOpen) => {
+	const handleChange = (panel) => (_, isOpen) => {
 		setOpen(isOpen ? panel : false);
 		setAway({ p1: true, p2: true });
 	};
@@ -30,7 +32,12 @@ export default function FrontBack(props) {
 	return (
 		<All>
 			<Header>Home</Header>
-			<LinkButton to="/" onClick={props.onClick} text="Homepage" />
+			<LinkButton
+				sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
+				to="/"
+				onClick={props.onClick}
+				text="Homepage"
+			/>
 			<ClickAwayListener onClickAway={() => setAway({ ...away, p1: false })}>
 				<Accordion
 					expanded={open === "panel1" && away.p1}
@@ -74,6 +81,7 @@ export default function FrontBack(props) {
 				</Accordion>
 			</ClickAwayListener>
 			<LinkButton
+				sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
 				to="/competitions"
 				onClick={props.onClick}
 				text="Competitions"

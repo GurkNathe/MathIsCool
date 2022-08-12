@@ -1,27 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Button, Divider } from "@mui/material";
 import { useHistory } from "react-router-dom";
-import { LayerOne, LayerTwo } from "../styledComps";
-import options from "../back/options.json";
+
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 
 import { getDocs, getDoc, collection, doc } from "@firebase/firestore";
 import { db } from "../fire";
 
+import { LayerOne, LayerTwo } from "../styledComps";
+
 export default function Competitions() {
 	const history = useHistory();
 
-	// states for the chosen grade level and chosen competition
+	// States for the chosen grade level and chosen competition
 	const [chosen, setChosen] = useState(["4", {}]);
 
-	// all competitions
+	// All competitions
 	const [competitions, setCompetitions] = useState(
 		JSON.parse(sessionStorage.getItem("calendarCompetitions"))
 	);
 
-	// current competition selected
+	// Options object
+	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+
+	// Current competition selected
 	const [comp, setComp] = useState(null);
 
-	// all possible sites
+	// All possible sites
 	const [sites, setSites] = useState(null);
 
 	const days = [
@@ -49,7 +54,8 @@ export default function Competitions() {
 		"December",
 	];
 
-	// firestore call that gets all competitions
+	// Firestore call that gets all competitions
+	// TODO: exclude competitions that are closed/not open for registration or upcoming
 	const getComps = async () => {
 		const comps = await getDocs(collection(db, "competitions"));
 
@@ -63,12 +69,13 @@ export default function Competitions() {
 		return compsArr;
 	};
 
+	// Gets every possible competition site
 	const getSites = async () => {
 		const sites = await getDoc(doc(db, "web", "sites"));
 		return sites.data();
 	};
 
-	// gets all competitions if there are none in the session storage
+	// Gets all competitions and sites if there are none in the session storage
 	useEffect(() => {
 		if (competitions === null || competitions === undefined) {
 			getComps().then((comps) => {
@@ -82,7 +89,7 @@ export default function Competitions() {
 		}
 	}, [competitions, sites]);
 
-	// function that uses the competition to parse the grade value and formats
+	// Function that uses the competition to parse the grade value and formats
 	// the grade level into something more useable.
 	const getGrade = (comp) => {
 		let grades = [];
@@ -104,7 +111,7 @@ export default function Competitions() {
 		return grade;
 	};
 
-	// function that formats the grade level into something more useable
+	// Function that formats the grade level into something more useable
 	const parseGrade = (grade) => {
 		for (const item in options.level) {
 			if (options.level[item].value === grade) {
@@ -115,7 +122,7 @@ export default function Competitions() {
 		return grade;
 	};
 
-	// gets the time values from the schedule for the Tentative Schedule
+	// Gets the time values from the schedule for the Tentative Schedule
 	const getTimes = (comp) => {
 		let times = [];
 		for (let i = 0; i < comp.length; i++) {
@@ -126,7 +133,7 @@ export default function Competitions() {
 		return times;
 	};
 
-	// gets the events values from the schedule for the Tentative Schedule
+	// Gets the events values from the schedule for the Tentative Schedule
 	const getEvents = (comp) => {
 		let events = [];
 		for (let i = 0; i < comp.length; i++) {
@@ -152,9 +159,7 @@ export default function Competitions() {
 		} ${dayOfWeek.getDate()}, ${dayOfWeek.getFullYear()}`;
 	};
 
-	/**
-	 * onclick function to link to registration page
-	 */
+	// onClick function to link to registration page
 	const register = () => {
 		let registerData = {};
 		registerData.level = { label: parseGrade(chosen[0]), value: chosen[0] };

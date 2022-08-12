@@ -10,7 +10,7 @@ import {
 import { useHistory } from "react-router-dom";
 
 // Static Images for side of homepage
-// ? Should this be changed to easily allow updating the pictures?
+// ? Should this be changed to easily allow updating the pictures? (Storage)
 import { math, lake, train, wp, donate } from "../assets.js";
 
 // Used to get the page contents if they are not already loaded

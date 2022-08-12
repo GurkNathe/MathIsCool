@@ -8,25 +8,61 @@ import Typography from "@mui/material/Typography";
 import { db } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-import { Form, Paper, Submit } from "../styledComps";
+import { Form, Paper, Submit, Alerts } from "../styledComps";
 
 export default function AddAdmin() {
+	// Input UID
 	const [uid, setUid] = useState("");
-	const [error, setError] = useState(false);
+
+	// Error handling
+	const [error, setError] = useState({
+		uid: false,
+		submitted: false,
+		get: false,
+		success: false,
+		error: false,
+		already: false,
+	});
 
 	// Adds new admin to firestore
 	const addAdmin = async (uid) => {
 		const docRef = doc(db, "roles", "admin");
-		const admin = await getDoc(docRef).then((doc) => {
-			const uids = doc.data().admins;
-			if (!uids.includes(uid)) {
-				updateDoc(docRef, {
-					admins: [...uids, uid],
-				});
-			}
-		});
-
-		return admin;
+		await getDoc(docRef)
+			.then((doc) => {
+				const uids = doc.data().admins;
+				if (!uids.includes(uid)) {
+					updateDoc(docRef, {
+						admins: [...uids, uid],
+					})
+						.then(() => {
+							setError((prev) => ({
+								...prev,
+								success: true,
+								submitted: true,
+							}));
+						})
+						.catch(() => {
+							setError((prev) => ({
+								...prev,
+								error: true,
+								submitted: true,
+							}));
+						});
+				} else {
+					setError((prev) => ({
+						...prev,
+						already: true,
+						submitted: true,
+					}));
+				}
+			})
+			.catch(() => {
+				setError((prev) => ({
+					...prev,
+					get: true,
+					submitted: true,
+				}));
+			});
 	};
 
 	// Submission function that checks for a valid string
@@ -34,18 +70,49 @@ export default function AddAdmin() {
 		if (uid !== "" && uid !== null && uid !== undefined) {
 			addAdmin(uid);
 		} else {
-			setError(true);
+			setError((prev) => ({
+				...prev,
+				uid: true,
+			}));
 		}
 	};
 
-	// Gets current input uid
+	// Updates current input uid
 	const onChange = (uid) => {
 		setUid(uid);
-		setError(false);
+		setError((prev) => ({
+			...prev,
+			uid: false,
+		}));
 	};
 
 	return (
 		<Container component="main" maxWidth="xs">
+			<Alerts
+				open={error.submitted}
+				handleClose={() =>
+					setError({
+						uid: false,
+						submitted: false,
+						get: false,
+						success: false,
+						error: false,
+						already: false,
+					})
+				}
+				type={error.success ? "success" : "error"}
+				message={
+					error.success
+						? "Successfully updated page."
+						: error.get
+						? "There was an error retrieving admin information."
+						: error.error
+						? "There was an error updating the admin information."
+						: error.already
+						? `User with UID: ${uid} is already an administrator.`
+						: null
+				}
+			/>
 			<Paper>
 				<Typography component="h1" variant="h5">
 					Enter UID of User
@@ -53,13 +120,13 @@ export default function AddAdmin() {
 				<Form id="user" noValidate>
 					<Grid item xs={12}>
 						<TextField
-							error={!!error}
+							error={error.uid}
 							variant="outlined"
 							margin="normal"
 							required
 							fullWidth
 							label="UID"
-							helperText={error ? "Please enter a valid uid." : null}
+							helperText={error.uid ? "Please enter a valid uid." : null}
 							autoFocus
 							onChange={(event) => onChange(event.target.value)}
 						/>

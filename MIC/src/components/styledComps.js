@@ -1,4 +1,4 @@
-import { styled } from "@mui/material/styles";
+import styled from "@mui/material/styles/styled";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -11,10 +11,12 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
-import { ExpandMore, AccountCircle } from "@mui/icons-material";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+
 import { Link } from "react-router-dom";
+
 import image from "../assets/logo.5a82c15d88ad2d074447.png";
-import options from "./back/options.json";
 
 const color = "#3f51b5";
 const profCol = "#" + ((Math.random() * 0xffffff) << 0).toString(16);
@@ -193,10 +195,11 @@ const NavButton = styled(Button)({
 
 // used for the accordion summary in FrontBack
 const Summary = styled(AccordionSummary)({
-	justifyContent: "left",
+	display: "flex",
+	flexDirection: "column",
+	textAlign: "center",
 	textTransform: "capitalize",
 	textDecoration: "none",
-	border: "currentColor",
 	color: "white",
 	borderRadius: "0",
 	fontSize: "15px",
@@ -342,7 +345,7 @@ const Th = styled("th")({
 // Button that links to a page
 const LinkButton = (props) => {
 	return (
-		<Linked to={props.to} onClick={props.onClick}>
+		<Linked to={props.to} onClick={props.onClick} style={props.sx}>
 			{props.regBut === undefined ? (
 				props.avatar === undefined ? (
 					<NavButton>{props.text}</NavButton>
@@ -363,7 +366,7 @@ const Accord = (props) => {
 				<FAQHead>{props.title}</FAQHead>
 			</AccordionSummary>
 			<AccordionDetails>
-				<Typography>{props.content}</Typography>
+				<span dangerouslySetInnerHTML={{ __html: props.content }}></span>
 			</AccordionDetails>
 		</Accordion>
 	);
@@ -572,57 +575,6 @@ const Profile = (props) => {
 	);
 };
 
-const Student = (props) => {
-	const field = {
-		minWidth: "10vw",
-		maxWidth: "50vw",
-		width: "100%",
-	};
-
-	return (
-		<tr style={{ width: "100%" }}>
-			<td>
-				<TextField
-					value={props.stud.name}
-					onChange={(event) =>
-						props.onChange(event.target.value, props.index, "name")
-					}
-					variant="outlined"></TextField>
-			</td>
-			<td>
-				<Auto
-					options={options.grade}
-					value={props.stud.grade}
-					style={field}
-					onChange={(event, newValue) =>
-						props.onChange(newValue, props.index, "grade")
-					}
-				/>
-			</td>
-			<td>
-				<Auto
-					options={options.stlev}
-					value={props.stud.level}
-					style={field}
-					onChange={(event, newValue) =>
-						props.onChange(newValue, props.index, "level")
-					}
-				/>
-			</td>
-			<td>
-				<Auto
-					options={props.ops}
-					value={props.stud.pos}
-					style={field}
-					onChange={(event, newValue) =>
-						props.onChange(newValue, props.index, "pos")
-					}
-				/>
-			</td>
-		</tr>
-	);
-};
-
 export {
 	color,
 	All,
@@ -663,7 +615,6 @@ export {
 	GoogleForm,
 	NotFound,
 	Profile,
-	Student,
 	Drop,
 	Alerts,
 };

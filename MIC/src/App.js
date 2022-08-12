@@ -86,9 +86,24 @@ export default function App() {
 		}
 	};
 
+	// Loads the options object
+	const getOptions = async () => {
+		if (sessionStorage.getItem("options") !== undefined) {
+			const options = doc(db, "web", "options");
+			await getDoc(options)
+				.then((doc) => {
+					sessionStorage.setItem("options", JSON.stringify(doc.data()));
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		}
+	};
+
 	// Used to get non-compromising user information
 	useEffect(() => {
 		getUser();
+		getOptions();
 	}, []);
 
 	return (
@@ -97,7 +112,6 @@ export default function App() {
 				<Router basename="/">
 					<SideBar />
 					<Switch>
-						<Route path="/test" exact component={Test} />
 						<Route path="/" exact render={(props) => <Home {...props} />} />
 						<Route path="/about/history" exact component={History} />
 						<Route path="/about/contacts" exact component={Contacts} />
@@ -159,6 +173,7 @@ export default function App() {
 							exact
 							component={ManageSites}
 						/>
+						<AdminRoute path="/admin/other" exact component={Test} />
 						<Route component={NotFound} />
 					</Switch>
 				</Router>

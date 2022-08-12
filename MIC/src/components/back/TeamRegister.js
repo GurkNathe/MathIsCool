@@ -9,6 +9,8 @@ import { auth, db } from "../fire";
 
 let options = require("./options");
 
+// TODO: Competition grade matches given grade
+
 export default function TeamRegister(props) {
 	const history = useHistory();
 

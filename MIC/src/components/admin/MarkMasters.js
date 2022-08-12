@@ -2,47 +2,53 @@ import React, { useState } from "react";
 import ReactLoading from "react-loading";
 import { useHistory } from "react-router";
 
-import { BasicPage } from "../styledComps";
-import options from "../back/options.json";
-import DataTable from "../custom/DataTable";
 import { doc, getDoc, getDocs, collection } from "@firebase/firestore";
 import { db } from "../fire";
 
-//gets every compeition currently available
-async function getComps() {
-	try {
-		//getting all competitions
-		const comps = await getDocs(collection(db, "competitions"));
+import { BasicPage } from "../styledComps";
+import DataTable from "../custom/DataTable";
 
-		//getting masters schools
-		const masters = await getDoc(doc(db, "masters", "teams"));
-		const master = masters ? masters.data() : null;
-
-		//creating an Array version of the competions
-		let competitions = [];
-		comps.forEach((doc) => {
-			competitions.push(doc.data());
-		});
-
-		//prevents the need for multiple reads in one session
-		sessionStorage.setItem("mastersComps", JSON.stringify(competitions));
-		sessionStorage.setItem("mastersData", JSON.stringify(master));
-
-		return [competitions, master];
-	} catch (error) {
-		return error;
-	}
-}
+// TODO: Add documentation
 
 export default function MarkMasters() {
 	const history = useHistory();
+
 	const [comps, setComps] = useState({
 		comp: JSON.parse(sessionStorage.getItem("mastersComps")),
 		loading: true,
 	});
+
 	const [mast, setMast] = useState(
 		JSON.parse(sessionStorage.getItem("mastersData"))
 	);
+
+	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+
+	//gets every compeition currently available
+	const getComps = async () => {
+		try {
+			//getting all competitions
+			const comps = await getDocs(collection(db, "competitions"));
+
+			//getting masters schools
+			const masters = await getDoc(doc(db, "masters", "teams"));
+			const master = masters ? masters.data() : null;
+
+			//creating an Array version of the competions
+			let competitions = [];
+			comps.forEach((doc) => {
+				competitions.push(doc.data());
+			});
+
+			//prevents the need for multiple reads in one session
+			sessionStorage.setItem("mastersComps", JSON.stringify(competitions));
+			sessionStorage.setItem("mastersData", JSON.stringify(master));
+
+			return [competitions, master];
+		} catch (error) {
+			return error;
+		}
+	};
 
 	//TODO: flex or width?
 	//Columns and rows of the data table
@@ -168,7 +174,14 @@ export default function MarkMasters() {
 						}
 						return null;
 					})}
-					<DataTable columns={columns} rows={rows} />
+					<h1>Mark Masters</h1>
+					<DataTable
+						columns={columns}
+						rows={rows}
+						disableDensitySelector
+						disableColumnSelector
+						disableColumnFilter
+					/>
 				</>
 			) : (
 				<div style={{ position: "fixed", top: "45%", left: "45%" }}>

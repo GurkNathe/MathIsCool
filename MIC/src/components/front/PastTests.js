@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { BasicPage, Td, Th } from "../styledComps";
+
 import { Button, Divider } from "@mui/material";
 
 import { doc, getDoc } from "@firebase/firestore";
 import { ref, getDownloadURL } from "@firebase/storage";
 import { db, storage } from "../fire";
-import options from "../back/options.json";
+
+import { BasicPage, Td, Th } from "../styledComps";
 
 export default function PastTests() {
 	// Used to control the state of which grade of tests are shown
@@ -15,6 +16,9 @@ export default function PastTests() {
 	const [samples, setSamples] = useState(
 		JSON.parse(sessionStorage.getItem("samples"))
 	);
+
+	// Options object
+	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
 
 	// Holds the array of results for table construction
 	const [year, setYear] = useState([]);

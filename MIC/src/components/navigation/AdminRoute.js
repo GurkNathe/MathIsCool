@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Route, Redirect } from "react-router-dom";
 import ReactLoading from "react-loading";
+
 import { onAuthStateChanged } from "@firebase/auth";
 import { auth } from "../fire";
 
 export default function AdminRoute(props) {
-	const [user, setUser] = useState(1);
+	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 
+	// Get user information and stop loading
 	useEffect(() => {
 		onAuthStateChanged(auth, (use) => {
 			setUser(use);

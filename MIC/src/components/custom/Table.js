@@ -14,7 +14,6 @@ import { doc, getDoc, updateDoc } from "@firebase/firestore";
 import { db } from "../fire";
 
 import { TableTop } from "../styledComps";
-import genInfo from "../back/options.json";
 
 //Used for Enter Names table
 
@@ -160,7 +159,7 @@ export default function Table(props) {
 			flex: 1,
 			editable: true,
 			type: "singleSelect",
-			valueOptions: genInfo.grade,
+			valueOptions: JSON.parse(sessionStorage.getItem("options")).grade,
 		},
 		{
 			field: "level",
@@ -169,7 +168,7 @@ export default function Table(props) {
 			flex: 1,
 			editable: true,
 			type: "singleSelect",
-			valueOptions: genInfo.stlev,
+			valueOptions: JSON.parse(sessionStorage.getItem("options")).stlev,
 		},
 		{
 			field: "pos",

@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, TextField } from "@mui/material";
-import { db, auth } from "../fire";
-import { doc, getDoc, updateDoc } from "@firebase/firestore";
-import { Auto } from "../styledComps";
-import getWeb from "../front/getWeb";
+
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 import CodeEditor from "@uiw/react-textarea-code-editor";
+
+import { db, auth } from "../fire";
+import { doc, getDoc, updateDoc } from "@firebase/firestore";
+
+import { Auto, Alerts } from "../styledComps";
+import getWeb from "../front/getWeb";
 
 export default function ManageHome() {
 	// Information of the article selected/created
@@ -13,11 +17,10 @@ export default function ManageHome() {
 		key: "",
 		article: "",
 		priority: Number(),
-		timestamp: "",
 		title: "",
-		user: undefined,
 		visible: false,
 	});
+
 	// Used to store the data for each article
 	const [records, setRecords] = useState([]);
 
@@ -29,6 +32,17 @@ export default function ManageHome() {
 		picked: false,
 		clicked: false,
 		delete: false,
+	});
+
+	// Error handling
+	const [error, setError] = useState({
+		submitted: false,
+		success: false,
+		error: false,
+		get: false,
+		delete: false,
+		deleteError: false,
+		noQuestions: false,
 	});
 
 	useEffect(() => {
@@ -107,32 +121,136 @@ export default function ManageHome() {
 					data.records[article.key] = article;
 					data.timestamp = new Date(Date.now());
 				}
-				updateDoc(page, data).then(() =>
-					sessionStorage.setItem("news", JSON.stringify(data))
-				);
+				updateDoc(page, data)
+					.then(() => {
+						// Update local information
+						sessionStorage.setItem("news", JSON.stringify(data));
+						setRecords(data.records);
+						if (newArt.clicked) {
+							setOptions((prev) => [...prev, article.key]);
+							setInfo({
+								key: "",
+								article: "",
+								priority: Number(),
+								title: "",
+								visible: false,
+							});
+						}
+						setNewArt({
+							picked: false,
+							clicked: false,
+							delete: false,
+						});
+						setError((prev) => ({
+							...prev,
+							submitted: true,
+							success: true,
+						}));
+					})
+					.catch(() => {
+						setError((prev) => ({
+							...prev,
+							submitted: true,
+							error: true,
+						}));
+					});
 			})
-			.catch((error) => console.error(error));
+			.catch(() => {
+				setError((prev) => ({
+					...prev,
+					submitted: true,
+					get: true,
+				}));
+			});
 	};
 
 	// Deletes the selected article
 	const deleteArticle = () => {
-		const page = doc(db, "web", "news");
-		getDoc(page)
-			.then((doc) => {
-				let data = doc.data();
-				delete data.records[info.key];
-				data.n--;
-				data.timestamp = new Date(Date.now());
+		if (options.includes(info.key)) {
+			const page = doc(db, "web", "news");
+			getDoc(page)
+				.then((doc) => {
+					let data = doc.data();
+					delete data.records[info.key];
+					data.n--;
+					data.timestamp = new Date(Date.now());
 
-				updateDoc(page, data).then(() =>
-					sessionStorage.setItem("news", JSON.stringify(data))
-				);
-			})
-			.catch((error) => console.error(error));
+					updateDoc(page, data)
+						.then(() => {
+							// Update local information
+							sessionStorage.setItem("news", JSON.stringify(data));
+							setOptions(Object.keys(data.records));
+							setRecords(data.records);
+							setInfo({
+								key: "",
+								article: "",
+								priority: Number(),
+								title: "",
+								visible: false,
+							});
+
+							setError((prev) => ({
+								...prev,
+								submitted: true,
+								delete: true,
+							}));
+						})
+						.catch(() => {
+							setError((prev) => ({
+								...prev,
+								submitted: true,
+								deleteError: true,
+							}));
+						});
+				})
+				.catch(() => {
+					setError((prev) => ({
+						...prev,
+						submitted: true,
+						get: true,
+					}));
+				});
+		} else {
+			setError((prev) => ({
+				...prev,
+				submitted: true,
+				noQuestion: true,
+			}));
+		}
 	};
 
 	return (
 		<div style={{ margin: "10px" }}>
+			<Alerts
+				open={error.submitted || error.delete}
+				handleClose={() =>
+					setError({
+						submitted: false,
+						success: false,
+						error: false,
+						get: false,
+						delete: false,
+						deleteError: false,
+						noQuestions: false,
+					})
+				}
+				type={error.success || error.delete ? "success" : "error"}
+				message={
+					error.success
+						? "Successfully updated article."
+						: error.delete
+						? "Successfully deleted article."
+						: error.get
+						? "There was an error retrieving the article. Please try saving again."
+						: error.error
+						? "Article failed to upload. Please try again."
+						: error.deleteError
+						? "Error deleting the article. Please try again."
+						: error.noQuestion
+						? "There is no article to delete."
+						: "An unknown error occurred. Please try again."
+				}
+			/>
 			<h1>Homepage Articles</h1>
 
 			<div
@@ -227,7 +345,10 @@ export default function ManageHome() {
 				<TextField
 					value={info.priority}
 					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, priority: event.target.value }))
+						setInfo((prev) => ({
+							...prev,
+							priority: event.target.value.replace(/[^\d,]+/g, ""),
+						}))
 					}
 					label="Priority"
 					variant="outlined"

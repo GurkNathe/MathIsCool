@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import {
-	Button,
-	TextField,
-	Box,
-	CircularProgress,
-	Typography,
-} from "@mui/material";
+
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import Add from "@mui/icons-material/Add";
 import DownloadDoneIcon from "@mui/icons-material/DownloadDone";
+
 import { db, auth, storage } from "../fire";
 import { doc, updateDoc } from "@firebase/firestore";
 import { ref, uploadBytesResumable } from "@firebase/storage";
+
 import { Drop, Alerts } from "../styledComps";
 import getWeb from "../front/getWeb";
 
-// TODO: Progress upload
+// TODO: uploading animation
 
 export default function ManagePastTests() {
 	// Information of the article selected/created
@@ -154,6 +155,7 @@ export default function ManagePastTests() {
 				},
 				timestamp: new Date(Date.now()),
 			};
+
 			const dbSamples = doc(db, "web", "samples");
 			updateDoc(dbSamples, samps)
 				.then(() => {
@@ -288,9 +290,7 @@ export default function ManagePastTests() {
 					onChange={(event) => {
 						setInfo((prev) => ({
 							...prev,
-							bYear: !isNaN(Number(event.target.value))
-								? event.target.value
-								: "",
+							bYear: event.target.value.replace(/[^\d,]+/g, "").substring(0, 4),
 						}));
 						event.target.value.length === 4
 							? setErrors((prev) => ({
@@ -313,9 +313,7 @@ export default function ManagePastTests() {
 					onChange={(event) => {
 						setInfo((prev) => ({
 							...prev,
-							eYear: !isNaN(Number(event.target.value))
-								? event.target.value
-								: "",
+							eYear: event.target.value.replace(/[^\d,]+/g, "").substring(0, 4),
 						}));
 						event.target.value.length === 4
 							? setErrors((prev) => ({

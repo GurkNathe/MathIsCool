@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, TextField } from "@mui/material";
+
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
+
 import { Drop, Alerts } from "../styledComps";
 import getWeb from "../front/getWeb";
 
@@ -190,10 +194,15 @@ export default function ManageSites() {
 							success: true,
 						}));
 						if (!options.includes(info.key)) {
-							options.push(info.key);
+							let tempOps = options;
+							tempOps.push(info.key);
+							tempOps.sort();
+							setOptions(tempOps);
 						}
-						options.sort();
-						records[info.key] = info;
+						setRecords((prev) => ({
+							...prev,
+							[info.key]: info,
+						}));
 						setInfo({
 							city: "",
 							key: "",

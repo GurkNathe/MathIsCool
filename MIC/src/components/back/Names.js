@@ -6,7 +6,6 @@ import { auth, db } from "../fire";
 
 import { NamesOne, NamesTwo, NamesThree } from "../styledComps";
 import Table from "../custom/Table";
-import options from "./options.json";
 
 export default function Names() {
 	// Used to store the schools the current user has registered for
@@ -17,6 +16,8 @@ export default function Names() {
 	const [selected, setSelected] = useState(0);
 	// Cached competition data
 	const [loadedComps, setLoadedComps] = useState([]);
+	// Options object
+	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
 
 	// Returns the values of # individuals and # teams for each competition
 	// where the current user signed up the chosen school

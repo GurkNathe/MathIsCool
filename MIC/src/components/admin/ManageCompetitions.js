@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+
 import { Button, Grid, TextField, Autocomplete } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { DatePicker } from "@mui/lab";
+
 import { Drop, Alerts } from "../styledComps";
-import options from "../back/options.json";
 
 import {
 	getDocs,
@@ -16,113 +17,96 @@ import {
 import { db, auth } from "../fire";
 
 // TODO: mapurl issues?
-
-// columns for the table
-const columns = [
-	{
-		field: "id",
-		headerName: "ID",
-		description: "ID",
-		flex: 1,
-		hide: true,
-		editable: false,
-	},
-	{
-		field: "site",
-		headerName: "Location",
-		description: "Location",
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "level",
-		headerName: "Level",
-		description: "Grade Level",
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "compDate",
-		headerName: "Date",
-		description: "Competition date.",
-		flex: 1,
-		editable: false,
-		type: "date",
-	},
-	{
-		field: "status",
-		headerName: "Status",
-		description: "Status",
-		flex: 1,
-		editable: false,
-	},
-	// ??? What to do with this?
-	// {
-	// 	field: "notes",
-	// 	headerName: `Director's  Notes`,
-	// 	description: `Director's  Notes`,
-	// 	flex: 1,
-	// 	editable: false,
-	// },
-	// {
-	// 	field: "schools",
-	// 	headerName: `View Schools`,
-	// 	description: `View Schools`,
-	// 	flex: 1,
-	// 	editable: false,
-	// },
-	// {
-	// 	field: "names",
-	// 	headerName: `View Names`,
-	// 	description: `View Names`,
-	// 	flex: 1,
-	// 	editable: false,
-	// },
-	// {
-	// 	field: "emails",
-	// 	headerName: `View Email List`,
-	// 	description: `View Email List`,
-	// 	flex: 1,
-	// 	editable: false,
-	// },
-];
+// TODO: indexing issue with competitions (ids in database messed up)
 
 // Location, level, date, status, map URL, Directors notes, view schools, names, emails
 
 export default function ManageCompetitions() {
+	// columns for the table
+	const columns = [
+		{
+			field: "id",
+			headerName: "ID",
+			description: "ID",
+			flex: 1,
+			hide: true,
+			editable: false,
+		},
+		{
+			field: "site",
+			headerName: "Location",
+			description: "Location",
+			flex: 1,
+			editable: false,
+		},
+		{
+			field: "level",
+			headerName: "Level",
+			description: "Grade Level",
+			flex: 1,
+			editable: false,
+		},
+		{
+			field: "compDate",
+			headerName: "Date",
+			description: "Competition date.",
+			flex: 1,
+			editable: false,
+			type: "date",
+		},
+		{
+			field: "status",
+			headerName: "Status",
+			description: "Status",
+			flex: 1,
+			editable: false,
+		},
+		{
+			field: "note",
+			headerName: `Director's  Notes`,
+			description: `Director's  Notes`,
+			flex: 1,
+			editable: false,
+		},
+	];
+	// Options for selection
+	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
 	// formats competitions for the table
-	const formatComps = (comps) => {
-		if (comps !== undefined && comps !== null) {
-			comps.forEach((comp, index) => {
-				comp.site = comp.site.replace(/\w\S*/g, (w) =>
-					w.replace(/^\w/, (c) => c.toUpperCase())
-				);
-				let grades = [];
-				for (const item in options.level) {
-					for (const char in comp.grade.substr(1)) {
-						if (options.level[item].value === comp.grade.substr(1)[char]) {
-							grades.push(options.level[item].label);
-							break;
+	const formatComps = useCallback(
+		(comps) => {
+			if (comps !== undefined && comps !== null) {
+				comps.forEach((comp, index) => {
+					comp.site = comp.site.replace(/\w\S*/g, (w) =>
+						w.replace(/^\w/, (c) => c.toUpperCase())
+					);
+					let grades = [];
+					for (const item in options.level) {
+						for (const char in comp.grade.substr(1)) {
+							if (options.level[item].value === comp.grade.substr(1)[char]) {
+								grades.push(options.level[item].label);
+								break;
+							}
 						}
 					}
-				}
-				let grade =
-					grades.length > 2 ? grades.join(", ") : grades.join(" and ");
-				grade =
-					grades.length > 2
-						? grade.substring(0, grade.lastIndexOf(", ")) +
-						  ", and " +
-						  grade.substring(grade.lastIndexOf(", ") + 2, grade.length)
-						: grade;
+					let grade =
+						grades.length > 2 ? grades.join(", ") : grades.join(" and ");
+					grade =
+						grades.length > 2
+							? grade.substring(0, grade.lastIndexOf(", ")) +
+							  ", and " +
+							  grade.substring(grade.lastIndexOf(", ") + 2, grade.length)
+							: grade;
 
-				comp.id = index;
-				comp.level = grade;
-				comp.date = new Date(comp.compDate);
-				comp.mapurl = comp.mapURL;
-			});
-		}
-		return comps;
-	};
+					comp.id = index;
+					comp.level = grade;
+					comp.date = new Date(comp.compDate);
+					comp.mapurl = comp.mapURL;
+				});
+			}
+			return comps;
+		},
+		[options.level]
+	);
 
 	// current copmetitions
 	const [rowState, setRow] = useState({
@@ -163,6 +147,7 @@ export default function ManageCompetitions() {
 		timestamp: "",
 		user: "",
 		year: "",
+		note: "",
 	});
 
 	// Used to tell what options for modifying articles have been selected
@@ -252,7 +237,7 @@ export default function ManageCompetitions() {
 				loading: false,
 			}));
 		}
-	}, [rowState.comp, rowState.loading]);
+	}, [rowState.comp, rowState.loading, formatComps]);
 
 	// Used when selecting a competition to edit/delete
 	const onSelect = (comp) => {
@@ -304,6 +289,7 @@ export default function ManageCompetitions() {
 				timestamp: "",
 				user: "",
 				year: "",
+				note: "",
 			});
 			setRowInfo((prev) => ({
 				...prev,
@@ -359,6 +345,7 @@ export default function ManageCompetitions() {
 				id: newComp.id + 1,
 				timestamp: new Date(Date.now()),
 				user: auth.currentUser.uid,
+				note: newComp.note,
 			};
 
 			// Adding new competition to database
@@ -897,6 +884,14 @@ export default function ManageCompetitions() {
 						/>
 					</Grid>
 				</Grid>
+				<textarea
+					style={{ marginTop: "10px", minHeight: "45px", minWidth: "217px" }}
+					placeholder="Add a note"
+					onChange={(e) => {
+						setComp({ ...newComp, note: e.target.value });
+					}}
+					value={newComp.note}
+				/>
 			</div>
 		</div>
 	);

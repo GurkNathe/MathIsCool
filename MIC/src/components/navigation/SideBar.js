@@ -1,6 +1,11 @@
-import React, { useState } from "react";
-import { Drawer, Button, ClickAwayListener, Grid } from "@mui/material";
-import { Menu } from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+
+import Drawer from "@mui/material/Drawer";
+import Button from "@mui/material/Button";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Grid from "@mui/material/Grid";
+import Menu from "@mui/icons-material/Menu";
+
 import { onAuthStateChanged } from "@firebase/auth";
 import { auth } from "../fire";
 
@@ -9,46 +14,39 @@ import FrontBack from "./FrontBack";
 import CoachTools from "./CoachTools";
 import Admin from "./Admin";
 
-//NOTE: Mobile rendering of the pushed profile button is still pushed after switching pages
-
 export default function SideBar() {
+	// Controls the open/closed state of the drop down menu
 	const [open, setOpen] = useState(false);
-	const [name, setName] = useState(1);
-	const [xsVal, setXs] = useState(window.innerWidth > 540 ? null : 3);
-	const [width, setWidth] = useState(window.innerWidth);
 
+	// User information
+	const [user, setUser] = useState(null);
+
+	// Used for username display on profile button
 	let username = sessionStorage.getItem("username");
 
-	if (name === 1) {
+	// Gets and sets user information
+	useEffect(() => {
 		onAuthStateChanged(auth, (use) => {
-			setName(use);
+			setUser(use);
 		});
-	}
-
-	const onClick = () => {
-		setOpen(false);
-	};
+	}, []);
 
 	return (
 		<FullNav>
-			{width !== window.innerWidth ? setWidth(window.innerWidth) : null}
-			{xsVal !== (window.innerWidth > 540 ? null : 3)
-				? setXs(window.innerWidth > 540 ? null : 3)
-				: null}
 			<Drawer open={open} anchor="top">
 				<ClickAwayListener onClickAway={() => setOpen(false)}>
 					<NavOptions>
 						<Grid container>
-							<Grid item xs={xsVal}>
-								<FrontBack onClick={onClick} />
+							<Grid item>
+								<FrontBack onClick={() => setOpen(false)} />
 							</Grid>
-							<Grid item xs={xsVal}>
-								{auth.currentUser ? <CoachTools onClick={onClick} /> : null}
+							<Grid item>
+								{user ? <CoachTools onClick={() => setOpen(false)} /> : null}
 							</Grid>
-							<Grid item xs={xsVal}>
-								{auth.currentUser ? (
-									auth.currentUser.photoURL ? (
-										<Admin onClick={onClick} />
+							<Grid item>
+								{user ? (
+									user.photoURL === user.uid ? (
+										<Admin onClick={() => setOpen(false)} />
 									) : null
 								) : null}
 							</Grid>
