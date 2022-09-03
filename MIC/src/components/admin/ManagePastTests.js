@@ -15,8 +15,6 @@ import { ref, uploadBytesResumable } from "@firebase/storage";
 import { Drop, Alerts } from "../styledComps";
 import getWeb from "../front/getWeb";
 
-// TODO: uploading animation
-
 export default function ManagePastTests() {
 	// Information of the article selected/created
 	const [info, setInfo] = useState({
@@ -29,6 +27,7 @@ export default function ManagePastTests() {
 		user: undefined,
 		timestamp: "",
 	});
+
 	// Used to store the data for each article
 	const [samples, setSamples] = useState(null);
 

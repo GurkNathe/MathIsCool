@@ -1,12 +1,14 @@
 import React from "react";
-import { Button, Grid, Typography } from "@mui/material";
 import { Redirect } from "react-router-dom";
+
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
 import { doc, setDoc } from "@firebase/firestore";
 import { db } from "../fire";
 
-import { BasicPage, color } from "../styledComps";
-import DataTable from "../custom/DataTable";
+import { BasicPage, color, DataTable } from "../styledComps";
 
 export default function MastersTeams(props) {
 	// Redirect back to the main mark masters page if entry point wasn't through mark masters page
@@ -67,7 +69,7 @@ export default function MastersTeams(props) {
 			}
 		}
 
-		const newData = { teams: [...newMasters] };
+		const newData = { teams: newMasters };
 		setDoc(doc(db, "masters", "teams"), newData);
 		return newData;
 	};

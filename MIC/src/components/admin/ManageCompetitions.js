@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-import { Button, Grid, TextField, Autocomplete } from "@mui/material";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+
 import { DataGrid } from "@mui/x-data-grid";
 import { DatePicker } from "@mui/lab";
 
@@ -15,11 +19,6 @@ import {
 	updateDoc,
 } from "@firebase/firestore";
 import { db, auth } from "../fire";
-
-// TODO: mapurl issues?
-// TODO: indexing issue with competitions (ids in database messed up)
-
-// Location, level, date, status, map URL, Directors notes, view schools, names, emails
 
 export default function ManageCompetitions() {
 	// columns for the table
@@ -40,7 +39,7 @@ export default function ManageCompetitions() {
 			editable: false,
 		},
 		{
-			field: "level",
+			field: "grade",
 			headerName: "Level",
 			description: "Grade Level",
 			flex: 1,
@@ -69,8 +68,10 @@ export default function ManageCompetitions() {
 			editable: false,
 		},
 	];
+
 	// Options for selection
 	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+
 	// formats competitions for the table
 	const formatComps = useCallback(
 		(comps) => {
@@ -108,6 +109,15 @@ export default function ManageCompetitions() {
 		[options.level]
 	);
 
+	// Gets the competition ids (non-numeric)
+	const getCompIds = (comps) => {
+		let tempIds = [];
+		comps.forEach((doc) => {
+			tempIds.push(doc.compId);
+		});
+		return tempIds;
+	};
+
 	// current copmetitions
 	const [rowState, setRow] = useState({
 		comp: formatComps(JSON.parse(sessionStorage.getItem("mastersComps"))),
@@ -117,9 +127,7 @@ export default function ManageCompetitions() {
 	// Selected competition info
 	const [rowInfo, setRowInfo] = useState({
 		comps: JSON.parse(sessionStorage.getItem("mastersComps"))
-			? JSON.parse(sessionStorage.getItem("mastersComps"))
-					.map((val) => String(val.id - 1))
-					.sort()
+			? getCompIds(JSON.parse(sessionStorage.getItem("mastersComps")))
 			: [],
 		row: [],
 		comp: "",
@@ -131,10 +139,6 @@ export default function ManageCompetitions() {
 		contact: "",
 		email: "",
 		grade: "",
-		id:
-			rowState.comp !== null && rowState.comp !== undefined
-				? rowState.comp.length
-				: 1,
 		level: "",
 		mapurl: "",
 		maxTeams: "",
@@ -181,6 +185,8 @@ export default function ManageCompetitions() {
 		extraInfo: "",
 		// Issue with adding/updating competition in database
 		upload: false,
+		// If delete was initiated
+		delete: false,
 		// Successful deletion
 		deleteSucc: false,
 		// Failure to delete
@@ -227,7 +233,7 @@ export default function ManageCompetitions() {
 					}));
 					setRowInfo((prev) => ({
 						...prev,
-						comps: Array.from(Array(result.length), (d, i) => String(i)),
+						comps: getCompIds(result),
 					}));
 				})
 				.catch((error) => console.error(error));
@@ -239,77 +245,98 @@ export default function ManageCompetitions() {
 		}
 	}, [rowState.comp, rowState.loading, formatComps]);
 
+	// Used to select the selected competition by its competition ID
+	const selectComp = (id, comps) => {
+		let temp = null;
+		Object.values(comps).forEach((comp) => {
+			if (comp.compId === id) {
+				temp = comp;
+			}
+		});
+
+		// If the mapurl is undefined, define it
+		if (temp && !temp.mapurl) {
+			temp.mapurl = "";
+		}
+		return { ...temp, id: 0 };
+	};
+
 	// Used when selecting a competition to edit/delete
 	const onSelect = (comp) => {
 		if (comp) {
+			const newComp = selectComp(comp, rowState.comp);
 			setRowInfo((prev) => ({
 				...prev,
-				row: [rowState.comp[comp]],
+				row: [{ ...newComp, grade: newComp.grade.substr(1) }],
 				comp: comp,
 			}));
 			setComp((prev) => ({
 				...prev,
-				...rowState.comp[comp],
+				...newComp,
 			}));
 			setNewArt((prev) => ({
 				...prev,
 				picked: true,
 			}));
 
-			// Set all errors to true
+			// Set errors accordingly
 			let tempErrors = errors;
 			Object.keys(tempErrors).forEach((val) => (tempErrors[val] = true));
 			tempErrors.submitted = false;
+			tempErrors.notFull = false;
+			tempErrors.extraInfo = false;
+			tempErrors.upload = false;
+			tempErrors.delete = false;
+			tempErrors.deleteSucc = false;
+			tempErrors.deleteErr = false;
 			tempErrors.deleteError = false;
 			setErrors(tempErrors);
 		}
 	};
 
 	// Used to clear the input fields when needed
-	const onClear = (event) => {
-		if (!event || !event.target.value) {
-			setComp({
-				compDate: null,
-				contact: "",
-				email: "",
-				grade: "",
-				id:
-					rowState.comp !== null && rowState.comp !== undefined
-						? rowState.comp.length
-						: 1,
-				level: "",
-				mapurl: "",
-				maxTeams: "",
-				regDate: null,
-				registration: {},
-				schTeams: "",
-				schedule: "",
-				site: "",
-				status: "",
-				timestamp: "",
-				user: "",
-				year: "",
-				note: "",
-			});
-			setRowInfo((prev) => ({
-				...prev,
-				row: [],
-				comp: "",
-			}));
-			setNewArt((prev) => ({
-				...prev,
-				picked: false,
-			}));
+	const onClear = () => {
+		setComp({
+			compDate: null,
+			contact: "",
+			email: "",
+			grade: "",
+			level: "",
+			mapurl: "",
+			maxTeams: "",
+			regDate: null,
+			registration: {},
+			schTeams: "",
+			schedule: "",
+			site: "",
+			status: "",
+			timestamp: "",
+			user: "",
+			year: "",
+			note: "",
+		});
+		setRowInfo((prev) => ({
+			...prev,
+			row: [],
+			comp: "",
+		}));
+		setNewArt({
+			clicked: false,
+			deleted: false,
+			picked: false,
+		});
+	};
 
-			// Set all errors to false
-			let tempErrors = errors;
-			Object.keys(tempErrors).forEach((val) => (tempErrors[val] = false));
-			setErrors(tempErrors);
-		}
+	// Clears all error values
+	const clearErrors = () => {
+		// Set all errors to false
+		let tempErrors = errors;
+		Object.keys(tempErrors).forEach((val) => (tempErrors[val] = false));
+		setErrors(tempErrors);
 	};
 
 	// Adds/modifies a competition to/in the database
-	const onSubmit = () => {
+	const onSubmit = async () => {
 		// If no errors submit
 		if (
 			Object.keys(errors)
@@ -317,12 +344,12 @@ export default function ManageCompetitions() {
 					(key) =>
 						key !== "submitted" &&
 						key !== "notFull" &&
-						key !== "success" &&
 						key !== "deleteError" &&
 						key !== "extraInfo" &&
 						key !== "upload" &&
 						key !== "deleteSucc" &&
-						key !== "deleteErr"
+						key !== "deleteErr" &&
+						key !== "delete"
 				)
 				.map((key) => errors[key])
 				.every((value) => value)
@@ -342,7 +369,6 @@ export default function ManageCompetitions() {
 				status: newComp.status,
 				year: newComp.year,
 				mapurl: newComp.mapurl === undefined ? "" : newComp.mapurl,
-				id: newComp.id + 1,
 				timestamp: new Date(Date.now()),
 				user: auth.currentUser.uid,
 				note: newComp.note,
@@ -354,28 +380,24 @@ export default function ManageCompetitions() {
 				const page = collection(db, "competitions");
 
 				// Adding new competition to database
-				addDoc(page, comp)
+				await addDoc(page, comp)
 					.then((val) => {
 						// Feedback for new competition
 						setErrors((prev) => ({
 							...prev,
 							extraInfo:
 								"Competition added with ID: " + val.id + " in the database.",
+							submitted: true,
 						}));
-
-						// !!! May need to remove/figure out a different method
-						// Inserting the option if it isn't already there
-						let tempComps = rowInfo.comps;
-						if (!tempComps.includes(comp.id.toString())) {
-							tempComps.push(comp.id.toString());
-						}
-						tempComps.sort();
 
 						// Updating/adding question to local records
 						setRowInfo((prev) => ({
 							...prev,
-							comps: tempComps,
+							comps: [...prev.comps, val.id],
 						}));
+
+						// Add competition id to object
+						comp.compId = val.id;
 
 						// Adding competition information to list
 						let newComps = [...rowState.comp, comp];
@@ -387,27 +409,36 @@ export default function ManageCompetitions() {
 							comp: newComps,
 						}));
 					})
-					.catch((error) => {
+					.catch(() => {
 						setErrors((prev) => ({
 							...prev,
 							upload: true,
+							submitted: true,
 						}));
-						console.error(error);
 					});
 				// Updating competition
 			} else {
 				// Getting competition
 				const upComp = doc(db, "competitions", newComp.compId);
-				updateDoc(upComp, comp)
+				await updateDoc(upComp, comp)
 					.then(() => {
 						setErrors((prev) => ({
 							...prev,
 							extraInfo: "Updated competition with ID: " + newComp.compId + ".",
+							submitted: true,
 						}));
 
-						// !!! May need to remove/figure out a different method
+						// Add competition id to object
+						comp.compId = newComp.compId;
+
 						// Adding competition information to list
-						let newComps = [...rowState.comp, comp];
+						let newComps = rowState.comp;
+
+						newComps.forEach((_, index) => {
+							if (newComps[index].compId === comp.compId) {
+								newComps[index] = comp;
+							}
+						});
 
 						// Adding information to session information
 						sessionStorage.setItem("mastersComps", JSON.stringify(newComps));
@@ -416,48 +447,84 @@ export default function ManageCompetitions() {
 							comp: newComps,
 						}));
 					})
-					.catch((error) => {
+					.catch(() => {
 						setErrors((prev) => ({
 							...prev,
 							upload: true,
+							submitted: true,
 						}));
-						console.error(error);
 					});
 			}
 		} else {
 			setErrors((prev) => ({
 				...prev,
 				notFull: true,
+				submitted: true,
 			}));
 		}
-		setErrors((prev) => ({
-			...prev,
-			submitted: true,
-		}));
 	};
 
 	// Deletes the selected competions from the database
 	const onDelete = async () => {
-		if (newComp.compId !== undefined) {
+		if (newComp.compId) {
 			await deleteDoc(doc(db, "competitions", newComp.compId))
 				.then(() => {
+					// Removing competition information to list
+					let newComps = rowState.comp;
+
+					newComps.filter((comp) => {
+						return comp.compId === newComp.compId ? false : true;
+					});
+
+					setRow(newComps);
+					sessionStorage.setItem("mastersComps", JSON.stringify(newComps));
 					setErrors((prev) => ({
 						...prev,
+						delete: true,
 						deleteSucc: true,
 					}));
+					onClear();
 				})
-				.catch((error) => {
+				.catch(() => {
 					setErrors((prev) => ({
 						...prev,
+						delete: true,
 						deleteErr: true,
 					}));
-					console.error(error);
 				});
 		} else {
 			setErrors((prev) => ({
 				...prev,
+				delete: true,
 				deleteError: true,
 			}));
+		}
+	};
+
+	// Gets the alert message
+	const getMessage = (errors) => {
+		if (errors.submitted) {
+			if (errors.notFull) {
+				return "Please fill out all required fields to successfully submit a competition.";
+			} else if (errors.upload) {
+				return "There was an issue uploading the competition to the database.";
+			} else if (errors.extraInfo.length !== 0) {
+				return errors.extraInfo;
+			} else {
+				return "Submitted successfully.";
+			}
+		} else if (errors.delete) {
+			if (errors.deleteSucc) {
+				return "Successfully deleted competition.";
+			} else if (errors.deleteErr) {
+				return "There was an error trying to delete the selected competition.";
+			} else if (errors.deleteError) {
+				return "Please select a competition to delete.";
+			} else {
+				return "Unknown behavior error.";
+			}
+		} else {
+			return "Unkown behavior error.";
 		}
 	};
 
@@ -465,19 +532,11 @@ export default function ManageCompetitions() {
 		<div style={{ margin: "10px" }}>
 			<h1>Manage Competitions</h1>
 			<Alerts
-				open={errors.submitted || errors.deleteError}
-				handleClose={() =>
-					setErrors((prev) => ({
-						...prev,
-						submitted: false,
-						notFull: false,
-						deleteError: false,
-						success: false,
-						upload: false,
-						deleteSucc: false,
-						deleteErr: false,
-					}))
-				}
+				open={errors.submitted || errors.delete}
+				handleClose={() => {
+					clearErrors();
+					onClear();
+				}}
 				type={
 					errors.submitted
 						? errors.notFull
@@ -485,43 +544,22 @@ export default function ManageCompetitions() {
 							: errors.upload
 							? "error"
 							: "success"
-						: errors.deleteError
+						: errors.deleteError || errors.deleteErr
 						? "error"
 						: "success"
 				}
-				message={
-					errors.submitted
-						? errors.notFull
-							? "Please fill out all required fields to successfully submit a competition."
-							: errors.upload
-							? "There was an issue uploading the competition to the database."
-							: errors.extraInfo.length !== 0
-							? errors.extraInfo
-							: "Submitted successfully."
-						: errors.deleteError
-						? "Please select a competition to delete."
-						: errors.deleteSucc
-						? "Successfully deleted competition."
-						: errors.deleteErr
-						? "There was an error trying to delete the selected competition."
-						: "Unknown error."
-				}
+				message={getMessage(errors)}
 			/>
 			<div style={{ display: "flex", marginBottom: "10px" }}>
 				<Drop
 					options={rowInfo.comps}
 					onChange={(e) => {
 						onSelect(e.target.textContent);
-						setErrors((prev) => ({
-							...prev,
-							submitted: false,
-							notFull: false,
-							upload: false,
-							deleteSucc: false,
-							deleteErr: false,
-						}));
+						if (e.target.textContent === "") {
+							onClear();
+							clearErrors();
+						}
 					}}
-					onInputChange={(event) => onClear(event)}
 					text="Select Competition"
 					value={rowInfo.comp}
 					style={{ width: "223px" }}
@@ -536,7 +574,7 @@ export default function ManageCompetitions() {
 							size="medium"
 							onClick={() => {
 								setNewArt((prev) => ({ ...prev, clicked: true }));
-								onClear(null);
+								// onClear();
 							}}
 							style={{ marginLeft: "10px" }}>
 							Create New Article
@@ -547,7 +585,6 @@ export default function ManageCompetitions() {
 							size="medium"
 							onClick={() => {
 								setNewArt((prev) => ({ ...prev, delete: true }));
-								onClear(null);
 							}}
 							style={{ marginLeft: "10px" }}>
 							Delete Article
@@ -568,14 +605,7 @@ export default function ManageCompetitions() {
 								variant="outlined"
 								color="primary"
 								size="medium"
-								onClick={() => {
-									setNewArt((prev) => ({
-										...prev,
-										clicked: false,
-										delete: false,
-									}));
-									onClear(null);
-								}}
+								onClick={() => onClear()}
 								style={{ marginLeft: "10px" }}>
 								Undo Option
 							</Button>
@@ -595,21 +625,16 @@ export default function ManageCompetitions() {
 							variant="outlined"
 							color="primary"
 							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({
-									...prev,
-									clicked: false,
-									delete: false,
-								}));
-								onClear(null);
-							}}
+							onClick={() => onClear()}
 							style={{ marginLeft: "10px" }}>
 							Undo Option
 						</Button>
 					</>
 				)}
 			</div>
+
 			<DataGrid autoHeight hideFooter columns={columns} rows={rowInfo.row} />
+
 			<div style={{ marginTop: "10px" }}>
 				<Grid container>
 					<Grid item sm={3}>
@@ -785,7 +810,7 @@ export default function ManageCompetitions() {
 					<Grid item sm={3}>
 						<Autocomplete
 							options={["reg", "pre", "names", "closed", "masters", "archive"]}
-							onChange={(event, newValue) => {
+							onChange={(_, newValue) => {
 								setComp({ ...newComp, status: newValue });
 								setErrors((prev) => ({
 									...prev,
@@ -811,7 +836,7 @@ export default function ManageCompetitions() {
 						/>
 						<Autocomplete
 							options={options.level}
-							onChange={(event, newValue) => {
+							onChange={(_, newValue) => {
 								if (newValue !== null) {
 									setComp({
 										...newComp,
@@ -833,7 +858,7 @@ export default function ManageCompetitions() {
 									}));
 								}
 							}}
-							value={newComp.level}
+							value={newComp.grade.substr(1)}
 							freeSolo
 							sx={{
 								width: "210px",
@@ -851,7 +876,7 @@ export default function ManageCompetitions() {
 						/>
 						<Autocomplete
 							options={options.locations}
-							onChange={(event, newValue) => {
+							onChange={(_, newValue) => {
 								if (newValue !== null) {
 									setComp({ ...newComp, site: newValue.value });
 									setErrors((prev) => ({

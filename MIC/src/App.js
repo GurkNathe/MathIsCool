@@ -43,7 +43,7 @@ import ManageSites from "./components/admin/ManageSites";
 import Test from "./components/admin/Test";
 
 import { doc, getDoc } from "@firebase/firestore";
-import { onAuthStateChanged } from "@firebase/auth";
+import { updateProfile } from "@firebase/auth";
 import { db, auth } from "./components/fire";
 
 export default function App() {
@@ -62,20 +62,17 @@ export default function App() {
 			// Checking if user is a new admin
 			if (!Number(sessionStorage.getItem("checked"))) {
 				if (user !== null) {
-					if (!user.photoURL) {
+					if (!user.photoURL || !JSON.parse(user.photoURL).admin) {
 						const admins = doc(db, "roles", "admin");
 						await getDoc(admins).then((doc) => {
 							if (doc.data().admins.includes(user.uid)) {
-								onAuthStateChanged((user) => {
-									if (user) {
-										user
-											.updateProfile({
-												photoURL: user.uid,
-											})
-											.catch((error) => {
-												console.log(error);
-											});
-									}
+								updateProfile(user, {
+									photoURL: JSON.stringify({
+										...JSON.parse(user.photoURL),
+										admin: user.uid,
+									}),
+								}).catch((error) => {
+									console.error(error);
 								});
 							}
 						});

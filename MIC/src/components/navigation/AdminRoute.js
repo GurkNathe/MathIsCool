@@ -29,8 +29,21 @@ export default function AdminRoute(props) {
 				</div>
 			) : user != null ? (
 				user.emailVerified ? (
-					user.photoURL === user.uid ? (
-						<Route component={props.component} exact path={props.path} />
+					user.photoURL ? (
+						JSON.parse(user.photoURL).admin === user.uid ? (
+							<Route component={props.component} exact path={props.path} />
+						) : (
+							<Redirect
+								to={{
+									pathname: "/",
+									state: {
+										alert: true,
+										severity: "error",
+										message: "You are not an admin.",
+									},
+								}}
+							/>
+						)
 					) : (
 						<Redirect
 							to={{

@@ -16,11 +16,13 @@ import {
 } from "@firebase/auth";
 
 import SignIn from "./SignIn";
-import { Paper, ProfileAvatar } from "../styledComps";
+import { Paper, ProfileAvatar, Drop, Alerts } from "../styledComps";
 
 export default function ProfilePage() {
 	// Tells when a field has been changed
 	const [changed, setChanged] = useState(false);
+
+	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
 
 	// Load user information into state
 	const [userInfo, setUserInfo] = useState({
@@ -28,9 +30,21 @@ export default function ProfilePage() {
 		email: sessionStorage.getItem("email"),
 		school:
 			sessionStorage.getItem("school") === undefined ||
-			sessionStorage.getItem("school") === null
-				? ""
+			sessionStorage.getItem("school") === String(undefined)
+				? "Not chosen"
 				: sessionStorage.getItem("school"),
+	});
+
+	// Alerts for updating/managing profile
+	const [alerts, setAlerts] = useState({
+		saved: false,
+		profile: false,
+		email: false,
+		verify: false,
+		noEmail: false,
+		other: false,
+		signOut: false,
+		sendVerify: false,
 	});
 
 	// Saves user information to auth database and
@@ -46,13 +60,59 @@ export default function ProfilePage() {
 			if (user) {
 				updateProfile(user, {
 					displayName: userInfo.username,
-				});
+					photoURL: JSON.stringify({
+						...JSON.parse(user.photoURL),
+						school: userInfo.school,
+					}),
+				})
+					.then(() => {
+						setAlerts((prev) => ({
+							...prev,
+							saved: true,
+							profile: true,
+						}));
+					})
+					.catch(() => {
+						setAlerts((prev) => ({
+							...prev,
+							saved: true,
+						}));
+					});
 				// Update email and send email verification if email changed
 				if (userInfo.email !== user.email) {
-					updateEmail(user, userInfo.email);
-					sendEmailVerification(user).then(() => {
-						console.log("Email sent");
-					});
+					updateEmail(user, userInfo.email)
+						.then(() => {
+							setAlerts((prev) => ({
+								...prev,
+								saved: true,
+								email: true,
+							}));
+						})
+						.catch(() => {
+							setAlerts((prev) => ({
+								...prev,
+								saved: true,
+							}));
+						});
+					sendEmailVerification(user)
+						.then(() => {
+							setAlerts((prev) => ({
+								...prev,
+								saved: true,
+								verify: true,
+							}));
+						})
+						.catch(() => {
+							setAlerts((prev) => ({
+								...prev,
+								saved: true,
+							}));
+						});
+				} else {
+					setAlerts((prev) => ({
+						...prev,
+						noEmail: true,
+					}));
 				}
 			}
 		});
@@ -70,6 +130,63 @@ export default function ProfilePage() {
 
 	return (
 		<Container component="main">
+			<Alerts
+				open={alerts.saved || alerts.other}
+				handleClose={() =>
+					setAlerts({
+						saved: false,
+						profile: false,
+						email: false,
+						verify: false,
+						noEmail: false,
+						other: false,
+						signOut: false,
+						sendVerify: false,
+					})
+				}
+				type={
+					alerts.saved
+						? alerts.profile
+							? alerts.email
+								? alerts.verify
+									? "success"
+									: "error"
+								: alerts.noEmail
+								? "success"
+								: "error"
+							: "error"
+						: alerts.other
+						? alerts.signOut
+							? "error"
+							: alerts.sendVerify
+							? "success"
+							: "error"
+						: "error"
+				}
+				message={
+					alerts.saved
+						? alerts.profile
+							? alerts.email
+								? alerts.verify
+									? alerts.noEmail
+										? "Successfully updated profile."
+										: "Successfully updated profile. Please confirm your new email."
+									: "Failed to send email verification email."
+								: alerts.noEmail
+								? "Successfully updated profile."
+								: "Failed to update email. Please try again."
+							: "Failed to update profile. Please try again."
+						: alerts.other
+						? alerts.sendVerify
+							? "An verification email was sent to your email address."
+							: alerts.signOut
+							? "There was an error upon signing out. Please sign out again."
+							: "An unknown error occurred. Please try again."
+						: alerts.sendVerify
+						? "Failed to send email verification email. Please try again."
+						: "An unknown error occurred."
+				}
+			/>
 			<Paper>
 				{userInfo.username !== null && userInfo.username !== undefined ? (
 					<ProfileAvatar size="100px">
@@ -103,7 +220,9 @@ export default function ProfilePage() {
 								</Grid>
 								<Grid item xs={6}>
 									<TextField
-										id="outlined-basic"
+										style={{
+											width: "15vw",
+										}}
 										variant="outlined"
 										placeholder={userInfo.username}
 										value={userInfo.username}
@@ -136,7 +255,9 @@ export default function ProfilePage() {
 								</Grid>
 								<Grid item xs={6}>
 									<TextField
-										id="outlined-basic"
+										style={{
+											width: "15vw",
+										}}
 										variant="outlined"
 										placeholder={userInfo.email}
 										value={userInfo.email}
@@ -167,22 +288,20 @@ export default function ProfilePage() {
 									<Typography variant="h6">School: </Typography>
 								</Grid>
 								<Grid item xs={6}>
-									<TextField
-										id="outlined-basic"
-										variant="outlined"
-										placeholder={userInfo.school}
+									<Drop
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											width: "15vw",
+										}}
+										options={options.school}
 										value={userInfo.school}
 										onChange={(e) => {
 											setChanged(true);
 											setUserInfo({
 												...userInfo,
-												school: e.target.value,
+												school: e.target.textContent,
 											});
-										}}
-										onKeyPress={(event) => {
-											if (event.key === "Enter") {
-												saveChanges();
-											}
 										}}
 									/>
 								</Grid>
@@ -216,31 +335,43 @@ export default function ProfilePage() {
 								onClick={() => {
 									signOut(auth)
 										.then(() => {
+											sessionStorage.removeItem("username");
+											sessionStorage.removeItem("email");
+											sessionStorage.removeItem("school");
 											window.location.reload();
 										})
-										.catch((error) => {
-											console.error(error);
+										.catch(() => {
+											setAlerts((prev) => ({
+												...prev,
+												other: true,
+												signOut: true,
+											}));
 										});
-									sessionStorage.removeItem("username");
-									sessionStorage.removeItem("email");
-									sessionStorage.removeItem("school");
 								}}>
 								Logout
 							</Button>
-							{!auth.currentUser.emailVerified ? (
-								<Button
-									onClick={() => {
-										sendEmailVerification(auth.currentUser)
-											.then((result) => {
-												console.log("Verified email sent");
-												console.log(auth.currentUser);
-											})
-											.catch((error) => {
-												console.error(error);
-											});
-									}}>
-									Resend Email Confirmation
-								</Button>
+							{auth.currentUser !== null ? (
+								!auth.currentUser.emailVerified ? (
+									<Button
+										onClick={() => {
+											sendEmailVerification(auth.currentUser)
+												.then(() => {
+													setAlerts((prev) => ({
+														...prev,
+														other: true,
+														sendVerify: true,
+													}));
+												})
+												.catch(() => {
+													setAlerts((prev) => ({
+														...prev,
+														sendVerify: true,
+													}));
+												});
+										}}>
+										Resend Email Confirmation
+									</Button>
+								) : null
 							) : null}
 						</div>
 					</>

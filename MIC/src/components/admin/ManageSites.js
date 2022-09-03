@@ -34,7 +34,11 @@ export default function ManageSites() {
 		show: false,
 		street: false,
 		failed: false,
+		submitted: false,
+		error: false,
 		success: false,
+		delete: false,
+		get: false,
 	});
 
 	// Used to store the data for all sites
@@ -154,7 +158,7 @@ export default function ManageSites() {
 		}
 	};
 
-	// Saves the selected or created site
+	// Saves the selected or created site to the database
 	const saveSite = () => {
 		if (
 			errors.key &&
@@ -169,11 +173,13 @@ export default function ManageSites() {
 			getDoc(page)
 				.then((doc) => {
 					let data = doc.data();
+
 					let site = {
 						...info,
 						timestamp: new Date(Date.now()),
 						user: auth.currentUser.uid,
 					};
+
 					if (newArt.clicked) {
 						// If a new site is being added
 						if (!compare(data.records, records)) {
@@ -187,37 +193,55 @@ export default function ManageSites() {
 						data.timestamp = new Date(Date.now());
 					}
 
-					updateDoc(page, data).then(() => {
-						sessionStorage.setItem("sites", JSON.stringify(data));
-						setErrors((prev) => ({
-							...prev,
-							success: true,
-						}));
-						if (!options.includes(info.key)) {
-							let tempOps = options;
-							tempOps.push(info.key);
-							tempOps.sort();
-							setOptions(tempOps);
-						}
-						setRecords((prev) => ({
-							...prev,
-							[info.key]: info,
-						}));
-						setInfo({
-							city: "",
-							key: "",
-							mapUrl: "",
-							name: "",
-							phone: "",
-							region: "",
-							show: "",
-							street: "",
-							timestamp: "",
-							user: undefined,
+					updateDoc(page, data)
+						.then(() => {
+							sessionStorage.setItem("sites", JSON.stringify(data));
+							setErrors((prev) => ({
+								...prev,
+								submitted: true,
+								success: true,
+							}));
+
+							if (!options.includes(info.key)) {
+								let tempOps = options;
+								tempOps.push(info.key);
+								tempOps.sort();
+								setOptions(tempOps);
+							}
+
+							setRecords((prev) => ({
+								...prev,
+								[info.key]: info,
+							}));
+
+							setInfo({
+								city: "",
+								key: "",
+								mapUrl: "",
+								name: "",
+								phone: "",
+								region: "",
+								show: "",
+								street: "",
+								timestamp: "",
+								user: undefined,
+							});
+						})
+						.catch(() => {
+							setErrors((prev) => ({
+								...prev,
+								submitted: true,
+								error: true,
+							}));
 						});
-					});
 				})
-				.catch((error) => console.error(error));
+				.catch(() =>
+					setErrors((prev) => ({
+						...prev,
+						submitted: true,
+						get: true,
+					}))
+				);
 		} else {
 			setErrors((prev) => ({
 				...prev,
@@ -225,6 +249,8 @@ export default function ManageSites() {
 			}));
 		}
 	};
+
+	// Deletes the selected site from the database
 	const deleteSite = () => {
 		if (
 			errors.key &&
@@ -242,17 +268,23 @@ export default function ManageSites() {
 					delete data.records[info.key];
 					data.n--;
 					data.timestamp = new Date(Date.now());
+
 					updateDoc(page, data).then(() => {
 						sessionStorage.setItem("sites", JSON.stringify(data));
 						setErrors((prev) => ({
 							...prev,
-							success: true,
+							submitted: true,
+							delete: true,
 						}));
+
 						delete records[info.key];
+
 						const newOps = options.filter((value) => {
 							return value !== info.key;
 						});
+
 						setOptions(newOps);
+
 						setInfo({
 							city: "",
 							key: "",
@@ -267,7 +299,13 @@ export default function ManageSites() {
 						});
 					});
 				})
-				.catch((error) => console.error(error));
+				.catch((error) =>
+					setErrors((prev) => ({
+						...prev,
+						submitted: true,
+						get: true,
+					}))
+				);
 		} else {
 			setErrors((prev) => ({
 				...prev,
@@ -280,19 +318,33 @@ export default function ManageSites() {
 		<div style={{ margin: "10px" }}>
 			<h1>Site Location Information</h1>
 			<Alerts
-				open={errors.failed || errors.success}
+				open={errors.failed || errors.submitted}
 				handleClose={() =>
 					setErrors((prev) => ({
 						...prev,
+						submitted: false,
+						get: false,
+						error: false,
 						failed: false,
 						success: false,
+						delete: false,
 					}))
 				}
-				type={errors.success ? "success" : "error"}
+				type={errors.success || errors.delete ? "success" : "error"}
 				message={
-					errors.success
-						? "Successfully updated sites data."
-						: "Please make sure every field is properly filled in."
+					errors.submitted
+						? errors.get
+							? "Failed to retrieve site information. Please try again."
+							: errors.error
+							? "Failed to update the database. Please try again."
+							: errors.success
+							? "Successfully added site to the database."
+							: errors.delete
+							? "Successfully deleted the site from the database."
+							: "test"
+						: errors.failed
+						? "Fields aren't appropriately filled out."
+						: "Unknown error occurred. Please try again."
 				}
 			/>
 			<div
@@ -396,7 +448,7 @@ export default function ManageSites() {
 						}}
 						helperText={`This will overwrite any site with the key "${
 							info.key === "" ? 0 : info.key
-						}".`}
+						}". Key example: auburn.`}
 						label="Key"
 						variant="outlined"
 						style={{ marginRight: "10px" }}

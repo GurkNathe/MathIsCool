@@ -45,8 +45,10 @@ export default function SideBar() {
 							</Grid>
 							<Grid item>
 								{user ? (
-									user.photoURL === user.uid ? (
-										<Admin onClick={() => setOpen(false)} />
+									user.photoURL ? (
+										JSON.parse(user.photoURL).admin === user.uid ? (
+											<Admin onClick={() => setOpen(false)} />
+										) : null
 									) : null
 								) : null}
 							</Grid>

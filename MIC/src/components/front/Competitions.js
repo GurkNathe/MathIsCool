@@ -55,14 +55,15 @@ export default function Competitions() {
 	];
 
 	// Firestore call that gets all competitions
-	// TODO: exclude competitions that are closed/not open for registration or upcoming
 	const getComps = async () => {
 		const comps = await getDocs(collection(db, "competitions"));
 
 		let compsArr = [];
 
 		comps.forEach((item) => {
-			compsArr.push(item.data());
+			if (item.data().status !== "closed" && item.data().status !== "archive") {
+				compsArr.push(item.data());
+			}
 		});
 
 		sessionStorage.setItem("calendarCompetitions", JSON.stringify(compsArr));

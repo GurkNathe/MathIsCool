@@ -62,8 +62,10 @@ export default function SignIn() {
 						// Store user information in session storage
 						sessionStorage.setItem("email", email);
 						sessionStorage.setItem("username", userCredential.user.displayName);
-						// TODO: Do something about this
-						sessionStorage.setItem("school", userCredential.user.phoneNumber);
+						sessionStorage.setItem(
+							"school",
+							JSON.parse(userCredential.user.photoURL).school
+						);
 
 						// Navigate to home page
 						history.push({
@@ -83,7 +85,7 @@ export default function SignIn() {
 					});
 			})
 			.catch((error) => {
-				console.error(error);
+				setError(error);
 			});
 	};
 

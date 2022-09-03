@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-import { Button, Divider } from "@mui/material";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 
 import { doc, getDoc } from "@firebase/firestore";
 import { ref, getDownloadURL } from "@firebase/storage";

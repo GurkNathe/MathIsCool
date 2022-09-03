@@ -1,6 +1,6 @@
 /**
  * @license MIT
- * 
+ *
  * © 2019-2020 xfanatical.com. All Rights Reserved.
  *
  * @since 1.1.2 interface fix
@@ -8,192 +8,456 @@
  * @since 1.1.0 Optimize performance
  * @since 1.0.0 Add all edit response urls and update new urls for new submissions
  */
+
 /**
- * To use:  designate a 'Form Response Edit URL' column
- *          1: Timestamp
- *          2: 
- *          3: Coach Name
- *          4: Competition location
- *          5: Competition Level
- *          6: Number of Teams
- *          7: Number of Individuals
- *          8: School Information
- *          9: School ID
- *         10: School Name
- *         11: School City
- *         12: School Division
- *         13: Emails
- *         14: Form Response Edit URL
- *         15: Invoice
+ * FirestoreApp Library ID: 1VUSl4b1r1eoNcRWotZM3e87ygkxvXltOgyDZhixqncz9lQ3MjfT1iKFw
+ * A  1: Timestamp
+ * B  2: Coach Name
+ * C  3: UID
+ * D  4: Competition location
+ * E  5: Competition Level
+ * F  6: Number of Teams
+ * G  7: Number of Individuals
+ * H  8: School Information
+ * I  9: Emails
+ * J 10: Competition Id
+ * K 11: Form Response Edit URL
+ * L 12: Invoice
+ * M 13: School ID
+ * N 14: School Name
+ * O 15: School City
+ * P 16: School Division
  */
 
-var timestamp = 1
-var coach = 3
-var location = 4
-var level = 5
-var teams = 6
-var individuals = 7
-var schoolInfo = 8
-var schoolID = 9
-var name = 10
-var city = 11
-var div = 12
-var emails = 13
-var form = 14
-var inv = 15
+//  Column Variable Names
+var timestamp = 1;
+var coachName = 2;
+var uid = 3;
+var compLoc = 4;
+var compLev = 5;
+var numTeams = 6;
+var numIndivs = 7;
+var schoolInfo = 8;
+var emails = 9;
+var compId = 10;
+var editUrl = 11;
+var invoice = 12;
+var schoolId = 13;
+var schoolName = 14;
+var schoolCity = 15;
+var schoolDiv = 16;
 
+// Used as a set up function for the spreadsheet
+function setUp() {
+	let sheet = SpreadsheetApp.getActiveSheet();
+
+	// Check if there is a linked form, and alerts the user if there isn't
+	let formURL = sheet.getFormUrl();
+	if (!formURL) {
+		SpreadsheetApp.getUi().alert(
+			"No Google Form associated with this sheet. Please connect it from your Form."
+		);
+		return;
+	}
+	let form = FormApp.openByUrl(formURL);
+
+	// Get form url column and set up the header if it doesn't exist
+	let urlCol = getFormUrlColumn(sheet);
+	if (!sheet.getRange(1, urlCol).getValue()) {
+		sheet.getRange(1, urlCol).setValue("Form Response Edit URL");
+		sheet.getRange(1, urlCol + 1).setValue("Invoice");
+		sheet.getRange(1, urlCol + 2).setValue("School ID");
+		sheet.getRange(1, urlCol + 3).setValue("School Name");
+		sheet.getRange(1, urlCol + 4).setValue("School City");
+		sheet.getRange(1, urlCol + 5).setValue("School Division");
+	}
+
+	// Get the timestamp column
+	let timestampColumn = getTimestampColumn(sheet);
+
+	let timestampRange = undefined;
+	let editResponseUrlRange = undefined;
+
+	// If there are no responses, don't get the ranges
+	if (sheet.getLastRow() > 1) {
+		timestampRange = sheet.getRange(
+			2,
+			timestampColumn,
+			sheet.getLastRow() - 1,
+			1
+		);
+		editResponseUrlRange = sheet.getRange(2, urlCol, sheet.getLastRow() - 1, 1);
+	}
+
+	// If the range isn't undefined (there are responses), continue
+	if (editResponseUrlRange) {
+		// Get url and timestamps
+		let editResponseUrlValues = editResponseUrlRange.getValues();
+		let timestampValues = timestampRange.getValues();
+
+		// For every row, check if the url is valid
+		// (i.e., there is a value there other than an empty string)
+		for (let i = 0; i < editResponseUrlValues.length; i++) {
+			// Get the url and timestamp for the current row
+			let editResponseUrlValue = editResponseUrlValues[i][0];
+			let timestampValue = timestampValues[i][0];
+
+			// Check if the url is valid
+			if (editResponseUrlValue === "") {
+				// If there is no url, but there is a timestamp
+				let timestamp = new Date(timestampValue);
+				if (timestamp) {
+					// Get the form response associated with the timestamp
+					let formResponse = form.getResponses(timestamp)[0];
+
+					// Set the url for the form response
+					editResponseUrlValues[i][0] = formResponse.getEditResponseUrl();
+				}
+			}
+		}
+
+		editResponseUrlRange.setValues(editResponseUrlValues);
+		SpreadsheetApp.flush();
+	}
+
+	// If no Form Submit trigger is added, add one
+	registerNewEditResponseURLTrigger();
+
+	// Notify user that spreadsheet is set up
+	SpreadsheetApp.getUi().alert("Form is set up and ready to go. Thank you.");
+}
+
+// Automatically sets up onFormSubmit trigger upon setting up the spreasheet
 function registerNewEditResponseURLTrigger() {
-  // check if an existing trigger is set
-  var existingTriggerId = PropertiesService.getUserProperties().getProperty('onFormSubmitTriggerID')
-  if (existingTriggerId) {
-    var foundExistingTrigger = false
-    ScriptApp.getProjectTriggers().forEach(function (trigger) {
-      if (trigger.getUniqueId() === existingTriggerId) {
-        foundExistingTrigger = true
-      }
-    })
-    if (foundExistingTrigger) {
-      return
-    }
-  }
+	// Check if form url trigger is already registered
+	let existingTriggerId = PropertiesService.getUserProperties().getProperty(
+		"onFormSubmitTriggerID"
+	);
+	if (existingTriggerId) {
+		let foundExistingTrigger = false;
+		ScriptApp.getProjectTriggers().forEach(function (trigger) {
+			if (trigger.getUniqueId() === existingTriggerId) {
+				foundExistingTrigger = true;
+			}
+		});
+		if (foundExistingTrigger) {
+			return;
+		}
+	}
 
-  var trigger = ScriptApp.newTrigger('onFormSubmitEvent')
-    .forSpreadsheet(SpreadsheetApp.getActive())
-    .onFormSubmit()
-    .create()
+	let trigger = ScriptApp.newTrigger("onFormSubmitEvent")
+		.forSpreadsheet(SpreadsheetApp.getActive())
+		.onFormSubmit()
+		.create();
 
-  PropertiesService.getUserProperties().setProperty('onFormSubmitTriggerID', trigger.getUniqueId())
-}
-
-function parseSchoolInfo(params) {
-  var info = params.sheet.getRange(params.row, schoolInfo).getValue()
-  params.sheet.getRange(params.row, schoolID).setValue(info.substring(0, 5)) //setting school ID
-  params.sheet.getRange(params.row, name).setValue(info.substring(5, info.indexOf("~"))) //setting school name
-  params.sheet.getRange(params.row, city).setValue(info.substring(info.indexOf("~")+1, info.length-4)) //setting school city
-  params.sheet.getRange(params.row, div).setValue(info.substring(info.length-1, info.length)) //setting school division
-}
-
-function getTimestampColumn(sheet) {
-  for (var i = 1; i <= sheet.getLastColumn(); i += 1) {
-    if (sheet.getRange(1, i).getValue() === 'Timestamp') {
-      return i
-    }
-  }
-  return 1
-}
-
-function getFormResponseEditUrlColumn(sheet) {
-  var form = FormApp.openByUrl(sheet.getFormUrl())
-  for (var i = 1; i <= sheet.getLastColumn(); i += 1) {
-    if (sheet.getRange(1, i).getValue() === 'Form Response Edit URL') {
-      return i
-    }
-  }
-  // get the last column at which the url can be placed.
-  return Math.max(sheet.getLastColumn() + 1, form.getItems().length + 2)
-}
-
-/**
- * params: { sheet, form, formResponse, row }
- */
-function addEditResponseURLToSheet(params) {
-  if (!params.col) {
-    params.col = getFormResponseEditUrlColumn(params.sheet)
-  }
-  var formResponseEditUrlRange = params.sheet.getRange(params.row, params.col)
-  formResponseEditUrlRange.setValue(params.formResponse.getEditResponseUrl()) ;
-  var invoice = Math.floor(params.sheet.getRange(params.row, timestamp).getValue()/1000) % 1000000000 ;
-  var message = 'Hello ' + params.sheet.getRange(params.row, coach).getValue() + ',\n\nThank you for registering ' ;
-  message = message + params.sheet.getRange(params.row, teams).getValue() + ' ' + params.sheet.getRange(params.row, level).getValue() ;
-  message = message +  'th grade teams and ' + params.sheet.getRange(params.row, individuals).getValue() ;
-  message = message + ' individuals, \nfrom ' + params.sheet.getRange(params.row, name).getValue() + ' in ' ;
-  message = message + params.sheet.getRange(params.row, city).getValue() + '\n\nIf you need to change your registration, please use the link ' 
-  message = message + params.formResponse.getEditResponseUrl() + '.\nDo not share the link as anyone can change the registration with it.\n\n'
-  
-  message = message + 'The invoice can be viewed and paid using the link:\nhttp://www.academicsarecool.com/oldsite/invoice1.php?c4='
-  message = message + params.sheet.getRange(params.row, name).getValue().replace(/ /g,'%20') + '&c6=' + params.sheet.getRange(params.row, teams).getValue()
-  message = message + '&c1=' + params.sheet.getRange(params.row, timestamp).getValue().getTime()
-  message = message + '&c7=' + params.sheet.getRange(params.row, individuals).getValue()
-  message = message + '&c8=' + params.sheet.getRange(params.row, level).getValue() + '&c12=' + invoice + '\n\n' ;
-  params.sheet.getRange(params.row, inv).setValue(invoice); 
-
-  
-  var subject = params.sheet.getRange(params.row, level).getValue()+'th Grade Math is Cool Registration'
-  MailApp.sendEmail(params.sheet.getRange(params.row, emails).getValue(), subject, message);
-  
-  
-  /* http://www.academicsarecool.com/oldsite/invoice1.php?c4=Marvista&c6=3&c1=42111.2&c7=1&c8=6  */
-}
-
-
-function onOpen() {
-  var menu = [{ name: 'Add Form Edit Response URLs', functionName: 'setupFormEditResponseURLs' }]
-  SpreadsheetApp.getActive().addMenu('Forms', menu)
-}
-
-function setupFormEditResponseURLs() {
-  var sheet = SpreadsheetApp.getActiveSheet()
-  var spreadsheet = SpreadsheetApp.getActive()
-  var formURL = sheet.getFormUrl()
-  if (!formURL) {
-    SpreadsheetApp.getUi().alert('No Google Form associated with this sheet. Please connect it from your Form.')
-    return
-  }
-  var form = FormApp.openByUrl(formURL)
-
-  // setup the header if not existed
-  var headerFormEditResponse = sheet.getRange(1, getFormResponseEditUrlColumn(sheet))
-  var title = headerFormEditResponse.getValue()
-  if (!title) {
-    headerFormEditResponse.setValue('Form Response Edit URL')
-  }
-
-  var timestampColumn = getTimestampColumn(sheet)
-  var editResponseUrlColumn = getFormResponseEditUrlColumn(sheet)
-  
-  var timestampRange = sheet.getRange(2, timestampColumn, sheet.getLastRow() - 1, 1)
-  var editResponseUrlRange = sheet.getRange(2, editResponseUrlColumn, sheet.getLastRow() - 1, 1)
-  if (editResponseUrlRange) {
-    var editResponseUrlValues = editResponseUrlRange.getValues()
-    var timestampValues = timestampRange.getValues()
-    for (var i = 0; i < editResponseUrlValues.length; i += 1) {
-      var editResponseUrlValue = editResponseUrlValues[i][0]
-      var timestampValue = timestampValues[i][0]
-      if (editResponseUrlValue === '') {
-        var timestamp = new Date(timestampValue)
-        if (timestamp) {
-          var formResponse = form.getResponses(timestamp)[0]
-          editResponseUrlValues[i][0] = formResponse.getEditResponseUrl()
-          var row = i + 2
-          if (row % 10 === 0) {
-            spreadsheet.toast('processing rows ' + row + ' to ' + (row + 10))
-            editResponseUrlRange.setValues(editResponseUrlValues)
-            SpreadsheetApp.flush()
-          }
-        }
-      }
-    }
-    
-    editResponseUrlRange.setValues(editResponseUrlValues)
-    SpreadsheetApp.flush()
-  }
-
-  registerNewEditResponseURLTrigger()
-  SpreadsheetApp.getUi().alert('You are all set! Please check the Form Response Edit URL column in this sheet. Future responses will automatically sync the form response edit url.')
+	PropertiesService.getUserProperties().setProperty(
+		"onFormSubmitTriggerID",
+		trigger.getUniqueId()
+	);
 }
 
 function onFormSubmitEvent(e) {
-  var sheet = e.range.getSheet()
-  var form = FormApp.openByUrl(sheet.getFormUrl())
-  var formResponse = form.getResponses().pop()
-  addEditResponseURLToSheet({
-    sheet: sheet,
-    form: form,
-    formResponse: formResponse,
-    row: e.range.getRow(),
-  })
-  parseSchoolInfo({
-    sheet: sheet,
-    row: e.range.getRow(),
-  })
+	let sheet = e.range.getSheet();
+	let formResponse = FormApp.openByUrl(sheet.getFormUrl()).getResponses().pop();
+
+	addEditResponseURLToSheet({
+		sheet: sheet,
+		formResponse: formResponse,
+		row: e.range.getRow(),
+		col: getFormUrlColumn(sheet),
+	});
+
+	getFireStore({
+		sheet: sheet,
+		row: e.range.getRow(),
+	});
+}
+
+/**
+ * params: { sheet, formResponse, row, col }
+ */
+function addEditResponseURLToSheet(params) {
+	// Get form url cell and set it to the form response url
+	let formResponseEditUrlRange = params.sheet.getRange(params.row, params.col);
+	formResponseEditUrlRange.setValue(params.formResponse.getEditResponseUrl());
+
+	// Get school information
+	let info = params.sheet.getRange(params.row, schoolInfo).getValue();
+
+	// Parse school info
+	let schoolinfo = parseSchool(info);
+
+	// Set cells with parsed school info
+	params.sheet.getRange(params.row, schoolId).setValue(schoolinfo[0]);
+	params.sheet.getRange(params.row, schoolName).setValue(schoolinfo[1]);
+	params.sheet.getRange(params.row, schoolCity).setValue(schoolinfo[2]);
+	params.sheet.getRange(params.row, schoolDiv).setValue(schoolinfo[3]);
+
+	// ?? might remove, seems redundant
+	params.sheet
+		.getRange(params.row, emails)
+		.setValue(params.sheet.getRange(params.row, emails).getValue().trim());
+
+	let invoiceId =
+		Math.floor(params.sheet.getRange(params.row, 1).getValue() / 1000) %
+		1000000000;
+
+	// Object to store all the message values
+	let messageVals = {
+		coachName: params.sheet.getRange(params.row, coachName).getValue(),
+		numTeams: params.sheet.getRange(params.row, numTeams).getValue(),
+		compLev: params.sheet.getRange(params.row, compLev).getValue(),
+		numIndivs: params.sheet.getRange(params.row, numIndivs).getValue(),
+		schoolName: params.sheet.getRange(params.row, schoolName).getValue(),
+		compLoc: params.sheet.getRange(params.row, compLoc).getValue(),
+		formUrl: params.formResponse.getEditResponseUrl(),
+		schoolLinkName: params.sheet
+			.getRange(params.row, schoolName)
+			.getValue()
+			.replace(/ /g, "%20"),
+		timestamp: params.sheet.getRange(params.row, 1).getValue().getTime(),
+		compLinkLoc: params.sheet
+			.getRange(params.row, compLoc)
+			.getValue()
+			.replace(/ /g, "%20"),
+	};
+
+	/**
+	 * Link for invoice
+	 * ?? May need to change in the future
+	 * c4: School Name
+	 * c6: Number of Teams
+	 * c1: Timestamp
+	 * c7: Number of Individuals
+	 * c8: Competition Level
+	 * c12: Invoice ID
+	 * site: Competition Site
+	 */
+	let invoiceLink = `http://www.academicsarecool.com/oldsite/invoice1.php?c4=${messageVals.schoolLinkName}&c6=${messageVals.numTeams}&c1=${messageVals.timestamp}&c7=${messageVals.numIndivs}&c8=${messageVals.compLev}&c12=${invoiceId}&site=${messageVals.compLinkLoc}`;
+
+	// Create body of email
+	let message = `Hello ${messageVals.coachName},\n\nThank you for registering ${messageVals.numTeams} ${messageVals.compLev}th grade teams and ${messageVals.numIndivs} individuals, from ${messageVals.schoolName} at ${messageVals.compLoc}\n\nIf you need to change your registration, please use the link: ${messageVals.formUrl}.\n\nDo not share the link as anyone can change the registration with it.\n\nThe invoice can be viewed and paid using the link:\n${invoiceLink}\n\n`;
+
+	// Set invoice id in spreadsheet
+	params.sheet.getRange(params.row, invoice).setValue(invoiceId);
+
+	// Create subject for email
+	let subject = `${params.sheet
+		.getRange(params.row, compLev)
+		.getValue()}th Grade Math is Cool Registration`;
+
+	// Send invoice emails to all given emails
+	params.sheet
+		.getRange(params.row, emails)
+		.getValue()
+		.split(", ")
+		.forEach((value) => {
+			MailApp.sendEmail(value, subject, message);
+		});
+}
+
+function getTimestampColumn(sheet) {
+	for (let i = 1; i <= sheet.getLastColumn(); i += 1) {
+		if (sheet.getRange(1, i).getValue() === "Timestamp") {
+			return i;
+		}
+	}
+	return 1;
+}
+
+function getFormUrlColumn(sheet) {
+	let form = FormApp.openByUrl(sheet.getFormUrl());
+	for (let i = 1; i <= sheet.getLastColumn(); i += 1) {
+		if (sheet.getRange(1, i).getValue() === "Form Response Edit URL") {
+			return i;
+		}
+	}
+	// get the last column at which the url can be placed.
+	return Math.max(sheet.getLastColumn() + 1, form.getItems().length + 2);
+}
+
+// Parses the submitted school format
+function parseSchool(schoolInfo) {
+	let info = [];
+	info.push(schoolInfo.substring(0, 5));
+	info.push(schoolInfo.substring(5, schoolInfo.indexOf("~")));
+	info.push(
+		schoolInfo.substring(schoolInfo.indexOf("~") + 1, schoolInfo.length - 4)
+	);
+	info.push(schoolInfo.substring(schoolInfo.length - 1, schoolInfo.length));
+	return info;
+}
+
+/**
+ * params: { sheet, row, cols }
+ */
+function getFireStore(params) {
+	//Firestore config variables
+	const config = {
+		email: "webdev-f6352@appspot.gserviceaccount.com",
+		key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/zg2xV19agtej\npmzv+Hxy9OYF2ARoAaMV4sJd8uHCsqhXpgFdC+WZYbIgAF/WbdBqJtq4xHnUgIle\ni3Hxj3x6rNBrMIxukVw9zgwFdPkGBKzvVJSfIxhetkBSCSckaoAGBP4O0kWwrjbq\nJ8nFy0dOZK3oHFOXr8b5gpBj6n7GhCw9pkeOf3BsPE82d9lQLAsTPbrlbH1nl2QM\nOTGXfpUsVWk/Ks/LNKf7j/LbvM5QwgF8M1Pw0bjoF007wpsPAUG5EAhMrJopoipP\n4+RReOmjE3iunODhNRMNgg/TaBFGsy1VCnI7r1SlkA3OPuaMNDI04Vg4aEEO8Z+f\nlInMiRBpAgMBAAECggEAJSXuZvuKH0iaJTr1fGC/EbC24EjfSZmPkYySoomJCiF6\nE0e2mePU+yj9y87mwOwR4o1V7VU4V1zxvhr53ZQxwry3vRrxB/UlTV8b2u610GGV\ncOELy+qLLMTVnk3hg98QnpnW7t3w23BSeHVuUd22GMvNFthtpEJKIkcUWhWvqhjX\nUnx76HN96evctFB7q18HoF/O2tcKtuTZVEmJjzWlqcMJ3lEiZEuSUQkE8vJyvkry\n0pg1CEEbeDbC2wSaq/M3F5d2x9x6XNChHnPjteFkC6HJzC12AjIoJcrVP+ZON25e\ny6QrtcgfAX2tiittj9X7ZRtrRD567/0IztKKGzi01QKBgQDquwACBOTBSbDfprbT\nYKQe0ba1Z3s4THbKEGmQsBLcKQFu+M+3YuULqDjFloJZoj5wnlFP11uBehp7d1s7\nNwVivlj0RoTeR655eEYd7AzQwB07SbSg41wTheEMVWGuZPTJ2N5/F0jVkHU3t/Ap\n8PoN0hNPMSt8sX9RKxFeUi9sqwKBgQDRL1EXeUefWtHPwx6gP6BjLpm7uOrirzvy\nE8tQx31fb56HOdnr3dWJt8X7wdeTTYeEQBp0jN0aI2tsLrQFdP+pb4U77l8IHS/v\ni3Wi3R7vBB9VsrE57YH74VwEGkzaXar7WrZwwM+uEBwBZGapgFoA/P9cMLBeql6/\nPaWUMrcPOwKBgQCHCfPUNYqA5GscD6YobvWcQVvSeuj5l4vTbaO9uH3xKKoJdJzT\nTNKmZS3cBl2RQXSYh4wR2bxr/ZoUo7LZmyq/BvDX/2XbFvP6L8Zu2mj5Az0N6bY/\nxO0o0iGJXelnUe893EUMapHdQ1EcL/a7ukWxA8VWDtyMzPSI9rT0RWXBJwKBgCn1\nzdRhlYZXl2KPhyMp4ChE/r1zGFqkP+gNJGltuq5cG3aQmi//7YeUf3hCp9V6ZcaX\nfTcH0oodtLycmavGjkoUfqtI43MjN6xbUxt6M2xKbWapU3eFNt+pkuWXyPa8d0G4\nLoRriL0nqhZ1Z0p03pj4Jtj9Q0OZ9StzWDVj/uhlAoGAMUecHHwO4T/N7G6/0swy\nrEU2Z0DEz1cs+X0t6liJL9phcNokSLnuUzB67X2ID5N8DX3cwAUAXC+7TSFqTzNj\n6H+b26/4CnT2yhmISj7088UEwyA7tT8dXM+JKi1Nhv3C4hzpkdvHlJe9Ha9PAOJ0\nLG3LuTSWgDJGmmsjokl19PM=\n-----END PRIVATE KEY-----\n",
+		id: "webdev-f6352",
+	};
+
+	let firestore = FirestoreApp.getFirestore(
+		config.email,
+		config.key,
+		config.id
+	);
+
+	// Gets the competition data for the competition signed up for
+	let competitions = firestore.getDocument(
+		"competitions/" + params.sheet.getRange(params.row, compId).getValue()
+	);
+
+	// Create an object holding the form submitted information
+	let newData = {
+		level: String(params.sheet.getRange(params.row, compLev).getValue()),
+		numIndividuals: params.sheet.getRange(params.row, numIndivs).getValue(),
+		numTeams: params.sheet.getRange(params.row, numTeams).getValue(),
+		schoolID: params.sheet.getRange(params.row, schoolId).getValue(),
+		uid: params.sheet.getRange(params.row, uid).getValue(),
+	};
+
+	// Reformatting registration map, so no errors occur
+	let registrations = {};
+	let alreadySignedUp = false;
+	if (competitions.fields.registration.mapValue !== undefined) {
+		// Registration map containing every individual registration
+		const regComp = competitions.fields.registration.mapValue.fields;
+
+		// Every registration for the signed up competition
+		for (const i in regComp) {
+			// Individual registration map for every sign up
+			const regSchool = regComp[i].mapValue.fields;
+
+			// Every student for the registration
+			let names = [];
+			if (regSchool.names !== undefined) {
+				const numStudents = newData.numTeams * 4 + newData.numIndividuals - 1;
+
+				// Adding in alternatives, if a registration can have them
+				if (newData.numTeams > 0) {
+					numStudents += 2;
+				}
+
+				for (let j in regSchool.names.arrayValue.values) {
+					j = Number(j);
+					// Checks if a new submission decreased the number of people signed up
+					if (j > numStudents) {
+						break;
+					}
+
+					// Each student in the list of names
+					const regTeam = regSchool.names.arrayValue.values[j].mapValue.fields;
+
+					// Recreating the student map
+					let student = {
+						grade: regTeam.grade.stringValue,
+						name: regTeam.name.stringValue,
+						id: j,
+						level: regTeam.level.stringValue,
+						pos: regTeam.pos.stringValue,
+					};
+
+					names.push(student);
+
+					// Checks if a new submission increased the number of people signed up
+					if (
+						j === regSchool.names.arrayValue.values.length - 1 &&
+						j < numStudents
+					) {
+						for (let newIndex = 1; newIndex < numStudents - j + 1; newIndex++) {
+							names.push({
+								grade: "",
+								name: "",
+								id: j + newIndex,
+								level: "",
+								pos: "",
+							});
+						}
+					}
+				}
+			}
+
+			// Checking if already signed up and adding values accordingly
+			if (newData.schoolID !== Number(regSchool.schoolID.integerValue)) {
+				// Checking if they already started entering names
+				if (regSchool.names === undefined) {
+					registrations[i] = {
+						level: regSchool.level.stringValue,
+						schoolID: Number(regSchool.schoolID.integerValue),
+						numIndividuals: Number(regSchool.numIndividuals.integerValue),
+						uid: regSchool.uid.stringValue,
+						numTeams: Number(regSchool.numTeams.integerValue),
+					};
+				} else {
+					registrations[i] = {
+						level: regSchool.level.stringValue,
+						schoolID: Number(regSchool.schoolID.integerValue),
+						numIndividuals: Number(regSchool.numIndividuals.integerValue),
+						uid: regSchool.uid.stringValue,
+						numTeams: Number(regSchool.numTeams.integerValue),
+						names: names,
+					};
+				}
+			} else {
+				if (regSchool.names === undefined) {
+					registrations[i] = {
+						level: regSchool.level.stringValue,
+						schoolID: Number(regSchool.schoolID.integerValue),
+						numIndividuals: Number(newData.numIndividuals),
+						uid: regSchool.uid.stringValue,
+						numTeams: Number(newData.numTeams),
+					};
+				} else {
+					registrations[i] = {
+						level: regSchool.level.stringValue,
+						schoolID: Number(regSchool.schoolID.integerValue),
+						numIndividuals: Number(newData.numIndividuals),
+						uid: regSchool.uid.stringValue,
+						numTeams: Number(newData.numTeams),
+						names: names,
+					};
+				}
+
+				alreadySignedUp = true;
+			}
+		}
+	}
+
+	// Adding new registration id
+	if (!alreadySignedUp) {
+		let regId = randString(16);
+		registrations[regId] = newData;
+	}
+
+	// Creating data object to use update mask
+	let data = {
+		registration: registrations,
+	};
+
+	// Updating competition signed up for
+	firestore.updateDocument(
+		"competitions/" + params.sheet.getRange(params.row, compId).getValue(),
+		data,
+		true
+	);
+}
+
+function randString(len) {
+	let text = "";
+
+	//Check if numbers
+	if (typeof len !== "number") {
+		return (text = "NaN");
+	}
+
+	let charString =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	for (let i = 0; i < len; i++)
+		text += charString.charAt(Math.floor(Math.random() * charString.length));
+
+	return text;
 }

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
-import { Accordion, AccordionDetails, ClickAwayListener } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 import { LinkButton, All, Header, Summary } from "../styledComps";
 
