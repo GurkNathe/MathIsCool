@@ -54,6 +54,9 @@ export default function ManageSites() {
 		delete: false,
 	});
 
+	// Selected location
+	const [selected, setSelected] = useState("");
+
 	useEffect(() => {
 		// Gets the site data for the page
 		if (sessionStorage.getItem("sites")) {
@@ -127,6 +130,7 @@ export default function ManageSites() {
 				show: true,
 				street: true,
 			}));
+			setSelected(e);
 		} else {
 			setInfo((prev) => ({
 				...prev,
@@ -155,6 +159,7 @@ export default function ManageSites() {
 				...prev,
 				picked: false,
 			}));
+			setSelected("");
 		}
 	};
 
@@ -170,6 +175,7 @@ export default function ManageSites() {
 			errors.street
 		) {
 			const page = doc(db, "web", "sites");
+			const ops = doc(db, "web", "options");
 			getDoc(page)
 				.then((doc) => {
 					let data = doc.data();
@@ -191,6 +197,55 @@ export default function ManageSites() {
 						// If an old site is being updated
 						data.records[site.key] = site;
 						data.timestamp = new Date(Date.now());
+					}
+
+					// Getting options to update options
+					let optionsSites = JSON.parse(sessionStorage.getItem("options"));
+
+					// Checking if the submitted site is already an option
+					let included = false;
+					for (const option of optionsSites.locations) {
+						if (option.value === site.name) {
+							included = true;
+						}
+					}
+
+					// If it is a new location, add it
+					if (!included && /^(true|1)$/i.test(site.show)) {
+						optionsSites.locations = [
+							...optionsSites.locations,
+							{ label: site.name, value: site.name },
+						];
+
+						// Sort alphabetically by name
+						optionsSites.locations.sort((a, b) => {
+							const aVal = a.value.toLowerCase(),
+								bVal = b.value.toLowerCase();
+							if (aVal < bVal) {
+								return -1;
+							}
+							if (aVal > bVal) {
+								return 1;
+							}
+							return 0;
+						});
+
+						updateDoc(ops, optionsSites)
+							.then(() => {
+								sessionStorage.setItem("options", JSON.stringify(optionsSites));
+							})
+							.catch((err) => console.log(err));
+					} else if (!/^(true|1)$/i.test(site.show)) {
+						// Removing option, if the site was set to invisible
+						optionsSites.locations = optionsSites.locations.filter((value) => {
+							return value.value !== site.name;
+						});
+
+						updateDoc(ops, optionsSites)
+							.then(() => {
+								sessionStorage.setItem("options", JSON.stringify(optionsSites));
+							})
+							.catch((err) => console.log(err));
 					}
 
 					updateDoc(page, data)
@@ -226,6 +281,8 @@ export default function ManageSites() {
 								timestamp: "",
 								user: undefined,
 							});
+
+							setSelected("");
 						})
 						.catch(() => {
 							setErrors((prev) => ({
@@ -235,13 +292,13 @@ export default function ManageSites() {
 							}));
 						});
 				})
-				.catch(() =>
+				.catch(() => {
 					setErrors((prev) => ({
 						...prev,
 						submitted: true,
 						get: true,
-					}))
-				);
+					}));
+				});
 		} else {
 			setErrors((prev) => ({
 				...prev,
@@ -262,12 +319,27 @@ export default function ManageSites() {
 			errors.street
 		) {
 			const page = doc(db, "web", "sites");
+			const ops = doc(db, "web", "options");
 			getDoc(page)
 				.then((doc) => {
 					let data = doc.data();
 					delete data.records[info.key];
 					data.n--;
 					data.timestamp = new Date(Date.now());
+
+					// Getting options to update options
+					let optionsSites = JSON.parse(sessionStorage.getItem("options"));
+
+					// Removing option
+					optionsSites.locations = optionsSites.locations.filter((value) => {
+						return value.value !== info.name;
+					});
+
+					updateDoc(ops, optionsSites)
+						.then(() => {
+							sessionStorage.setItem("options", JSON.stringify(optionsSites));
+						})
+						.catch((err) => console.log(err));
 
 					updateDoc(page, data).then(() => {
 						sessionStorage.setItem("sites", JSON.stringify(data));
@@ -297,9 +369,11 @@ export default function ManageSites() {
 							timestamp: "",
 							user: undefined,
 						});
+
+						setSelected("");
 					});
 				})
-				.catch((error) =>
+				.catch(() =>
 					setErrors((prev) => ({
 						...prev,
 						submitted: true,
@@ -355,6 +429,7 @@ export default function ManageSites() {
 					text="Select Location to Edit"
 					disabled={newArt.clicked}
 					style={{ width: 200 }}
+					value={selected}
 				/>
 				{!newArt.picked && !newArt.clicked && !newArt.delete ? (
 					<>
@@ -434,7 +509,10 @@ export default function ManageSites() {
 					</>
 				)}
 			</div>
-
+			<p style={{ color: "grey" }}>
+				The site name will be added to the list if it is a new location and is
+				visible, and will be removed if it is set to invisible/deleted.
+			</p>
 			<div
 				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
 				{newArt.clicked ? (

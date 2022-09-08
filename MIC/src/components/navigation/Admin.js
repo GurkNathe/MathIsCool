@@ -28,6 +28,7 @@ export default function Admin(props) {
 			{ to: "/admin/manage-comps", text: "Manage Competitions" },
 			{ to: "/admin/manage-pasttests", text: "Manage Past Tests" },
 			{ to: "/admin/manage-sites", text: "Manage Sites" },
+			{ to: "/admin/add-info", text: "Add Info" },
 			{ to: "/admin/other", text: "Others" },
 		],
 	];

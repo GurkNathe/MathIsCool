@@ -1,5 +1,0 @@
-Mark masters so only certain schools to register for masters.
-
-Masters collection ---> documents of each grade level ---> have all schools that can register for masters
-
-Competition ---> document for each competition ---> current competition data + list of teams that have signed up by UID (being able to write to you record but no one else's).

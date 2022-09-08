@@ -1,3 +1,0 @@
-begin year+end year = year
-level
-url

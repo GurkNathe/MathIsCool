@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.util.regex.*;
 
 public class ReadJsonAsString {
-
     public static void main(String[] args) throws Exception {
         String file = "./school.txt";
         String json = readFileAsString(file);
@@ -22,8 +21,8 @@ public class ReadJsonAsString {
           }     
         System.out.println(json);
     }
-    public static String readFileAsString(String file)throws Exception
-    {
+
+    public static String readFileAsString(String file) throws Exception {
         return new String(Files.readAllBytes(Paths.get(file)));
     }
 }

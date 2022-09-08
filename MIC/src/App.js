@@ -38,6 +38,7 @@ import ManageHome from "./components/admin/ManageHome";
 import ManageFAQ from "./components/admin/ManageFAQ";
 import ManagePastTests from "./components/admin/ManagePastTests";
 import ManageSites from "./components/admin/ManageSites";
+import AddInfo from "./components/admin/AddInfo";
 
 // Test page for developers to mess around with
 import Test from "./components/admin/Test";
@@ -170,6 +171,7 @@ export default function App() {
 							exact
 							component={ManageSites}
 						/>
+						<AdminRoute path="/admin/add-info" exact component={AddInfo} />
 						<AdminRoute path="/admin/other" exact component={Test} />
 						<Route component={NotFound} />
 					</Switch>

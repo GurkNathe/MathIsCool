@@ -364,7 +364,11 @@ export default function TeamRegister() {
 				case "location":
 					// Updating how many teams are allowed per registration
 					if (newValue !== null) {
-						const compId = setCompID({ ...choice, loc: newValue });
+						const compId = setCompID({
+							...choice,
+							lev: field.field ? field.lev : choice.lev,
+							loc: newValue,
+						});
 						for (const key in comps) {
 							if (key === compId) {
 								setOptions((prev) => ({
@@ -439,7 +443,10 @@ export default function TeamRegister() {
 					(w) => w.replace(/^\w/, (c) => c.toUpperCase())
 				);
 				if (location !== "Masters") {
-					onChange({ value: location, label: location }, "general", "loc");
+					onChange({ value: location, label: location }, "location", {
+						lev: history.location.state.level,
+						field: true,
+					});
 				}
 			}
 			// Clears the state so it doesn't keep the state after a redirect

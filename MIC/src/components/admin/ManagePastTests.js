@@ -16,7 +16,7 @@ import { Drop, Alerts } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ManagePastTests() {
-	// Information of the article selected/created
+	// Information of the test
 	const [info, setInfo] = useState({
 		description: "",
 		url: "",
@@ -51,23 +51,25 @@ export default function ManagePastTests() {
 
 	useEffect(() => {
 		// Gets the article data for the page
-		if (sessionStorage.getItem("samples")) {
-			let homeRecs = JSON.parse(sessionStorage.getItem("samples"));
-			setSamples(homeRecs);
-			let titles = [];
-			for (const record in homeRecs) {
-				titles.push(record);
-			}
-		} else {
-			getWeb("samples").then((response) => {
-				setSamples(response);
+		if (!samples) {
+			if (sessionStorage.getItem("samples")) {
+				let homeRecs = JSON.parse(sessionStorage.getItem("samples"));
+				setSamples(homeRecs);
 				let titles = [];
-				for (const record in response.records) {
+				for (const record in homeRecs) {
 					titles.push(record);
 				}
-			});
+			} else {
+				getWeb("samples").then((response) => {
+					setSamples(response);
+					let titles = [];
+					for (const record in response.records) {
+						titles.push(record);
+					}
+				});
+			}
 		}
-	}, []);
+	}, [samples]);
 
 	// Allows file upload
 	const uploadFile = (file) => {
@@ -138,6 +140,7 @@ export default function ManagePastTests() {
 				}
 			);
 
+			console.log(samples);
 			// Uploads information to Firestore to update website
 			const samps = {
 				n: samples.n + 1,
@@ -163,7 +166,7 @@ export default function ManagePastTests() {
 						...prev,
 						success: good,
 					}));
-					sessionStorage.setItem("samples", JSON.stringify(samps.records));
+					sessionStorage.setItem("samples", JSON.stringify(samps));
 				})
 				.catch((error) => {
 					console.error(error);
@@ -212,6 +215,11 @@ export default function ManagePastTests() {
 						: "An unkown error occured."
 				}
 			/>
+			<p style={{ color: "grey" }}>
+				Click the "Clear File" button before adding a new file. If you don't, it
+				will overwrite the previous submission, even if you select another file
+				to upload.
+			</p>
 			<div
 				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
 				<Button
@@ -228,7 +236,7 @@ export default function ManagePastTests() {
 						</>
 					) : (
 						<>
-							<Add sx={{ marginRight: "10px" }} /> Upload a file
+							<Add sx={{ marginRight: "10px" }} /> Upload a File
 						</>
 					)}
 					<input
@@ -259,6 +267,7 @@ export default function ManagePastTests() {
 					}}
 					style={{ width: 200 }}
 					text="Grade Level"
+					value={info.gLevel}
 				/>
 				<TextField
 					error={errors.saved ? !errors.description : false}
@@ -334,26 +343,29 @@ export default function ManagePastTests() {
 					color="primary"
 					size="medium"
 					onClick={saveTest}>
-					<Box sx={{ position: "relative", display: "inline-flex" }}>
-						<CircularProgress variant="determinate" />
-						<Box
-							sx={{
-								top: 0,
-								left: 0,
-								bottom: 0,
-								right: 0,
-								position: "absolute",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-							}}>
-							<Typography
-								variant="caption"
-								component="div"
-								color="text.secondary">{`${Math.round(upProg)}%`}</Typography>
+					{upProg > 0 ? (
+						<Box sx={{ position: "relative", display: "inline-flex" }}>
+							<CircularProgress variant="determinate" />
+							<Box
+								sx={{
+									top: 0,
+									left: 0,
+									bottom: 0,
+									right: 0,
+									position: "absolute",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+								}}>
+								<Typography
+									variant="caption"
+									component="div"
+									color="text.secondary">{`${Math.round(upProg)}%`}</Typography>
+							</Box>
 						</Box>
-					</Box>
-					Save Article
+					) : (
+						"Save Article"
+					)}
 				</Button>
 			</div>
 			<div>
@@ -364,6 +376,16 @@ export default function ManagePastTests() {
 					onClick={() => {
 						uploadFile(undefined);
 						document.getElementById("file-input").value = "";
+						setInfo({
+							description: "",
+							url: "",
+							gLevel: "",
+							bYear: "",
+							eYear: "",
+							fileInfo: null,
+							user: undefined,
+							timestamp: "",
+						});
 					}}>
 					Clear File
 				</Button>
