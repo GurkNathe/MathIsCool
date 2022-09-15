@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+
 import Add from "@mui/icons-material/Add";
 import DownloadDoneIcon from "@mui/icons-material/DownloadDone";
 
@@ -12,7 +14,7 @@ import { db, auth, storage } from "../fire";
 import { doc, updateDoc } from "@firebase/firestore";
 import { ref, uploadBytesResumable } from "@firebase/storage";
 
-import { Drop, Alerts } from "../styledComps";
+import { Alerts, Drop, LayerOne, LayerTwo } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ManagePastTests() {
@@ -71,7 +73,11 @@ export default function ManagePastTests() {
 		}
 	}, [samples]);
 
-	// Allows file upload
+	/**
+	 * Allows file upload
+	 *
+	 * @param {File} file : PDF file for uploading
+	 */
 	const uploadFile = (file) => {
 		if (file) {
 			setInfo((prev) => ({
@@ -184,212 +190,228 @@ export default function ManagePastTests() {
 	};
 
 	return (
-		<div style={{ margin: "10px" }}>
-			<h1>Add Past Tests</h1>
-			<Alerts
-				open={
-					errors.saved ||
-					errors.storage ||
-					errors.firestore ||
-					errors.success === 3
-				}
-				handleClose={() =>
-					setErrors((prev) => ({
-						...prev,
-						saved: false,
-						storage: false,
-						firestore: false,
-						success: 0,
-					}))
-				}
-				type={errors.success === 3 ? "success" : "error"}
-				message={
-					errors.success === 3
-						? "File uploaded to storage and database successfully."
-						: errors.saved
-						? "Please make sure every field is properly filled in."
-						: errors.storage
-						? "There was an issue uploading file to Firebase Storage."
-						: errors.firestore
-						? "There was an issue uploading to Firebase Firestore."
-						: "An unkown error occured."
-				}
-			/>
-			<p style={{ color: "grey" }}>
-				Click the "Clear File" button before adding a new file. If you don't, it
-				will overwrite the previous submission, even if you select another file
-				to upload.
-			</p>
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				<Button
-					color={
-						errors.saved ? (!errors.file ? "error" : "primary") : "primary"
-					}
-					variant="outlined"
-					component="label"
-					sx={{ marginRight: "10px", textTransform: "none" }}>
-					{info.url ? (
-						<>
-							<DownloadDoneIcon sx={{ marginRight: "10px" }} />
-							{info.url}
-						</>
-					) : (
-						<>
-							<Add sx={{ marginRight: "10px" }} /> Upload a File
-						</>
-					)}
-					<input
-						id="file-input"
-						type="file"
-						accept=".pdf"
-						onChange={(event) => uploadFile(event.target.files[0])}
-						hidden
+		<LayerOne>
+			<LayerTwo>
+				<div style={{ margin: "20px" }}>
+					<h1>Add Past Tests</h1>
+					<Alerts
+						open={
+							errors.saved ||
+							errors.storage ||
+							errors.firestore ||
+							errors.success === 3
+						}
+						handleClose={() =>
+							setErrors((prev) => ({
+								...prev,
+								saved: false,
+								storage: false,
+								firestore: false,
+								success: 0,
+							}))
+						}
+						type={errors.success === 3 ? "success" : "error"}
+						message={
+							errors.success === 3
+								? "File uploaded to storage and database successfully."
+								: errors.saved
+								? "Please make sure every field is properly filled in."
+								: errors.storage
+								? "There was an issue uploading file to Firebase Storage."
+								: errors.firestore
+								? "There was an issue uploading to Firebase Firestore."
+								: "An unkown error occured."
+						}
 					/>
-				</Button>
-				<Drop
-					error={errors.saved ? !errors.level : false}
-					options={grades}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							gLevel: event.target.textContent,
-						}));
-						event.target.textContent.length > 0
-							? setErrors((prev) => ({
+					<p style={{ color: "grey" }}>
+						Click the "Clear File" button before adding a new file. If you
+						don't, it will overwrite the previous submission, even if you select
+						another file to upload.
+					</p>
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						<Button
+							color={
+								errors.saved ? (!errors.file ? "error" : "primary") : "primary"
+							}
+							variant="outlined"
+							component="label"
+							sx={{ marginRight: "10px", textTransform: "none" }}>
+							{info.url ? (
+								<>
+									<DownloadDoneIcon sx={{ marginRight: "10px" }} />
+									{info.url}
+								</>
+							) : (
+								<>
+									<Add sx={{ marginRight: "10px" }} /> Upload a File
+								</>
+							)}
+							<input
+								id="file-input"
+								type="file"
+								accept=".pdf"
+								onChange={(event) => uploadFile(event.target.files[0])}
+								hidden
+							/>
+						</Button>
+
+						<Button
+							variant="outlined"
+							color="primary"
+							size="medium"
+							sx={{ marginRight: "10px", textTransform: "none" }}
+							onClick={saveTest}>
+							{upProg > 0 ? (
+								<Box sx={{ position: "relative", display: "inline-flex" }}>
+									<CircularProgress variant="determinate" />
+									<Box
+										sx={{
+											top: 0,
+											left: 0,
+											bottom: 0,
+											right: 0,
+											position: "absolute",
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+										}}>
+										<Typography
+											variant="caption"
+											component="div"
+											color="text.secondary">{`${Math.round(
+											upProg
+										)}%`}</Typography>
+									</Box>
+								</Box>
+							) : (
+								"Save Article"
+							)}
+						</Button>
+						<Button
+							variant="outlined"
+							component="label"
+							sx={{ textTransform: "none" }}
+							onClick={() => {
+								uploadFile(undefined);
+								document.getElementById("file-input").value = "";
+								setInfo({
+									description: "",
+									url: "",
+									gLevel: "",
+									bYear: "",
+									eYear: "",
+									fileInfo: null,
+									user: undefined,
+									timestamp: "",
+								});
+							}}>
+							Clear File
+						</Button>
+					</div>
+					<Grid container>
+						<Drop
+							error={errors.saved ? !errors.level : false}
+							options={grades}
+							onChange={(event) => {
+								setInfo((prev) => ({
 									...prev,
-									level: true,
-							  }))
-							: setErrors((prev) => ({
+									gLevel: event.target.textContent,
+								}));
+								event.target.textContent.length > 0
+									? setErrors((prev) => ({
+											...prev,
+											level: true,
+									  }))
+									: setErrors((prev) => ({
+											...prev,
+											level: false,
+									  }));
+							}}
+							style={{ width: 200 }}
+							text="Grade Level"
+							value={info.gLevel}
+						/>
+						<TextField
+							error={errors.saved ? !errors.description : false}
+							value={info.description}
+							onChange={(event) => {
+								setInfo((prev) => ({
 									...prev,
-									level: false,
-							  }));
-					}}
-					style={{ width: 200 }}
-					text="Grade Level"
-					value={info.gLevel}
-				/>
-				<TextField
-					error={errors.saved ? !errors.description : false}
-					value={info.description}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							description: event.target.value,
-						}));
-						event.target.value.length > 0
-							? setErrors((prev) => ({
+									description: event.target.value,
+								}));
+								event.target.value.length > 0
+									? setErrors((prev) => ({
+											...prev,
+											description: true,
+									  }))
+									: setErrors((prev) => ({
+											...prev,
+											description: false,
+									  }));
+							}}
+							label="Description"
+							variant="outlined"
+							style={{ marginLeft: "10px" }}
+							helperText="E.g., Champs"
+						/>
+						<TextField
+							error={errors.saved ? !errors.bYear : false}
+							value={info.bYear}
+							onChange={(event) => {
+								setInfo((prev) => ({
 									...prev,
-									description: true,
-							  }))
-							: setErrors((prev) => ({
+									bYear: event.target.value
+										.replace(/[^\d,]+/g, "")
+										.substring(0, 4),
+								}));
+								event.target.value.length === 4
+									? setErrors((prev) => ({
+											...prev,
+											bYear: true,
+									  }))
+									: setErrors((prev) => ({
+											...prev,
+											bYear: false,
+									  }));
+							}}
+							label="Beginning Year"
+							variant="outlined"
+							style={{ marginLeft: "10px", marginRight: "10px" }}
+							helperText="E.g.: If school year was 2021-2022, then 2021."
+						/>
+						<TextField
+							error={errors.saved ? !errors.eYear : false}
+							value={info.eYear}
+							onChange={(event) => {
+								setInfo((prev) => ({
 									...prev,
-									description: false,
-							  }));
-					}}
-					label="Description"
-					variant="outlined"
-					style={{ marginLeft: "10px" }}
-					helperText="E.g., Champs"
-				/>
-				<TextField
-					error={errors.saved ? !errors.bYear : false}
-					value={info.bYear}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							bYear: event.target.value.replace(/[^\d,]+/g, "").substring(0, 4),
-						}));
-						event.target.value.length === 4
-							? setErrors((prev) => ({
-									...prev,
-									bYear: true,
-							  }))
-							: setErrors((prev) => ({
-									...prev,
-									bYear: false,
-							  }));
-					}}
-					label="Beginning Year"
-					variant="outlined"
-					style={{ marginLeft: "10px", marginRight: "10px" }}
-					helperText="E.g.: If school year was 2021-2022, then 2021."
-				/>
-				<TextField
-					error={errors.saved ? !errors.eYear : false}
-					value={info.eYear}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							eYear: event.target.value.replace(/[^\d,]+/g, "").substring(0, 4),
-						}));
-						event.target.value.length === 4
-							? setErrors((prev) => ({
-									...prev,
-									eYear: true,
-							  }))
-							: setErrors((prev) => ({
-									...prev,
-									eYear: false,
-							  }));
-					}}
-					label="Ending Year"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-					helperText="E.g.: If school year was 2021-2022, then 2022."
-				/>
-				<Button
-					variant="outlined"
-					color="primary"
-					size="medium"
-					onClick={saveTest}>
-					{upProg > 0 ? (
-						<Box sx={{ position: "relative", display: "inline-flex" }}>
-							<CircularProgress variant="determinate" />
-							<Box
-								sx={{
-									top: 0,
-									left: 0,
-									bottom: 0,
-									right: 0,
-									position: "absolute",
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "center",
-								}}>
-								<Typography
-									variant="caption"
-									component="div"
-									color="text.secondary">{`${Math.round(upProg)}%`}</Typography>
-							</Box>
-						</Box>
-					) : (
-						"Save Article"
-					)}
-				</Button>
-			</div>
-			<div>
-				<Button
-					variant="outlined"
-					component="label"
-					sx={{ textTransform: "none" }}
-					onClick={() => {
-						uploadFile(undefined);
-						document.getElementById("file-input").value = "";
-						setInfo({
-							description: "",
-							url: "",
-							gLevel: "",
-							bYear: "",
-							eYear: "",
-							fileInfo: null,
-							user: undefined,
-							timestamp: "",
-						});
-					}}>
-					Clear File
-				</Button>
-			</div>
-		</div>
+									eYear: event.target.value
+										.replace(/[^\d,]+/g, "")
+										.substring(0, 4),
+								}));
+								event.target.value.length === 4
+									? setErrors((prev) => ({
+											...prev,
+											eYear: true,
+									  }))
+									: setErrors((prev) => ({
+											...prev,
+											eYear: false,
+									  }));
+							}}
+							label="Ending Year"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+							helperText="E.g.: If school year was 2021-2022, then 2022."
+						/>
+					</Grid>
+				</div>
+			</LayerTwo>
+		</LayerOne>
 	);
 }

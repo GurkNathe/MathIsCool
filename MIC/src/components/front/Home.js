@@ -49,7 +49,11 @@ export default function Home(props) {
 		history.replace({ state: undefined });
 	}, [history]);
 
-	// Gets and sorts the articles on the homepage
+	/**
+	 * Gets and sorts the articles on the homepage
+	 *
+	 * @param {object} items : homepage article information
+	 */
 	const getArticles = useCallback((items) => {
 		// Holding names of articles
 		let tempArticles = [];

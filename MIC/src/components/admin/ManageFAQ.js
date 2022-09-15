@@ -80,7 +80,11 @@ export default function ManageFAQ() {
 		}
 	}, []);
 
-	// Handles the data filling upon selecting a question
+	/**
+	 *Handles the data filling upon selecting a question
+	 *
+	 * @param {string} e : ID for the chosen FAQ
+	 */
 	const selectArticle = (e) => {
 		if (e) {
 			setInfo({

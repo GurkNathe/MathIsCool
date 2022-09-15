@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Redirect } from "react-router-dom";
 
 import Button from "@mui/material/Button";
@@ -10,12 +10,14 @@ import { db } from "../fire";
 
 import { BasicPage, color, DataTable } from "../styledComps";
 
+/**
+ * Table for loading the masters information for the chosen competition on Mark Masters
+ *
+ * @param {object} props.location.state : information passed from Mark Masters to component
+ * @param {object} props.location.state.data : information about the competition being marked
+ * @param {array} props.location.state.masters.teams : list fo every school elligible for masters, with the grade level they are elligible for
+ */
 export default function MastersTeams(props) {
-	// Redirect back to the main mark masters page if entry point wasn't through mark masters page
-	if (!props.location.state) {
-		return <Redirect to="/admin/mark-masters" />;
-	}
-
 	// Used for getting the grades on the page
 	const level = JSON.parse(sessionStorage.getItem("options")).level;
 
@@ -32,7 +34,14 @@ export default function MastersTeams(props) {
 			: null
 		: null;
 
-	// Adds schools to masters
+	/**
+	 * Adds schools to the list of elligible schools to sign up for masters
+	 *
+	 * @param {array} master : list fo every school elligible for masters, with the grade level they are elligible for
+	 * @param {array} values : row states for the registered schools
+	 * @param {string} grade : competition grade level
+	 * @returns {array} new list of elligible schools + grade level for masters
+	 */
 	const setMasters = async (master, values, grade) => {
 		let newMasters = [];
 
@@ -100,17 +109,25 @@ export default function MastersTeams(props) {
 
 	const grade = getGrade();
 
-	// Gets the school's name based on the school ID
-	const getSchoolName = (reg) => {
-		let schoolName = "";
-		for (const option in schools) {
-			if (schools[option].value === reg.schoolID) {
-				schoolName = schools[option].label;
-				break;
+	/**
+	 * Gets the school's name based on the school ID
+	 *
+	 * @param {object} reg : object containing the registration data for a school
+	 * @returns {string} : the school's name
+	 */
+	const getSchoolName = useCallback(
+		(reg) => {
+			let schoolName = "";
+			for (const option in schools) {
+				if (schools[option].value === reg.schoolID) {
+					schoolName = schools[option].label;
+					break;
+				}
 			}
-		}
-		return schoolName;
-	};
+			return schoolName;
+		},
+		[schools]
+	);
 
 	// Table format
 	const columns = [
@@ -171,9 +188,19 @@ export default function MastersTeams(props) {
 		},
 	];
 
-	let rows = [];
+	// Row states for the marking table
+	const [rows, setRows] = useState([]);
 
-	// Used to check if team has been marked as a Masters Team
+	// Checking variable that determines whether an attempt to create rows was made
+	const [checked, setChecked] = useState(false);
+
+	/**
+	 * Used to check if team has been marked as a Masters Team
+	 *
+	 * @param {array} list : list fo every school elligible for masters, with the grade level they are elligible for
+	 * @param {object} value : object containing the registration data for a school
+	 * @returns {boolean} : boolean value indicating whether the given value is in the list
+	 */
 	const same = (list, value) => {
 		for (const i in list) {
 			if (list[i].schoolID === value.schoolID && list[i].grade === value.level)
@@ -189,6 +216,29 @@ export default function MastersTeams(props) {
 		});
 	};
 
+	useEffect(() => {
+		// Redirect back to the main mark masters page if entry point wasn't through mark masters page
+		if (!props.location.state) {
+			return <Redirect to="/admin/mark-masters" />;
+		}
+
+		// Initializes row data for the competition
+		if (data !== null && rows.length === 0 && !checked) {
+			let newRows = [];
+			Object.values(data.registration).forEach((reg, index) => {
+				newRows.push({
+					id: index,
+					schoolId: reg.schoolID,
+					school: getSchoolName(reg),
+					level: reg.level,
+					status: same(masters, reg) ? "Masters Team" : "Team",
+				});
+			});
+			setRows(newRows);
+			setChecked(true);
+		}
+	}, [data, getSchoolName, masters, rows, props.location.state, checked]);
+
 	return (
 		<BasicPage>
 			{Object.keys(data.registration).length > 0 ? (
@@ -202,17 +252,6 @@ export default function MastersTeams(props) {
 						{grade} on&nbsp;
 						{data.compDate}
 					</p>
-
-					{Object.values(data.registration).map((reg, index) => {
-						rows.push({
-							id: index,
-							schoolId: reg.schoolID,
-							school: getSchoolName(reg),
-							level: reg.level,
-							status: same(masters, reg) ? "Masters Team" : "Team",
-						});
-						return null;
-					})}
 
 					<DataTable
 						pagination

@@ -35,7 +35,12 @@ export default function ImportContent() {
 	// Names of pages
 	const baseConv = ["history", "whotocall", "rules", "fees"];
 
-	// Gets the HTML for selected page
+	/**
+	 * Gets the HTML for selected page
+	 *
+	 * @param {string} name : name of page selected
+	 * @returns if no page is selected
+	 */
 	const getPageContent = (name) => {
 		if (name === "") {
 			setInfo("");

@@ -22,14 +22,14 @@ export default function Admin(props) {
 	// Url + Title for page editing buttons
 	const tabs = [
 		[
-			{ to: "/admin/import-content", text: "Manage HTML Pages" },
-			{ to: "/admin/manage-home", text: "Manage Homepage" },
-			{ to: "/admin/manage-faq", text: "Manage FAQ" },
 			{ to: "/admin/manage-comps", text: "Manage Competitions" },
+			{ to: "/admin/manage-home", text: "Manage Homepage" },
 			{ to: "/admin/manage-pasttests", text: "Manage Past Tests" },
+			{ to: "/admin/add-info", text: "Manage School Info" },
+			{ to: "/admin/manage-faq", text: "Manage FAQ" },
 			{ to: "/admin/manage-sites", text: "Manage Sites" },
-			{ to: "/admin/add-info", text: "Add Info" },
-			{ to: "/admin/other", text: "Others" },
+			{ to: "/admin/import-content", text: "Manage HTML Pages" },
+			{ to: "/admin/test", text: "Testing" },
 		],
 	];
 

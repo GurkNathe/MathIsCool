@@ -10,15 +10,67 @@ import { auth, db } from "../fire";
 
 import { TeamForm, Auto, BasicPage } from "../styledComps";
 import { divisions } from "../assets.js";
+import getOptions from "../getOptions";
 
 export default function TeamRegister() {
 	const history = useHistory();
 
-	const [options, setOptions] = useState(
-		JSON.parse(sessionStorage.getItem("options"))
-	);
+	const [options, setOptions] = useState({
+		...JSON.parse(sessionStorage.getItem("options")),
+		numteam: [
+			{
+				label: "0",
+				value: "0",
+			},
+			{
+				value: "1",
+				label: "1",
+			},
+			{
+				label: "2",
+				value: "2",
+			},
+			{
+				value: "3",
+				label: "3",
+			},
+			{
+				value: "4",
+				label: "4",
+			},
+			{
+				label: "5",
+				value: "5",
+			},
+			{
+				label: "6",
+				value: "6",
+			},
+			{
+				value: "7",
+				label: "7",
+			},
+			{
+				label: "8",
+				value: "8",
+			},
+			{
+				value: "9",
+				label: "9",
+			},
+			{
+				value: "10",
+				label: "10",
+			},
+		],
+	});
 
-	// Gets the competitions that are open (i.e. status == reg)
+	/**
+	 * Gets the competitions that are open (i.e. status == reg)
+	 *
+	 * @param {string} title : title of data wanted
+	 * @returns {array} [0] : competition data; [1] : masters data
+	 */
 	const getComps = async (title) => {
 		//holds the competitions
 		let comps = {};
@@ -96,23 +148,37 @@ export default function TeamRegister() {
 		school: sessionStorage.getItem("school"),
 	};
 
-	// Gets the value for width of text fields
+	/**
+	 * Gets the value for width of text fields
+	 *
+	 * @param {integer} longest : scaling factor for returned value if
+	 *                            there are no options, or no strings > longest
+	 * @returns {integer} : integer value for width of largest string in the options
+	 */
 	const getLongest = (longest) => {
 		//finding length of longest string in options and resize search box accordingly
-		for (const option in options) {
-			for (let i = 0; i < Object.keys(options[option]).length; i++) {
-				if (options[option][i].label.length > longest)
-					longest = options[option][i].label.length;
+		if (options !== null) {
+			for (const option in options) {
+				for (let i = 0; i < Object.keys(options[option]).length; i++) {
+					if (options[option][i].label.length > longest)
+						longest = options[option][i].label.length;
+				}
 			}
 		}
+
 		//don't know if there is a good way to do this, couldn't find anything
 		return longest * 10;
 	};
 
 	// Used for storing the width of the longest string that can be selected in the drop-downs
-	const longest = getLongest(0);
+	const longest = getLongest(10);
 
-	// Capitalizes the words in the given string
+	/**
+	 * Capitalizes the words in the given string
+	 *
+	 * @param {string} phrase : String that is to be capitalized
+	 * @returns {string} : capitalized string
+	 */
 	const capitalize = (phrase) => {
 		return phrase.replace(/\b\w/g, (c) => c.toUpperCase());
 	};
@@ -122,7 +188,7 @@ export default function TeamRegister() {
 	const onSubmit = () => {
 		const error = setError(choice);
 		if (!error) {
-			const compId = setCompID(choice);
+			const compId = setCompID(choice, comps);
 			if (compId !== undefined) {
 				// Navigates to the Google Form if there is no error
 				history.push({
@@ -137,37 +203,43 @@ export default function TeamRegister() {
 		}
 	};
 
-	// Sets the competition id for submission
-	const setCompID = useCallback(
-		(choice) => {
-			// Get all competitions at the selected grade level
-			let tempComps = [];
-			for (const i in comps) {
-				if (comps[i].grade.includes(choice.lev.value)) {
-					let totalRegs = 0;
-					for (const reg in comps[i].registration) {
-						totalRegs += comps[i].registration[reg].numTeams;
-					}
+	/**
+	 * Sets the competition id for submission
+	 *
+	 * @param {object} choice : Information filled out
+	 * @param {object} comps : Available competitions
+	 * @returns {string} : Found competition ID
+	 */
+	const setCompID = useCallback((choice, comps) => {
+		// Get all competitions at the selected grade level
+		let tempComps = [];
+		for (const i in comps) {
+			if (comps[i].grade.includes(choice.lev.value)) {
+				let totalRegs = 0;
+				for (const reg in comps[i].registration) {
+					totalRegs += comps[i].registration[reg].numTeams;
+				}
 
-					if (totalRegs < comps[i].maxTeams) {
-						tempComps.push({ ...comps[i], compId: i });
-					}
+				if (totalRegs < comps[i].maxTeams) {
+					tempComps.push({ ...comps[i], compId: i });
 				}
 			}
+		}
 
-			// Get the competition id based off the location
-			tempComps = tempComps.filter((competition) => {
-				return (
-					competition.site.toUpperCase() === choice.loc.value.toUpperCase()
-				);
-			});
+		// Get the competition id based off the location
+		tempComps = tempComps.filter((competition) => {
+			return competition.site.toUpperCase() === choice.loc.value.toUpperCase();
+		});
 
-			return tempComps[0].compId;
-		},
-		[comps]
-	);
+		return tempComps[0].compId;
+	}, []);
 
-	// Setting error if something is not filled out.
+	/**
+	 * Setting error if something is not filled out.
+	 *
+	 * @param {object} choice : Object containing all the input values for registration
+	 * @returns {boolean} : whether there is a required field that is missing
+	 */
 	const setError = (choice) => {
 		let err = false;
 		for (const item in choice) {
@@ -183,7 +255,13 @@ export default function TeamRegister() {
 		return err;
 	};
 
-	// Sets iframe url for filling google form
+	/**
+	 * Sets iframe url for filling google form
+	 *
+	 * @param {object} choice : Object containing all the input values for registration
+	 * @param {string} compId : ID of the competition selected
+	 * @returns {string} : URL for registration form
+	 */
 	const setURL = (choice, compId) => {
 		const uid = auth.currentUser.uid;
 		return `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${
@@ -203,6 +281,14 @@ export default function TeamRegister() {
 		}&entry.1445326839=${compId}`;
 	};
 
+	/**
+	 * Used for variable state on input change
+	 *
+	 * @param {*} newValue : New input value for changed field
+	 * @param {string} type : Tells which value to change
+	 * @param {string} field : Tells which value to change when
+	 *                         a general value is being changed
+	 */
 	const onChange = useCallback(
 		(newValue, type, field) => {
 			switch (type) {
@@ -220,7 +306,7 @@ export default function TeamRegister() {
 						let tempOps = [];
 						for (const comp in comps) {
 							if (
-								comps[comp].grade.substr(1).includes(newValue.value) &&
+								comps[comp].grade.includes(newValue.value) &&
 								!tempOps.includes(capitalize(comps[comp].site)) &&
 								comps[comp].site.toUpperCase() !== "MASTERS"
 							) {
@@ -233,11 +319,6 @@ export default function TeamRegister() {
 							tempOps[index] = { value: val, label: val };
 						});
 
-						setOptions((prev) => ({
-							...prev,
-							locations: tempOps,
-						}));
-
 						// Used to add the Masters option if the school is marked for Masters
 						if (choice.school) {
 							// Getting school id for chosen school
@@ -249,19 +330,22 @@ export default function TeamRegister() {
 									masters.teams[option].grade === newValue.value &&
 									masters.teams[option].schoolID === id
 								) {
-									setOptions((prev) => ({
-										...prev,
-										locations: [
-											...prev.locations,
-											{
-												value: "Masters",
-												label: "Masters",
-											},
-										],
-									}));
+									tempOps.push({
+										value: "Masters",
+										label: "Masters",
+									});
 									break;
 								}
 							}
+							setOptions((prev) => ({
+								...prev,
+								locations: tempOps,
+							}));
+						} else {
+							setOptions((prev) => ({
+								...prev,
+								locations: tempOps,
+							}));
 						}
 					} else {
 						setChoice((prevState) => ({
@@ -364,34 +448,45 @@ export default function TeamRegister() {
 				case "location":
 					// Updating how many teams are allowed per registration
 					if (newValue !== null) {
-						const compId = setCompID({
-							...choice,
-							lev: field.field ? field.lev : choice.lev,
-							loc: newValue,
-						});
-						for (const key in comps) {
-							if (key === compId) {
-								setOptions((prev) => ({
-									...prev,
-									numteam: [...Array(comps[key].schTeams + 1)].map((_, i) => ({
-										label: String(i),
-										value: String(i),
-									})),
-								}));
-								break;
+						// If there is a grade level selected, attempt to update number of teams
+						if (choice.lev !== null) {
+							// Get the competition id for the selected competition
+							const compId = setCompID(
+								{
+									lev: choice.lev,
+									loc: newValue,
+								},
+								comps
+							);
+
+							// Setting the number of teams allowed per registration
+							for (const key in comps) {
+								if (key === compId) {
+									setOptions((prev) => ({
+										...prev,
+										numteam: [...Array(comps[key].schTeams + 1)].map(
+											(_, i) => ({
+												label: String(i),
+												value: String(i),
+											})
+										),
+									}));
+									break;
+								}
 							}
+						} else if (choice.numteam && choice.numteam.length !== 11) {
+							setOptions((prev) => ({
+								...prev,
+								numteam: [...Array(11)].map((_, i) => ({
+									label: String(i),
+									value: String(i),
+								})),
+							}));
 						}
-					} else {
-						setOptions((prev) => ({
-							...prev,
-							numteam: [...Array(11)].map((_, i) => ({
-								label: String(i),
-								value: String(i),
-							})),
-						}));
 					}
 					setChoice((prevState) => ({
 						...prevState,
+						lev: choice.lev,
 						loc: newValue,
 						error: false,
 					}));
@@ -410,93 +505,42 @@ export default function TeamRegister() {
 		[choice, loaded.state, comps, locals, masters, options.locations, setCompID]
 	);
 
-	useEffect(() => {
-		// If the user has a selected school (profile school), use it
-		if (user.school && !choice.school) {
-			let school = {};
-			options.school.forEach((data, index) => {
-				if (data.label === user.school) {
-					school = options.school[index];
-				}
-			});
-			onChange(school, "school", "");
-		}
-
-		// Setting values if redirected from competition calendar
-		if (
-			history.location.state !== null &&
-			history.location.state !== undefined &&
-			!loaded.state
-		) {
+	/**
+	 *  Used to handle the redirect information filling and filtering
+	 *
+	 * @param {object} comps : Data on all found competitions
+	 * @param {object} masters : Data on which schools + grades can sign up for masters
+	 * @param {object} competition : Data from the competition redirect
+	 * @param {object} school : User favorited school
+	 */
+	const redirected = useCallback(
+		(comps, masters, competition, school) => {
+			// Setting values if redirected from competition calendar
 			if (
 				history.location.state.level !== null &&
 				history.location.state.level !== undefined &&
 				history.location.state.location !== null &&
 				history.location.state.location !== undefined
 			) {
-				// Adding the competition level
-				onChange(history.location.state.level, "level", "lev");
-
-				// Adding location
+				// Adding the competition level & location
 				const location = history.location.state.location.replace(
 					/\w\S*/g,
 					(w) => w.replace(/^\w/, (c) => c.toUpperCase())
 				);
-				if (location !== "Masters") {
-					onChange({ value: location, label: location }, "location", {
-						lev: history.location.state.level,
-						field: true,
-					});
-				}
-			}
-			// Clears the state so it doesn't keep the state after a redirect
-			history.replace({ ...history.location, state: null });
-			setLoaded((prev) => ({
-				...prev,
-				state: true,
-			}));
-		}
+				const level = history.location.state.level;
+				setChoice((prevState) => ({
+					...prevState,
+					lev: level,
+					loc:
+						location !== "Masters"
+							? { value: location, label: location }
+							: null,
+					error: false,
+				}));
 
-		// If the competitions haven't already been loaded, load them
-		if (comps === null) {
-			getComps("competitions")
-				.then((result) => {
-					if (result !== undefined) {
-						setComps(result[0]);
-						setMasters(result[1]);
-
-						// Filters the options based on the currently available competitions
-						if (result[0] !== null && result[0] !== undefined) {
-							let tempOps = [];
-							for (const comp in result[0]) {
-								// Add site value if it isn't a duplicate, and isn't Masters
-								if (
-									!tempOps.includes(capitalize(result[0][comp].site)) &&
-									result[0][comp].site.toUpperCase() !== "MASTERS"
-								) {
-									tempOps.push(capitalize(result[0][comp].site));
-								}
-							}
-
-							// Format sites
-							tempOps.forEach((val, index) => {
-								tempOps[index] = { value: val, label: val };
-							});
-
-							sessionStorage.setItem("filteredComps", JSON.stringify(tempOps));
-							setOptions((prev) => ({
-								...prev,
-								locations: tempOps,
-							}));
-							setLocals(tempOps);
-						}
-					}
-				})
-				.catch((error) => console.error(error));
-		} else {
-			// Filters the options based on the currently available competitions
-			if (comps !== undefined && !loaded.options) {
+				// Filter options
 				let tempOps = [];
+				let currOps = [];
 				for (const comp in comps) {
 					// Add site value if it isn't a duplicate, and isn't Masters
 					if (
@@ -505,34 +549,202 @@ export default function TeamRegister() {
 					) {
 						tempOps.push(capitalize(comps[comp].site));
 					}
+
+					// Adding filtered sites for the grade level
+					if (
+						comps[comp].grade.includes(level.value) &&
+						!currOps.includes(capitalize(comps[comp].site)) &&
+						comps[comp].site.toUpperCase() !== "MASTERS"
+					) {
+						currOps.push(capitalize(comps[comp].site));
+					}
 				}
 
 				// Format sites
 				tempOps.forEach((val, index) => {
 					tempOps[index] = { value: val, label: val };
 				});
+				currOps.forEach((val, index) => {
+					currOps[index] = { value: val, label: val };
+				});
 
+				// Save all sites
 				sessionStorage.setItem("filteredComps", JSON.stringify(tempOps));
+
+				// Getting school id for chosen school
+				let tempMasters = null;
+				if (school !== null) {
+					const id = school.value;
+					// Checking if school is able to sign up for masters
+					for (const option in masters.teams) {
+						if (
+							masters.teams[option].grade === level.value &&
+							masters.teams[option].schoolID === id
+						) {
+							tempMasters = {
+								value: "Masters",
+								label: "Masters",
+							};
+							break;
+						}
+					}
+				}
+
+				// Add Masters option if possible
+				if (tempMasters !== null) {
+					currOps.push(tempMasters);
+				}
+
+				const numteams = competition.schTeams;
+				// Save sites with correct grade level and number of teams allowed
 				setOptions((prev) => ({
 					...prev,
-					locations: tempOps,
+					numteam: [...Array(numteams + 1)].map((_, i) => ({
+						label: String(i),
+						value: String(i),
+					})),
+					locations: currOps,
 				}));
 				setLocals(tempOps);
-				setLoaded((prev) => ({
-					...prev,
-					options: true,
-				}));
 			}
+
+			// Clears the state so it doesn't keep the state after a redirect
+			setLoaded((prev) => ({
+				...prev,
+				state: true,
+			}));
+			history.replace({ ...history.location, state: null });
+		},
+		[history]
+	);
+
+	useEffect(() => {
+		if (options !== null) {
+			let potentialSchool = null;
+			// If the user has a selected school (profile school), use it
+			if (user.school && !choice.school) {
+				let school = {};
+				options.school.forEach((data, index) => {
+					if (data.label === user.school) {
+						school = options.school[index];
+					}
+				});
+				potentialSchool = school;
+				onChange(school, "school", "");
+			}
+
+			// If the competitions haven't already been loaded, load them
+			if ((comps === null || masters === null) && !loaded.state) {
+				getComps("competitions")
+					.then((result) => {
+						if (result !== undefined) {
+							setComps(result[0]);
+							setMasters(result[1]);
+
+							// Filters the options based on the currently available competitions
+							if (
+								result[0] !== null &&
+								result[0] !== undefined &&
+								history.location.state !== null &&
+								history.location.state !== undefined &&
+								!loaded.state
+							) {
+								// Checks for redirect from competitions page
+								const comp = history.location.state.competition;
+								redirected(result[0], result[1], comp, potentialSchool);
+							} else if (
+								result[0] !== null &&
+								result[0] !== undefined &&
+								!loaded.state
+							) {
+								let tempOps = [];
+								for (const comp in result[0]) {
+									// Add site value if it isn't a duplicate, and isn't Masters
+									if (
+										!tempOps.includes(capitalize(result[0][comp].site)) &&
+										result[0][comp].site.toUpperCase() !== "MASTERS"
+									) {
+										tempOps.push(capitalize(result[0][comp].site));
+									}
+								}
+
+								// Format sites
+								tempOps.forEach((val, index) => {
+									tempOps[index] = { value: val, label: val };
+								});
+
+								sessionStorage.setItem(
+									"filteredComps",
+									JSON.stringify(tempOps)
+								);
+								setOptions((prev) => ({
+									...prev,
+									locations: tempOps,
+								}));
+								setLocals(tempOps);
+								setLoaded((prev) => ({
+									...prev,
+									state: true,
+								}));
+							}
+						}
+					})
+					.catch((error) => console.error(error));
+			} else if (!loaded.state) {
+				// Filters the options based on the currently available competitions
+				if (comps !== undefined && !loaded.options) {
+					// If redirected and competition data already loaded
+					if (
+						history.location.state !== null &&
+						history.location.state !== undefined
+					) {
+						// Checks for redirect from competitions page
+						const comp = history.location.state.competition;
+						redirected(comps, masters, comp, potentialSchool);
+					} else {
+						let tempOps = [];
+						for (const comp in comps) {
+							// Add site value if it isn't a duplicate, and isn't Masters
+							if (
+								!tempOps.includes(capitalize(comps[comp].site)) &&
+								comps[comp].site.toUpperCase() !== "MASTERS"
+							) {
+								tempOps.push(capitalize(comps[comp].site));
+							}
+						}
+
+						// Format sites
+						tempOps.forEach((val, index) => {
+							tempOps[index] = { value: val, label: val };
+						});
+
+						sessionStorage.setItem("filteredComps", JSON.stringify(tempOps));
+						setOptions((prev) => ({
+							...prev,
+							locations: tempOps,
+						}));
+						setLocals(tempOps);
+						setLoaded((prev) => ({
+							...prev,
+							options: true,
+						}));
+					}
+				}
+			}
+		} else {
+			getOptions(setOptions);
 		}
 	}, [
 		choice.school,
 		comps,
-		history,
+		history.location.state,
 		loaded.options,
 		loaded.state,
 		onChange,
-		options.school,
+		options,
+		redirected,
 		user.school,
+		masters,
 	]);
 
 	return (

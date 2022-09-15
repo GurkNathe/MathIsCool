@@ -15,7 +15,11 @@ export default function ForgotPass() {
 	const [email, setEmail] = useState(" ");
 	const [error, setError] = useState(false);
 
-	// Gets current input email
+	/**
+	 * Gets current input email
+	 *
+	 * @param {string} emailAddress : input string of the email field
+	 */
 	const onEmail = (emailAddress) => {
 		setEmail(emailAddress);
 		setError(false);

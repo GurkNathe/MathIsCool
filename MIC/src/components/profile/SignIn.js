@@ -41,13 +41,21 @@ export default function SignIn() {
 	// Error state
 	const [error, setError] = useState(null);
 
-	// Gets current input email
+	/**
+	 * Gets current input email
+	 *
+	 * @param {object} event : The on change event object from changing the email field
+	 */
 	const onEmail = (event) => {
 		setEmail(event.target.value);
 		setError(null);
 	};
 
-	// Gets current input password
+	/**
+	 * Gets current input password
+	 *
+	 * @param {object} event : The on change event object from changing the password field
+	 */
 	const onPass = (event) => {
 		setPassword(event.target.value);
 		setError(null);

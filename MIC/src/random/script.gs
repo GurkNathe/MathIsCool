@@ -198,9 +198,12 @@ function addEditResponseURLToSheet(params) {
 		.getRange(params.row, emails)
 		.setValue(params.sheet.getRange(params.row, emails).getValue().trim());
 
+	const invoiceValue = params.sheet.getRange(params.row, invoiceCol).getValue();
 	let invoiceId =
-		Math.floor(params.sheet.getRange(params.row, 1).getValue() / 1000) %
-		1000000000;
+		invoiceValue === ""
+			? Math.floor(params.sheet.getRange(params.row, 1).getValue() / 1000) %
+			  1000000000
+			: invoiceValue;
 
 	// Object to store all the message values
 	let messageVals = {

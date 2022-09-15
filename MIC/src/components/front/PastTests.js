@@ -9,6 +9,8 @@ import { db, storage } from "../fire";
 
 import { BasicPage, Td, Th } from "../styledComps";
 
+import getOptions from "../getOptions";
+
 export default function PastTests() {
 	// Used to control the state of which grade of tests are shown
 	const [chosen, setChosen] = useState(null);
@@ -19,7 +21,9 @@ export default function PastTests() {
 	);
 
 	// Options object
-	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+	const [options, setOptions] = useState(
+		JSON.parse(sessionStorage.getItem("options"))
+	);
 
 	// Holds the array of results for table construction
 	const [year, setYear] = useState([]);
@@ -31,16 +35,26 @@ export default function PastTests() {
 		return samps.data().records;
 	};
 
-	// Filters current sample info for the chosen grade level and returns the chosen sample
+	/**
+	 * Filters samples for the chosen grade level
+	 *
+	 * @param {string} grade : grade level of tests chosen
+	 * @returns {object} : chosen samples
+	 */
 	const getChosenSamples = (grade) => {
 		const stuff = Object.values(samples).filter((sample) => {
-			return sample.level === grade + "th" ? sample : null;
+			return sample.level === grade + "th";
 		});
 
 		return stuff;
 	};
 
-	// Gets the sample info for the chosen grade level.
+	/**
+	 * Gets the sample info for the chosen grade level.
+	 *
+	 * @param {object} items : samples for selected grade level
+	 * @returns {array} : list of past tests sorted by years for selected grade level
+	 */
 	const getYears = (items) => {
 		let arr = [];
 		items.forEach((sampled) => {
@@ -78,7 +92,11 @@ export default function PastTests() {
 		return arr;
 	};
 
-	// Gets link to pdf for past test
+	/**
+	 * Gets link to pdf for past test
+	 *
+	 * @param {string} url : url for the past test chosen
+	 */
 	const getLink = (url) => {
 		url = url.replace(/%20/g, " ");
 		getDownloadURL(ref(storage, `Past Tests/${url}`)).then((link) => {
@@ -88,44 +106,50 @@ export default function PastTests() {
 
 	// Gets all samples from database
 	useEffect(() => {
+		if (options === null) {
+			getOptions(setOptions);
+		}
 		if (samples === null || samples === undefined) {
 			getSamples().then((sampleInfo) => {
 				setSamples(sampleInfo);
 			});
 		}
-	}, [samples]);
+	}, [samples, options]);
 
 	return (
 		<BasicPage>
 			<h1 style={{ fontStyle: "italic" }}>Past Tests</h1>
 			<span>Choose Grade Level: </span>
-			{options.level.map((item, index) => {
-				return (
-					<Button
-						key={index}
-						style={{ padding: "10px", margin: "10px" }}
-						variant={chosen === item.label ? "contained" : "outlined"}
-						color="primary"
-						onClick={() => {
-							let val =
-								chosen === null
-									? item.label
-									: chosen === item.label
-									? null
-									: item.label;
-							// The past tests for the chosen grade.
-							const gradeSamples = getChosenSamples(val);
+			{options
+				? options.level.map((item, index) => {
+						return (
+							<Button
+								key={index}
+								style={{ padding: "10px", margin: "10px" }}
+								variant={chosen === item.label ? "contained" : "outlined"}
+								color="primary"
+								onClick={() => {
+									let val =
+										chosen === null
+											? item.label
+											: chosen === item.label
+											? null
+											: item.label;
 
-							// Set value for grade selection feedback
-							setChosen(val);
+									// The past tests for the chosen grade.
+									const gradeSamples = getChosenSamples(val);
 
-							// Set the past tests for the chosen grade.
-							setYear(getYears(gradeSamples));
-						}}>
-						{item.label}
-					</Button>
-				);
-			})}
+									// Set value for grade selection feedback
+									setChosen(val);
+
+									// Set the past tests for the chosen grade.
+									setYear(getYears(gradeSamples));
+								}}>
+								{item.label}
+							</Button>
+						);
+				  })
+				: null}
 			<Divider />
 			{chosen === null ? (
 				<p

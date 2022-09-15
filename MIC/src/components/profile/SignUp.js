@@ -31,8 +31,9 @@ export default function SignUp() {
 
 	/**
 	 * Handles the value inputs for the page
-	 * @param {object} event - The event that triggered the execution of the function
-	 * @param {string} type  - What field to update
+	 *
+	 * @param {object} event : The event that triggered the execution of the function
+	 * @param {string} type  : What field to update
 	 */
 	const onChange = (event, type) => {
 		switch (type) {

@@ -24,7 +24,10 @@ export default function AddAdmin() {
 		already: false,
 	});
 
-	// Adds new admin to firestore
+	/**
+	 * Adds new admin to firestore
+	 * @param {string} uid : UID for the person being added as an admin
+	 */
 	const addAdmin = async (uid) => {
 		const docRef = doc(db, "roles", "admin");
 		await getDoc(docRef)
@@ -77,7 +80,11 @@ export default function AddAdmin() {
 		}
 	};
 
-	// Updates current input uid
+	/**
+	 * Updates current input uid
+	 *
+	 * @param {string} uid : UID for the person being added as an admin
+	 */
 	const onChange = (uid) => {
 		setUid(uid);
 		setError((prev) => ({

@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 
 import { read, utils, writeFileXLSX } from "xlsx";
 
-import Button from "@mui/material/Button";
 import Add from "@mui/icons-material/Add";
+import Button from "@mui/material/Button";
 import DownloadDoneIcon from "@mui/icons-material/DownloadDone";
 import DownloadIcon from "@mui/icons-material/Download";
 
 import { db } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-import { Alerts, BasicPage } from "../styledComps";
+import { Alerts, LayerOne, LayerTwo } from "../styledComps";
 
 export default function AddInfo() {
 	// Uploaded file
@@ -59,7 +59,11 @@ export default function AddInfo() {
 		}
 	}, []);
 
-	// Convert Excell data to JSON object
+	/**
+	 * Convert Excell data to JSON object
+	 *
+	 * @param {File} input : XLS/XLSX file
+	 */
 	const convertToJSON = (input) => {
 		input.target.files[0]
 			.arrayBuffer()
@@ -102,7 +106,11 @@ export default function AddInfo() {
 			});
 	};
 
-	// Get JSON data and export as Excell file
+	/**
+	 * Get JSON data and export as Excell file
+	 *
+	 * @param {JSON object} file : JSON object to conver to an XLSX file
+	 */
 	const downloadFile = (file) => {
 		const sheet = utils.json_to_sheet(file);
 		const book = utils.book_new();
@@ -142,100 +150,104 @@ export default function AddInfo() {
 	};
 
 	return (
-		<BasicPage>
-			<div style={{ marginTop: "10px" }}>
-				<h1>Add/Download School Info</h1>
-				<p style={{ color: "grey" }}>
-					For the uploaded file, make sure the excell file has the column
-					headings that contain "id", "name", and "division". Example: "School
-					ID", "School Name", "2021-22 Assigned Division". If this formatting
-					isn't kept, it will cause the website to malfunction.
-				</p>
-				<Alerts
-					open={errors.saved || errors.options || errors.file}
-					handleClose={() =>
-						setErrors({
-							file: false,
-							options: false,
-							saved: false,
-							noData: false,
-							upload: false,
-						})
-					}
-					type={
-						errors.file || errors.options || errors.noData || errors.upload
-							? "error"
-							: "success"
-					}
-					message={
-						errors.saved
-							? errors.noData
-								? "No data was uploaded."
-								: errors.upload
-								? "There was an issue uploading your file, please try again."
-								: "Successfully uploaded file to the database."
-							: errors.file
-							? "There was an error converting your file, please clear the file and reupload it to try again."
-							: errors.options
-							? "There was an error downloading database information, please refresh to try again."
-							: "An unknown error occured."
-					}
-				/>
-				<Button
-					color={errors.file || errors.noData ? "error" : "primary"}
-					variant="outlined"
-					component="label"
-					sx={{ marginRight: "10px", textTransform: "none" }}>
-					{file.name ? (
-						<>
-							<DownloadDoneIcon sx={{ marginRight: "10px" }} />
-							{file.name}
-						</>
-					) : (
-						<>
-							<Add sx={{ marginRight: "10px" }} /> Upload a File
-						</>
-					)}
-					<input
-						onChange={(input) => {
-							convertToJSON(input);
-						}}
-						type="file"
-						id="input"
-						accept=".xls,.xlsx"
-						hidden
-					/>
-				</Button>
-				<Button
-					variant="outlined"
-					sx={{ marginRight: "10px", textTransform: "none" }}
-					onClick={() => saveSchools()}>
-					Submit
-				</Button>
-				<Button
-					variant="outlined"
-					component="label"
-					sx={{ textTransform: "none" }}
-					onClick={() => {
-						setFile({
-							data: undefined,
-							name: "",
-						});
-						document.getElementById("input").value = "";
-					}}>
-					Clear File
-				</Button>
-			</div>
-			<div style={{ marginTop: "10px" }}>
-				<Button
-					color={errors.options ? "error" : "primary"}
-					variant="outlined"
-					sx={{ marginRight: "10px", textTransform: "none" }}
-					onClick={() => downloadFile(download.school)}>
-					<DownloadIcon sx={{ marginRight: "10px" }} />
-					Download Schools
-				</Button>
-			</div>
-		</BasicPage>
+		<LayerOne>
+			<LayerTwo>
+				<div style={{ margin: "20px" }}>
+					<div>
+						<h1>Add/Download School Info</h1>
+						<p style={{ color: "grey" }}>
+							For the uploaded file, make sure the excell file has the column
+							headings that contain "id", "name", and "division". Example:
+							"School ID", "School Name", "2021-22 Assigned Division". If this
+							formatting isn't kept, it will cause the website to malfunction.
+						</p>
+						<Alerts
+							open={errors.saved || errors.options || errors.file}
+							handleClose={() =>
+								setErrors({
+									file: false,
+									options: false,
+									saved: false,
+									noData: false,
+									upload: false,
+								})
+							}
+							type={
+								errors.file || errors.options || errors.noData || errors.upload
+									? "error"
+									: "success"
+							}
+							message={
+								errors.saved
+									? errors.noData
+										? "No data was uploaded."
+										: errors.upload
+										? "There was an issue uploading your file, please try again."
+										: "Successfully uploaded file to the database."
+									: errors.file
+									? "There was an error converting your file, please clear the file and reupload it to try again."
+									: errors.options
+									? "There was an error downloading database information, please refresh to try again."
+									: "An unknown error occured."
+							}
+						/>
+						<Button
+							color={errors.file || errors.noData ? "error" : "primary"}
+							variant="outlined"
+							component="label"
+							sx={{ marginRight: "10px", textTransform: "none" }}>
+							{file.name ? (
+								<>
+									<DownloadDoneIcon sx={{ marginRight: "10px" }} />
+									{file.name}
+								</>
+							) : (
+								<>
+									<Add sx={{ marginRight: "10px" }} /> Upload a File
+								</>
+							)}
+							<input
+								onChange={(input) => {
+									convertToJSON(input);
+								}}
+								type="file"
+								id="input"
+								accept=".xls,.xlsx"
+								hidden
+							/>
+						</Button>
+						<Button
+							variant="outlined"
+							sx={{ marginRight: "10px", textTransform: "none" }}
+							onClick={() => saveSchools()}>
+							Submit
+						</Button>
+						<Button
+							variant="outlined"
+							component="label"
+							sx={{ textTransform: "none" }}
+							onClick={() => {
+								setFile({
+									data: undefined,
+									name: "",
+								});
+								document.getElementById("input").value = "";
+							}}>
+							Clear File
+						</Button>
+					</div>
+					<div style={{ marginTop: "10px" }}>
+						<Button
+							color={errors.options ? "error" : "primary"}
+							variant="outlined"
+							sx={{ marginRight: "10px", textTransform: "none" }}
+							onClick={() => downloadFile(download.school)}>
+							<DownloadIcon sx={{ marginRight: "10px" }} />
+							Download Schools
+						</Button>
+					</div>
+				</div>
+			</LayerTwo>
+		</LayerOne>
 	);
 }

@@ -8,6 +8,7 @@ import { getDocs, getDoc, collection, doc } from "@firebase/firestore";
 import { db } from "../fire";
 
 import { LayerOne, LayerTwo } from "../styledComps";
+import getOptions from "../getOptions";
 
 export default function Competitions() {
 	const history = useHistory();
@@ -21,7 +22,9 @@ export default function Competitions() {
 	);
 
 	// Options object
-	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+	const [options, setOptions] = useState(
+		JSON.parse(sessionStorage.getItem("options"))
+	);
 
 	// Current competition selected
 	const [comp, setComp] = useState(null);
@@ -78,6 +81,11 @@ export default function Competitions() {
 
 	// Gets all competitions and sites if there are none in the session storage
 	useEffect(() => {
+		// If the options weren't loaded before, load them
+		if (options === null) {
+			getOptions(setOptions);
+		}
+
 		if (competitions === null || competitions === undefined) {
 			getComps().then((comps) => {
 				setCompetitions(comps);
@@ -88,10 +96,15 @@ export default function Competitions() {
 				setSites(site);
 			});
 		}
-	}, [competitions, sites]);
+	}, [competitions, sites, options]);
 
-	// Function that uses the competition to parse the grade value and formats
-	// the grade level into something more useable.
+	/**
+	 * Function that uses the competition to parse the grade value and formats
+	 * the grade level into something more useable.
+	 *
+	 * @param {object} comp : competition
+	 * @returns {string} : formatted grade level
+	 */
 	const getGrade = (comp) => {
 		let grades = [];
 		for (const item in options.level) {
@@ -112,7 +125,12 @@ export default function Competitions() {
 		return grade;
 	};
 
-	// Function that formats the grade level into something more useable
+	/**
+	 * Function that formats the grade level into something more useable
+	 *
+	 * @param {string} grade : grade level id
+	 * @returns {string} : human readable grade level
+	 */
 	const parseGrade = (grade) => {
 		for (const item in options.level) {
 			if (options.level[item].value === grade) {
@@ -123,7 +141,12 @@ export default function Competitions() {
 		return grade;
 	};
 
-	// Gets the time values from the schedule for the Tentative Schedule
+	/**
+	 * Gets the time values from the schedule for the Tentative Schedule
+	 *
+	 * @param {array} comp : schedule of competition split on the \n character
+	 * @returns {array} : returns only times for times in the schedule
+	 */
 	const getTimes = (comp) => {
 		let times = [];
 		for (let i = 0; i < comp.length; i++) {
@@ -134,7 +157,12 @@ export default function Competitions() {
 		return times;
 	};
 
-	// Gets the events values from the schedule for the Tentative Schedule
+	/**
+	 * Gets the events values from the schedule for the Tentative Schedule
+	 *
+	 * @param {array} comp : schedule of competition split on the \n character
+	 * @returns {array} : returns only times for events in the schedule
+	 */
 	const getEvents = (comp) => {
 		let events = [];
 		for (let i = 0; i < comp.length; i++) {
@@ -146,12 +174,11 @@ export default function Competitions() {
 	};
 
 	/**
-	 * @param {String} date
 	 * Takes in a date string and returns string of the day of the week + date
-	 * @returns {String}
-	 * @example
-	 * "2/21/2021"
-	 * "Sunday, February 21, 2021"
+	 *
+	 * @param {string} date : string in 'MM/DD/YYYY' format
+	 * @returns {string} : string in 'DAY-OF-THE-WEEK, MONTH DATE, YEAR' format
+	 * @example "2/21/2021" => "Sunday, February 21, 2021"
 	 */
 	const getDate = (date) => {
 		let dayOfWeek = new Date(date);
@@ -190,21 +217,25 @@ export default function Competitions() {
 						justifyContent: "space-between",
 						alignItems: "center",
 					}}>
-					{options.level.map((item, index) => {
-						return (
-							<Button
-								key={index}
-								style={{ padding: "10px", margin: "10px" }}
-								variant={chosen[0] === item.value ? "contained" : "outlined"}
-								color="primary"
-								onClick={() => {
-									setChosen((prevState) => [item.value, {}]);
-									setComp(null);
-								}}>
-								{item.label}
-							</Button>
-						);
-					})}
+					{options
+						? options.level.map((item, index) => {
+								return (
+									<Button
+										key={index}
+										style={{ padding: "10px", margin: "10px" }}
+										variant={
+											chosen[0] === item.value ? "contained" : "outlined"
+										}
+										color="primary"
+										onClick={() => {
+											setChosen((prevState) => [item.value, {}]);
+											setComp(null);
+										}}>
+										{item.label}
+									</Button>
+								);
+						  })
+						: null}
 				</div>
 			</LayerTwo>
 			<LayerTwo style={{ width: "75%" }}>
@@ -215,7 +246,9 @@ export default function Competitions() {
 						alignItems: "center",
 					}}>
 					<p style={{ fontSize: "20px", paddingLeft: "20px" }}>Competitions:</p>
-					{competitions !== null && competitions !== undefined
+					{competitions !== null &&
+					competitions !== undefined &&
+					options !== null
 						? competitions.map((item, index) => {
 								let grade = getGrade(item);
 								if (grade.includes(chosen[0])) {

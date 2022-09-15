@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -18,11 +18,15 @@ import {
 import SignIn from "./SignIn";
 import { Paper, ProfileAvatar, Drop, Alerts } from "../styledComps";
 
+import getOptions from "../getOptions";
+
 export default function ProfilePage() {
 	// Tells when a field has been changed
 	const [changed, setChanged] = useState(false);
 
-	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+	const [options, setOptions] = useState(
+		JSON.parse(sessionStorage.getItem("options"))
+	);
 
 	// Load user information into state
 	const [userInfo, setUserInfo] = useState({
@@ -46,6 +50,12 @@ export default function ProfilePage() {
 		signOut: false,
 		sendVerify: false,
 	});
+
+	useEffect(() => {
+		if (options === null) {
+			getOptions(setOptions);
+		}
+	}, [options]);
 
 	// Saves user information to auth database and
 	const saveChanges = () => {

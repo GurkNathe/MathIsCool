@@ -103,7 +103,12 @@ export default function MarkMasters() {
 	// Rows of the data table (competitions)
 	const [rows, setRows] = useState([]);
 
-	// Navigates the user to the page displaying the mark masters section for that competition
+	/**
+	 * Navigates the user to the page displaying the mark masters section for that competition
+	 *
+	 * @param {object} data : contains the information on the competition selected
+	 * @param {array} mast : contains the potential schools + grades for masters
+	 */
 	const onClick = (data, mast) => {
 		history.push({
 			pathname: "/admin/mark-masters/teams",
@@ -114,17 +119,23 @@ export default function MarkMasters() {
 		});
 	};
 
-	// Filters the competition data and puts it into a more readable format
+	/**
+	 * Filters the competition data and puts it into a more readable format
+	 *
+	 * @param {array} data : contains data for found competitions
+	 */
 	const filterRows = useCallback(
 		(data) => {
 			let tempRows = [];
-			Object.values(data).forEach((data, index) => {
-				if (data.site !== "masters") {
+			Object.values(data).forEach((competition, index) => {
+				if (competition.site !== "masters") {
 					// Create presentable grade label
 					let grades = [];
 					for (const item in options.level) {
-						for (const char in data.grade.substr(1)) {
-							if (options.level[item].value === data.grade.substr(1)[char]) {
+						for (const char in competition.grade.substr(1)) {
+							if (
+								options.level[item].value === competition.grade.substr(1)[char]
+							) {
 								grades.push(options.level[item].label);
 								break;
 							}
@@ -143,13 +154,13 @@ export default function MarkMasters() {
 					// Add information to rows of competitions
 					tempRows.push({
 						id: index,
-						site: data.site.replace(/\w\S*/g, (w) =>
+						site: competition.site.replace(/\w\S*/g, (w) =>
 							w.replace(/^\w/, (c) => c.toUpperCase())
 						),
 						level: grade,
-						date: data.compDate,
-						status: data.status,
-						page: data,
+						date: competition.compDate,
+						status: competition.status,
+						page: competition,
 					});
 				}
 			});

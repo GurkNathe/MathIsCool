@@ -10,7 +10,11 @@ export default function FrontBack(props) {
 	const [open, setOpen] = useState(false);
 	const [away, setAway] = useState({ p1: true, p2: true });
 
-	// Used to handle the opening and closing of the accordion buttons in the navigation
+	/**
+	 * Used to handle the opening and closing of the accordion buttons in the navigation
+	 *
+	 * @param {string} panel : accordian name to be opened
+	 */
 	const handleChange = (panel) => (_, isOpen) => {
 		setOpen(isOpen ? panel : false);
 		setAway({ p1: true, p2: true });

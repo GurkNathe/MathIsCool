@@ -67,7 +67,11 @@ export default function ManageHome() {
 		}
 	}, []);
 
-	// Handles the data filling upon selecting an article
+	/**
+	 * Handles the data filling upon selecting an article
+	 *
+	 * @param {string} e : ID of the article selected
+	 */
 	const selectArticle = (e) => {
 		if (e) {
 			setInfo((prev) => ({

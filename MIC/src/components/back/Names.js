@@ -10,6 +10,8 @@ import { auth, db } from "../fire";
 import { NamesOne, NamesTwo, NamesThree } from "../styledComps";
 import Table from "../custom/Table";
 
+import getOptions from "../getOptions";
+
 export default function Names() {
 	// Used to store the schools the current user has registered for
 	const [schoolData, setSchoolData] = useState([]);
@@ -23,7 +25,9 @@ export default function Names() {
 	const [loadedComps, setLoadedComps] = useState({});
 
 	// Options object
-	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+	const [options, setOptions] = useState(
+		JSON.parse(sessionStorage.getItem("options"))
+	);
 
 	// Returns the values of # individuals and # teams for each competition
 	// where the current user signed up the chosen school
@@ -75,40 +79,44 @@ export default function Names() {
 
 	useEffect(() => {
 		// Gets registrations
-		if (compData.length === 0) {
-			getComps().then((vals) => {
-				for (const val in vals) {
-					if (vals[val] !== undefined) {
-						setComp((prevState) => [
-							...prevState,
-							{
-								regId: vals[val].regID,
-								compId: vals[val].compID,
-								title: vals[val].title,
-								teams: vals[val].teams,
-								indivs: vals[val].indiv,
-								schoolID: vals[val].schoolID,
-							},
-						]);
-					}
-				}
-				setLoading(false);
-			});
-		} else {
-			// Gets school names if :
-			// not loading, hasn't already been loaded, and there are actually competitions
-			if (!loading && schoolData.length === 0 && compData.length > 0) {
-				let tempData = [];
-				for (const item in compData) {
-					for (const option in options.school) {
-						if (compData[item].schoolID === options.school[option].value) {
-							tempData.push(options.school[option].label);
-							break;
+		if (options !== null) {
+			if (compData.length === 0) {
+				getComps().then((vals) => {
+					for (const val in vals) {
+						if (vals[val] !== undefined) {
+							setComp((prevState) => [
+								...prevState,
+								{
+									regId: vals[val].regID,
+									compId: vals[val].compID,
+									title: vals[val].title,
+									teams: vals[val].teams,
+									indivs: vals[val].indiv,
+									schoolID: vals[val].schoolID,
+								},
+							]);
 						}
 					}
+					setLoading(false);
+				});
+			} else {
+				// Gets school names if :
+				// not loading, hasn't already been loaded, and there are actually competitions
+				if (!loading && schoolData.length === 0 && compData.length > 0) {
+					let tempData = [];
+					for (const item in compData) {
+						for (const option in options.school) {
+							if (compData[item].schoolID === options.school[option].value) {
+								tempData.push(options.school[option].label);
+								break;
+							}
+						}
+					}
+					setSchoolData(tempData);
 				}
-				setSchoolData(tempData);
 			}
+		} else {
+			getOptions(setOptions);
 		}
 	}, [
 		compData.length,
@@ -117,6 +125,7 @@ export default function Names() {
 		loading,
 		options.school,
 		schoolData.length,
+		options,
 	]);
 
 	return (

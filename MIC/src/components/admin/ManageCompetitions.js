@@ -20,6 +20,8 @@ import {
 } from "@firebase/firestore";
 import { db, auth } from "../fire";
 
+import getOptions from "../getOptions";
+
 export default function ManageCompetitions() {
 	// columns for the table
 	const columns = [
@@ -70,9 +72,16 @@ export default function ManageCompetitions() {
 	];
 
 	// Options for selection
-	const [options] = useState(JSON.parse(sessionStorage.getItem("options")));
+	const [options, setOptions] = useState(
+		JSON.parse(sessionStorage.getItem("options"))
+	);
 
-	// formats competitions for the table
+	/**
+	 * Formats competitions for the table
+	 *
+	 * @param {array} comps : list of competitions found
+	 * @returns {array} : formatted version of the competitions for the page
+	 */
 	const formatComps = useCallback(
 		(comps) => {
 			if (comps !== undefined && comps !== null) {
@@ -109,7 +118,12 @@ export default function ManageCompetitions() {
 		[options.level]
 	);
 
-	// Gets the competition ids (non-numeric)
+	/**
+	 * Gets the competition ids (non-numeric)
+	 *
+	 * @param {array} comps : list of competitions found
+	 * @returns {array} : all competition IDs
+	 */
 	const getCompIds = (comps) => {
 		let tempIds = [];
 		comps.forEach((doc) => {
@@ -219,6 +233,9 @@ export default function ManageCompetitions() {
 
 	//gets the competitions to mark
 	useEffect(() => {
+		if (options === null) {
+			getOptions(setOptions);
+		}
 		if (rowState.comp === null || rowState.comp === undefined) {
 			getComps()
 				.then((result) => {
@@ -243,9 +260,15 @@ export default function ManageCompetitions() {
 				loading: false,
 			}));
 		}
-	}, [rowState.comp, rowState.loading, formatComps]);
+	}, [rowState.comp, rowState.loading, formatComps, options]);
 
-	// Used to select the selected competition by its competition ID
+	/**
+	 * Used to select the selected competition by its competition ID
+	 *
+	 * @param {string} id : The ID of the competition selected
+	 * @param {array} comps : list of competitions found
+	 * @returns {object} : row state of the table with the competition selected
+	 */
 	const selectComp = (id, comps) => {
 		let temp = null;
 		Object.values(comps).forEach((comp) => {
@@ -261,7 +284,11 @@ export default function ManageCompetitions() {
 		return { ...temp, id: 0 };
 	};
 
-	// Used when selecting a competition to edit/delete
+	/**
+	 * Used when selecting a competition to edit/delete
+	 *
+	 * @param {string} comp : ID of the competition selected
+	 */
 	const onSelect = (comp) => {
 		if (comp) {
 			const newComp = selectComp(comp, rowState.comp);
@@ -501,7 +528,12 @@ export default function ManageCompetitions() {
 		}
 	};
 
-	// Gets the alert message
+	/**
+	 * Gets the alert message
+	 *
+	 * @param {object} errors : object containing all the error checks
+	 * @returns {string} : alert message associated with the error checks set
+	 */
 	const getMessage = (errors) => {
 		if (errors.submitted) {
 			if (errors.notFull) {
@@ -840,8 +872,8 @@ export default function ManageCompetitions() {
 								if (newValue !== null) {
 									setComp({
 										...newComp,
-										level: newValue.label,
-										grade: `G${newValue.label}`,
+										level: newValue,
+										grade: `G${newValue.value}`,
 									});
 									setErrors((prev) => ({
 										...prev,
@@ -850,6 +882,11 @@ export default function ManageCompetitions() {
 										submitted: false,
 									}));
 								} else {
+									setComp({
+										...newComp,
+										level: "",
+										grade: "",
+									});
 									setErrors((prev) => ({
 										...prev,
 										level: false,
@@ -858,7 +895,9 @@ export default function ManageCompetitions() {
 									}));
 								}
 							}}
-							value={newComp.grade.substr(1)}
+							value={
+								typeof newComp.level === "string" ? "" : newComp.level.label
+							}
 							freeSolo
 							sx={{
 								width: "210px",

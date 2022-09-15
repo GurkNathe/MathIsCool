@@ -1,7 +1,12 @@
 import { doc, getDoc } from "@firebase/firestore";
 import { db } from "../fire";
 
-// Used to get pre-login web page html/data
+/**
+ * Used to get pre-login web page html/data
+ *
+ * @param {string} title : title of the page requested
+ * @returns {object} : data from the web page or undefined if page isn't found
+ */
 export default async function getWeb(title) {
 	// Checks if not in session storage, meaning database can be pulled
 	if (!sessionStorage.getItem(title)) {

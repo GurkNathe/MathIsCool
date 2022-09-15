@@ -81,8 +81,14 @@ export default function ManageSites() {
 		}
 	}, []);
 
-	// Object comparison function
-	// From: https://stackoverflow.com/a/5859028
+	/**
+	 * Object comparison function
+	 * From: https://stackoverflow.com/a/5859028
+	 *
+	 * @param {object} obj1 : object to compare
+	 * @param {object} obj2 : object to compare
+	 * @returns {boolean} : whether the objects are equal
+	 */
 	const compare = (obj1, obj2) => {
 		for (let prop in obj1) {
 			if (obj1.hasOwnProperty(prop)) {
@@ -101,7 +107,11 @@ export default function ManageSites() {
 		return true;
 	};
 
-	// Handles the data filling upon selecting a site
+	/**
+	 * Handles the data filling upon selecting a site
+	 *
+	 * @param {string} e : ID of the site selected
+	 */
 	const selectSite = (e) => {
 		if (e) {
 			const selectedLoc = records[e];

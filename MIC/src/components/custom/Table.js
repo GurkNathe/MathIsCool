@@ -124,7 +124,14 @@ export default function Table(props) {
 		}
 	}, [getComps, loading, props, students]);
 
-	// Adds names to registration
+	/**
+	 * Adds names to registration
+	 *
+	 * @param {string} id : competition identifier
+	 * @param {string} regId : registration identifier
+	 * @param {array} students : registered students information list
+	 * @returns {Promise} a Promise that updates the student information
+	 */
 	const submitNames = async (id, regId, students) => {
 		const comps = doc(db, "competitions", id);
 		const res = await getDoc(comps)
@@ -180,7 +187,52 @@ export default function Table(props) {
 			flex: 1,
 			editable: true,
 			type: "singleSelect",
-			valueOptions: JSON.parse(sessionStorage.getItem("options")).grade,
+			valueOptions: [
+				{
+					label: "2",
+					value: "2",
+				},
+				{
+					label: "3",
+					value: "3",
+				},
+				{
+					label: "4",
+					value: "4",
+				},
+				{
+					label: "5",
+					value: "5",
+				},
+				{
+					label: "6",
+					value: "6",
+				},
+				{
+					label: "7",
+					value: "7",
+				},
+				{
+					label: "8",
+					value: "8",
+				},
+				{
+					value: "9",
+					label: "9",
+				},
+				{
+					label: "10",
+					value: "10",
+				},
+				{
+					label: "11",
+					value: "11",
+				},
+				{
+					label: "12",
+					value: "12",
+				},
+			],
 		},
 		{
 			field: "level",
@@ -189,7 +241,44 @@ export default function Table(props) {
 			flex: 1,
 			editable: true,
 			type: "singleSelect",
-			valueOptions: JSON.parse(sessionStorage.getItem("options")).stlev,
+			valueOptions: [
+				{
+					label: "4",
+					value: "4",
+				},
+				{
+					value: "5",
+					label: "5",
+				},
+				{
+					label: "6",
+					value: "6",
+				},
+				{
+					label: "Pre-Algebra",
+					value: "PA",
+				},
+				{
+					value: "A1",
+					label: "Algebra 1",
+				},
+				{
+					label: "Algebra 2",
+					value: "A2",
+				},
+				{
+					label: "Geometry",
+					value: "GE",
+				},
+				{
+					label: "Pre-Calculus",
+					value: "PC",
+				},
+				{
+					label: "Calculus",
+					value: "CA",
+				},
+			],
 		},
 		{
 			field: "pos",
@@ -203,7 +292,11 @@ export default function Table(props) {
 		},
 	];
 
-	// Updates the data with with the input values
+	/**
+	 * Updates the data with with the input values
+	 *
+	 * @param {object} field : row of names table being updated
+	 */
 	const getStudent = (field) => {
 		let tempArray = students.filter((student) => student.id !== field.id);
 		for (let s of students) {

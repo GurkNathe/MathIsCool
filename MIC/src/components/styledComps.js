@@ -348,7 +348,6 @@ const LayerThree = styled("div")({
 	marginLeft: "1%",
 	marginRight: "1%",
 	marginBottom: "1%",
-	minHeight: "80vh",
 });
 
 // For default home page's
@@ -601,7 +600,6 @@ const Profile = (props) => {
  * Profile icon for profile page
  *
  * @param {integer} size: width and height values
- * @param {object} theme: MUI provided theme object
  */
 const ProfileAvatar = styled(Avatar, {
 	shouldForwardProp: (prop) => prop !== "size",
