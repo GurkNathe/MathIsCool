@@ -15,7 +15,7 @@ import "prismjs/themes/prism.css";
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-import { Auto, Alerts } from "../styledComps";
+import { Auto, Alerts, LayerOne, LayerTwo } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ManageFAQ() {
@@ -247,215 +247,227 @@ export default function ManageFAQ() {
 	};
 
 	return (
-		<div style={{ margin: "10px" }}>
-			<Alerts
-				open={error.submitted || error.delete}
-				handleClose={() =>
-					setError({
-						submitted: false,
-						success: false,
-						error: false,
-						get: false,
-						delete: false,
-						deleteError: false,
-						noQuestion: false,
-					})
-				}
-				type={error.success || error.delete ? "success" : "error"}
-				message={
-					error.success
-						? "Successfully updated question."
-						: error.delete
-						? "Successfully deleted question."
-						: error.get
-						? "There was an error retrieving the question. Please try saving again."
-						: error.error
-						? "Page failed to upload successfully. Please try again."
-						: error.deleteError
-						? "Error deleting the question. Please try again."
-						: error.noQuestion
-						? "The question is already deleted."
-						: "An unknown error occurred. Please try again."
-				}
-			/>
-			<h1>FAQ Questions</h1>
+		<LayerOne>
+			<LayerTwo>
+				<div style={{ margin: "10px" }}>
+					<Alerts
+						open={error.submitted || error.delete}
+						handleClose={() =>
+							setError({
+								submitted: false,
+								success: false,
+								error: false,
+								get: false,
+								delete: false,
+								deleteError: false,
+								noQuestion: false,
+							})
+						}
+						type={error.success || error.delete ? "success" : "error"}
+						message={
+							error.success
+								? "Successfully updated question."
+								: error.delete
+								? "Successfully deleted question."
+								: error.get
+								? "There was an error retrieving the question. Please try saving again."
+								: error.error
+								? "Page failed to upload successfully. Please try again."
+								: error.deleteError
+								? "Error deleting the question. Please try again."
+								: error.noQuestion
+								? "The question is already deleted."
+								: "An unknown error occurred. Please try again."
+						}
+					/>
+					<h1>FAQ Questions</h1>
 
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				<Auto
-					options={options}
-					onChange={(event) => selectArticle(event.target.textContent)}
-					width={200}
-					text="Select Question to Edit"
-					disabled={newArt.clicked}
-				/>
-				{!newArt.picked && !newArt.clicked && !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, clicked: true }));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Create New Question
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, delete: true }));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Delete Question
-						</Button>
-					</>
-				) : !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={saveQuestion}
-							style={{ marginLeft: "10px" }}>
-							Save Question
-						</Button>
-						{!newArt.picked ? (
-							<Button
-								variant="outlined"
-								color="primary"
-								size="medium"
-								onClick={() =>
-									setNewArt((prev) => ({
-										...prev,
-										clicked: false,
-										delete: false,
-									}))
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						<Auto
+							options={options}
+							onChange={(event) => selectArticle(event.target.textContent)}
+							width={200}
+							text="Select Question to Edit"
+							disabled={newArt.clicked}
+						/>
+						{!newArt.picked && !newArt.clicked && !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, clicked: true }));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Create New Question
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, delete: true }));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Delete Question
+								</Button>
+							</>
+						) : !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={saveQuestion}
+									style={{ marginLeft: "10px" }}>
+									Save Question
+								</Button>
+								{!newArt.picked ? (
+									<Button
+										variant="outlined"
+										color="primary"
+										size="medium"
+										onClick={() =>
+											setNewArt((prev) => ({
+												...prev,
+												clicked: false,
+												delete: false,
+											}))
+										}
+										style={{ marginLeft: "10px" }}>
+										Undo Option
+									</Button>
+								) : null}
+							</>
+						) : (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={deleteQuestion}
+									style={{ marginLeft: "10px" }}>
+									Delete Question
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({
+											...prev,
+											clicked: false,
+											delete: false,
+										}));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Undo Option
+								</Button>
+							</>
+						)}
+						<Tooltip title={helpText}>
+							<HelpOutlineIcon
+								sx={{
+									marginLeft: "10px",
+									color: "black",
+									width: "25px",
+									height: "25px",
+									alignSelf: "center",
+								}}
+							/>
+						</Tooltip>
+					</div>
+
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						{newArt.clicked ? (
+							<TextField
+								value={info.key}
+								onChange={(event) =>
+									setInfo((prev) => ({ ...prev, key: event.target.value }))
 								}
-								style={{ marginLeft: "10px" }}>
-								Undo Option
-							</Button>
+								helperText={`This will overwrite any question with the key ${
+									info.key === "" ? 0 : info.key
+								}.`}
+								label="Key"
+								variant="outlined"
+								style={{ marginRight: "10px" }}
+							/>
 						) : null}
-					</>
-				) : (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={deleteQuestion}
-							style={{ marginLeft: "10px" }}>
-							Delete Question
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({
+						<Auto
+							options={["false", "true"]}
+							onChange={(event) => {
+								setInfo((prev) => ({
 									...prev,
-									clicked: false,
-									delete: false,
+									visible: event.target.textContent,
 								}));
 							}}
-							style={{ marginLeft: "10px" }}>
-							Undo Option
-						</Button>
-					</>
-				)}
-				<Tooltip title={helpText}>
-					<HelpOutlineIcon
-						sx={{
-							marginLeft: "10px",
-							color: "black",
-							width: "25px",
-							height: "25px",
-							alignSelf: "center",
+							width={120}
+							text="Visibility"
+							value={info.visible}
+						/>
+					</div>
+
+					<Typography>Question</Typography>
+					<Editor
+						value={info.question}
+						tabSize={4}
+						placeholder="No question selected."
+						onValueChange={(info) => {
+							setInfo((prev) => ({
+								...prev,
+								question: info,
+							}));
+						}}
+						highlight={(info) => highlight(info, languages.markup)}
+						padding={10}
+						style={{
+							fontFamily: '"Fira code", "Fira Mono", monospace',
+							fontSize: 12,
+							backgroundColor: "#f5f5f5",
+							minHeight: "100px",
+							border: "1px solid black",
+							borderRadius: "5px",
+							marginBottom: "10px",
 						}}
 					/>
-				</Tooltip>
-			</div>
 
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				{newArt.clicked ? (
-					<TextField
-						value={info.key}
-						onChange={(event) =>
-							setInfo((prev) => ({ ...prev, key: event.target.value }))
-						}
-						helperText={`This will overwrite any question with the key ${
-							info.key === "" ? 0 : info.key
-						}.`}
-						label="Key"
-						variant="outlined"
-						style={{ marginRight: "10px" }}
+					<Typography>Answer</Typography>
+					<Editor
+						value={info.answer}
+						tabSize={4}
+						placeholder="No question selected."
+						onValueChange={(info) => {
+							setInfo((prev) => ({
+								...prev,
+								answer: info,
+							}));
+						}}
+						disabled={info.key % 100 === 0}
+						highlight={(info) => highlight(info, languages.markup)}
+						padding={10}
+						style={{
+							fontFamily: '"Fira code", "Fira Mono", monospace',
+							fontSize: 12,
+							backgroundColor: "#f5f5f5",
+							minHeight: "100px",
+							border: "1px solid black",
+							borderRadius: "5px",
+							marginBottom: "10px",
+						}}
 					/>
-				) : null}
-				<Auto
-					options={["false", "true"]}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							visible: event.target.textContent,
-						}));
-					}}
-					width={120}
-					text="Visibility"
-					value={info.visible}
-				/>
-			</div>
-
-			<Typography>Question</Typography>
-			<Editor
-				value={info.question}
-				tabSize={4}
-				placeholder="No question selected."
-				onValueChange={(info) => {
-					setInfo((prev) => ({
-						...prev,
-						question: info,
-					}));
-				}}
-				highlight={(info) => highlight(info, languages.markup)}
-				padding={10}
-				style={{
-					fontFamily: '"Fira code", "Fira Mono", monospace',
-					fontSize: 12,
-					backgroundColor: "#f5f5f5",
-					minHeight: "100px",
-					border: "1px solid black",
-					borderRadius: "5px",
-					marginBottom: "10px",
-				}}
-			/>
-
-			<Typography>Answer</Typography>
-			<Editor
-				value={info.answer}
-				tabSize={4}
-				placeholder="No question selected."
-				onValueChange={(info) => {
-					setInfo((prev) => ({
-						...prev,
-						answer: info,
-					}));
-				}}
-				disabled={info.key % 100 === 0}
-				highlight={(info) => highlight(info, languages.markup)}
-				padding={10}
-				style={{
-					fontFamily: '"Fira code", "Fira Mono", monospace',
-					fontSize: 12,
-					backgroundColor: "#f5f5f5",
-					minHeight: "100px",
-					border: "1px solid black",
-					borderRadius: "5px",
-					marginBottom: "10px",
-				}}
-			/>
-		</div>
+				</div>
+			</LayerTwo>
+		</LayerOne>
 	);
 }

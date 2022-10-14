@@ -8,7 +8,7 @@ import CodeEditor from "@uiw/react-textarea-code-editor";
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-import { Auto, Alerts } from "../styledComps";
+import { Auto, Alerts, LayerOne, LayerTwo } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ManageHome() {
@@ -224,184 +224,198 @@ export default function ManageHome() {
 	};
 
 	return (
-		<div style={{ margin: "10px" }}>
-			<Alerts
-				open={error.submitted || error.delete}
-				handleClose={() =>
-					setError({
-						submitted: false,
-						success: false,
-						error: false,
-						get: false,
-						delete: false,
-						deleteError: false,
-						noQuestions: false,
-					})
-				}
-				type={error.success || error.delete ? "success" : "error"}
-				message={
-					error.success
-						? "Successfully updated article."
-						: error.delete
-						? "Successfully deleted article."
-						: error.get
-						? "There was an error retrieving the article. Please try saving again."
-						: error.error
-						? "Article failed to upload. Please try again."
-						: error.deleteError
-						? "Error deleting the article. Please try again."
-						: error.noQuestion
-						? "There is no article to delete."
-						: "An unknown error occurred. Please try again."
-				}
-			/>
-			<h1>Homepage Articles</h1>
+		<LayerOne>
+			<LayerTwo>
+				<div style={{ margin: "10px" }}>
+					<Alerts
+						open={error.submitted || error.delete}
+						handleClose={() =>
+							setError({
+								submitted: false,
+								success: false,
+								error: false,
+								get: false,
+								delete: false,
+								deleteError: false,
+								noQuestions: false,
+							})
+						}
+						type={error.success || error.delete ? "success" : "error"}
+						message={
+							error.success
+								? "Successfully updated article."
+								: error.delete
+								? "Successfully deleted article."
+								: error.get
+								? "There was an error retrieving the article. Please try saving again."
+								: error.error
+								? "Article failed to upload. Please try again."
+								: error.deleteError
+								? "Error deleting the article. Please try again."
+								: error.noQuestion
+								? "There is no article to delete."
+								: "An unknown error occurred. Please try again."
+						}
+					/>
+					<h1>Homepage Articles</h1>
 
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				<Auto
-					options={options}
-					onChange={(event) => selectArticle(event.target.textContent)}
-					width={200}
-					text="Select Article to Edit"
-					disabled={newArt.clicked}
-				/>
-				{!newArt.picked && !newArt.clicked && !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, clicked: true }));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Create New Article
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, delete: true }));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Delete Article
-						</Button>
-					</>
-				) : !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={saveArticle}
-							style={{ marginLeft: "10px" }}>
-							Save Article
-						</Button>
-						{!newArt.picked ? (
-							<Button
-								variant="outlined"
-								color="primary"
-								size="medium"
-								onClick={() =>
-									setNewArt((prev) => ({
-										...prev,
-										clicked: false,
-										delete: false,
-									}))
-								}
-								style={{ marginLeft: "10px" }}>
-								Undo Option
-							</Button>
-						) : null}
-					</>
-				) : (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={deleteArticle}
-							style={{ marginLeft: "10px" }}>
-							Delete Article
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() =>
-								setNewArt((prev) => ({
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						<Auto
+							options={options}
+							onChange={(event) => selectArticle(event.target.textContent)}
+							width={200}
+							text="Select Article to Edit"
+							disabled={newArt.clicked}
+						/>
+						{!newArt.picked && !newArt.clicked && !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, clicked: true }));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Create New Article
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, delete: true }));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Delete Article
+								</Button>
+							</>
+						) : !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={saveArticle}
+									style={{ marginLeft: "10px" }}>
+									Save Article
+								</Button>
+								{!newArt.picked ? (
+									<Button
+										variant="outlined"
+										color="primary"
+										size="medium"
+										onClick={() =>
+											setNewArt((prev) => ({
+												...prev,
+												clicked: false,
+												delete: false,
+											}))
+										}
+										style={{ marginLeft: "10px" }}>
+										Undo Option
+									</Button>
+								) : null}
+							</>
+						) : (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={deleteArticle}
+									style={{ marginLeft: "10px" }}>
+									Delete Article
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() =>
+										setNewArt((prev) => ({
+											...prev,
+											clicked: false,
+											delete: false,
+										}))
+									}
+									style={{ marginLeft: "10px" }}>
+									Undo Option
+								</Button>
+							</>
+						)}
+					</div>
+
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						<TextField
+							value={info.priority}
+							onChange={(event) =>
+								setInfo((prev) => ({
 									...prev,
-									clicked: false,
-									delete: false,
+									priority: event.target.value.replace(/[^\d,]+/g, ""),
 								}))
 							}
-							style={{ marginLeft: "10px" }}>
-							Undo Option
-						</Button>
-					</>
-				)}
-			</div>
+							label="Priority"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+						/>
+						<TextField
+							value={info.title}
+							onChange={(event) =>
+								setInfo((prev) => ({ ...prev, title: event.target.value }))
+							}
+							label="Title"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+						/>
+						<Auto
+							options={["false", "true"]}
+							onChange={(event) => {
+								setInfo((prev) => ({
+									...prev,
+									visible: /^\s*(true|1|on)\s*$/i.test(
+										event.target.textContent
+									),
+								}));
+							}}
+							width={120}
+							text="Visibility"
+							value={info.visible.toString()}
+						/>
+					</div>
 
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				<TextField
-					value={info.priority}
-					onChange={(event) =>
-						setInfo((prev) => ({
-							...prev,
-							priority: event.target.value.replace(/[^\d,]+/g, ""),
-						}))
-					}
-					label="Priority"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-				/>
-				<TextField
-					value={info.title}
-					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, title: event.target.value }))
-					}
-					label="Title"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-				/>
-				<Auto
-					options={["false", "true"]}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							visible: /^\s*(true|1|on)\s*$/i.test(event.target.textContent),
-						}));
-					}}
-					width={120}
-					text="Visibility"
-					value={info.visible.toString()}
-				/>
-			</div>
-
-			<CodeEditor
-				value={info.article}
-				language="html"
-				placeholder="No article selected."
-				onChange={(event) =>
-					setInfo((prev) => ({
-						...prev,
-						article: event.target.value,
-					}))
-				}
-				padding={15}
-				style={{
-					minHeight: "100px",
-					fontSize: 12,
-					backgroundColor: "#f5f5f5",
-					fontFamily:
-						"ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
-					border: "1px solid black",
-					borderRadius: "5px",
-				}}
-			/>
-		</div>
+					<CodeEditor
+						value={info.article}
+						language="html"
+						placeholder="No article selected."
+						onChange={(event) =>
+							setInfo((prev) => ({
+								...prev,
+								article: event.target.value,
+							}))
+						}
+						padding={15}
+						style={{
+							minHeight: "100px",
+							fontSize: 12,
+							backgroundColor: "#f5f5f5",
+							fontFamily:
+								"ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+							border: "1px solid black",
+							borderRadius: "5px",
+						}}
+					/>
+				</div>
+			</LayerTwo>
+		</LayerOne>
 	);
 }

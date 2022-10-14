@@ -8,7 +8,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { DataGrid } from "@mui/x-data-grid";
 import { DatePicker } from "@mui/lab";
 
-import { Drop, Alerts } from "../styledComps";
+import { Drop, Alerts, LayerOne, LayerTwo } from "../styledComps";
 
 import {
 	getDocs,
@@ -561,402 +561,425 @@ export default function ManageCompetitions() {
 	};
 
 	return (
-		<div style={{ margin: "10px" }}>
-			<h1>Manage Competitions</h1>
-			<Alerts
-				open={errors.submitted || errors.delete}
-				handleClose={() => {
-					clearErrors();
-					onClear();
-				}}
-				type={
-					errors.submitted
-						? errors.notFull
-							? "error"
-							: errors.upload
-							? "error"
-							: "success"
-						: errors.deleteError || errors.deleteErr
-						? "error"
-						: "success"
-				}
-				message={getMessage(errors)}
-			/>
-			<div style={{ display: "flex", marginBottom: "10px" }}>
-				<Drop
-					options={rowInfo.comps}
-					onChange={(e) => {
-						onSelect(e.target.textContent);
-						if (e.target.textContent === "") {
-							onClear();
+		<LayerOne>
+			<LayerTwo>
+				<div style={{ margin: "10px" }}>
+					<h1>Manage Competitions</h1>
+					<Alerts
+						open={errors.submitted || errors.delete}
+						handleClose={() => {
 							clearErrors();
+							onClear();
+						}}
+						type={
+							errors.submitted
+								? errors.notFull
+									? "error"
+									: errors.upload
+									? "error"
+									: "success"
+								: errors.deleteError || errors.deleteErr
+								? "error"
+								: "success"
 						}
-					}}
-					text="Select Competition"
-					value={rowInfo.comp}
-					style={{ width: "223px" }}
-					disabled={newArt.clicked}
-					helperText="Please click on an option."
-				/>
-				{!newArt.picked && !newArt.clicked && !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, clicked: true }));
-								// onClear();
-							}}
-							style={{ marginLeft: "10px" }}>
-							Create New Article
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, delete: true }));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Delete Article
-						</Button>
-					</>
-				) : !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={onSubmit}
-							style={{ marginLeft: "10px" }}>
-							Save Article
-						</Button>
-						{!newArt.picked ? (
-							<Button
-								variant="outlined"
-								color="primary"
-								size="medium"
-								onClick={() => onClear()}
-								style={{ marginLeft: "10px" }}>
-								Undo Option
-							</Button>
-						) : null}
-					</>
-				) : (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => onDelete()}
-							style={{ marginLeft: "10px" }}>
-							Delete Article
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => onClear()}
-							style={{ marginLeft: "10px" }}>
-							Undo Option
-						</Button>
-					</>
-				)}
-			</div>
-
-			<DataGrid autoHeight hideFooter columns={columns} rows={rowInfo.row} />
-
-			<div style={{ marginTop: "10px" }}>
-				<Grid container>
-					<Grid item sm={3}>
-						<TextField
-							sx={{ marginBottom: "10px" }}
-							label="Contact"
-							value={newComp.contact}
+						message={getMessage(errors)}
+					/>
+					<div style={{ display: "flex", marginBottom: "10px" }}>
+						<Drop
+							options={rowInfo.comps}
 							onChange={(e) => {
-								setComp({ ...newComp, contact: e.target.value });
-								setErrors((prev) => ({
-									...prev,
-									contact: !!e.target.value,
-									submitted: false,
-								}));
-							}}
-							error={errors.submitted ? !errors.contact : false}
-						/>
-						<TextField
-							sx={{ marginBottom: "10px" }}
-							label="Contact Email"
-							value={newComp.email}
-							onChange={(e) => {
-								setComp({ ...newComp, email: e.target.value });
-								setErrors((prev) => ({
-									...prev,
-									email: !!e.target.value,
-									submitted: false,
-								}));
-							}}
-							error={errors.submitted ? !errors.email : false}
-						/>
-						<DatePicker
-							views={["day"]}
-							label="Competition Date"
-							value={newComp.compDate}
-							onChange={(newValue) => {
-								if (newValue !== null) {
-									setComp({ ...newComp, compDate: newValue });
-									setErrors((prev) => ({
-										...prev,
-										compDate: true,
-										submitted: false,
-									}));
-								} else {
-									setErrors((prev) => ({
-										...prev,
-										compDate: false,
-										submitted: false,
-									}));
+								onSelect(e.target.textContent);
+								if (e.target.textContent === "") {
+									onClear();
+									clearErrors();
 								}
 							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									error={errors.submitted ? !errors.compDate : false}
-									helperText={
-										errors.compDate ? "Please fill out to continue." : null
-									}
-									sx={{
-										width: "223px",
-										alignSelf: "center",
+							text="Select Competition"
+							value={rowInfo.comp}
+							style={{ width: "223px" }}
+							disabled={newArt.clicked}
+							helperText="Please click on an option."
+						/>
+						{!newArt.picked && !newArt.clicked && !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, clicked: true }));
+										// onClear();
 									}}
-								/>
-							)}
-						/>
-					</Grid>
-					<Grid item sm={3}>
-						<TextField
-							sx={{ marginBottom: "10px" }}
-							label="Max Teams per School"
-							value={newComp.schTeams}
-							onChange={(e) => {
-								setComp({
-									...newComp,
-									schTeams: e.target.value.replace(/[^\d,]+/g, ""),
-								});
-								setErrors((prev) => ({
-									...prev,
-									schTeams: !!e.target.value,
-									submitted: false,
-								}));
-							}}
-							error={errors.submitted ? !errors.schTeams : false}
-						/>
-						<TextField
-							sx={{ marginBottom: "10px" }}
-							label="Max Teams"
-							value={newComp.maxTeams}
-							onChange={(e) => {
-								setComp({
-									...newComp,
-									maxTeams: e.target.value.replace(/[^\d,]+/g, ""),
-								});
-								setErrors((prev) => ({
-									...prev,
-									maxTeams: !!e.target.value,
-									submitted: false,
-								}));
-							}}
-							error={errors.submitted ? !errors.maxTeams : false}
-						/>
-						<DatePicker
-							views={["day"]}
-							label="Registration Deadline"
-							value={newComp.regDate}
-							onChange={(newValue) => {
-								if (newValue !== null) {
-									setComp({ ...newComp, regDate: newValue });
-									setErrors((prev) => ({
-										...prev,
-										regDate: true,
-										submitted: false,
-									}));
-								} else {
-									setErrors((prev) => ({
-										...prev,
-										regDate: false,
-										submitted: false,
-									}));
-								}
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									error={errors.submitted ? !errors.regDate : false}
-									required
-									helperText={
-										errors.regDate ? "Please fill out to continue." : null
-									}
-									sx={{
-										width: "223px",
-										alignSelf: "center",
+									style={{ marginLeft: "10px" }}>
+									Create New Article
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, delete: true }));
 									}}
+									style={{ marginLeft: "10px" }}>
+									Delete Article
+								</Button>
+							</>
+						) : !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={onSubmit}
+									style={{ marginLeft: "10px" }}>
+									Save Article
+								</Button>
+								{!newArt.picked ? (
+									<Button
+										variant="outlined"
+										color="primary"
+										size="medium"
+										onClick={() => onClear()}
+										style={{ marginLeft: "10px" }}>
+										Undo Option
+									</Button>
+								) : null}
+							</>
+						) : (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => onDelete()}
+									style={{ marginLeft: "10px" }}>
+									Delete Article
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => onClear()}
+									style={{ marginLeft: "10px" }}>
+									Undo Option
+								</Button>
+							</>
+						)}
+					</div>
+
+					<DataGrid
+						autoHeight
+						hideFooter
+						columns={columns}
+						rows={rowInfo.row}
+					/>
+
+					<div style={{ marginTop: "10px" }}>
+						<Grid container>
+							<Grid item sm={3}>
+								<TextField
+									sx={{ marginBottom: "10px" }}
+									label="Contact"
+									value={newComp.contact}
+									onChange={(e) => {
+										setComp({ ...newComp, contact: e.target.value });
+										setErrors((prev) => ({
+											...prev,
+											contact: !!e.target.value,
+											submitted: false,
+										}));
+									}}
+									error={errors.submitted ? !errors.contact : false}
 								/>
-							)}
-						/>
-					</Grid>
-					<Grid item sm={3}>
-						<TextField
-							sx={{ marginBottom: "10px" }}
-							label="Map URL"
-							value={newComp.mapurl}
-							onChange={(e) => setComp({ ...newComp, mapurl: e.target.value })}
-						/>
-						<TextField
-							sx={{ marginBottom: "10px" }}
-							label="Schedule"
-							value={newComp.schedule}
+								<TextField
+									sx={{ marginBottom: "10px" }}
+									label="Contact Email"
+									value={newComp.email}
+									onChange={(e) => {
+										setComp({ ...newComp, email: e.target.value });
+										setErrors((prev) => ({
+											...prev,
+											email: !!e.target.value,
+											submitted: false,
+										}));
+									}}
+									error={errors.submitted ? !errors.email : false}
+								/>
+								<DatePicker
+									views={["day"]}
+									label="Competition Date"
+									value={newComp.compDate}
+									onChange={(newValue) => {
+										if (newValue !== null) {
+											setComp({ ...newComp, compDate: newValue });
+											setErrors((prev) => ({
+												...prev,
+												compDate: true,
+												submitted: false,
+											}));
+										} else {
+											setErrors((prev) => ({
+												...prev,
+												compDate: false,
+												submitted: false,
+											}));
+										}
+									}}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											error={errors.submitted ? !errors.compDate : false}
+											helperText={
+												errors.compDate ? "Please fill out to continue." : null
+											}
+											sx={{
+												width: "223px",
+												alignSelf: "center",
+											}}
+										/>
+									)}
+								/>
+							</Grid>
+							<Grid item sm={3}>
+								<TextField
+									sx={{ marginBottom: "10px" }}
+									label="Max Teams per School"
+									value={newComp.schTeams}
+									onChange={(e) => {
+										setComp({
+											...newComp,
+											schTeams: e.target.value.replace(/[^\d,]+/g, ""),
+										});
+										setErrors((prev) => ({
+											...prev,
+											schTeams: !!e.target.value,
+											submitted: false,
+										}));
+									}}
+									error={errors.submitted ? !errors.schTeams : false}
+								/>
+								<TextField
+									sx={{ marginBottom: "10px" }}
+									label="Max Teams"
+									value={newComp.maxTeams}
+									onChange={(e) => {
+										setComp({
+											...newComp,
+											maxTeams: e.target.value.replace(/[^\d,]+/g, ""),
+										});
+										setErrors((prev) => ({
+											...prev,
+											maxTeams: !!e.target.value,
+											submitted: false,
+										}));
+									}}
+									error={errors.submitted ? !errors.maxTeams : false}
+								/>
+								<DatePicker
+									views={["day"]}
+									label="Registration Deadline"
+									value={newComp.regDate}
+									onChange={(newValue) => {
+										if (newValue !== null) {
+											setComp({ ...newComp, regDate: newValue });
+											setErrors((prev) => ({
+												...prev,
+												regDate: true,
+												submitted: false,
+											}));
+										} else {
+											setErrors((prev) => ({
+												...prev,
+												regDate: false,
+												submitted: false,
+											}));
+										}
+									}}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											error={errors.submitted ? !errors.regDate : false}
+											required
+											helperText={
+												errors.regDate ? "Please fill out to continue." : null
+											}
+											sx={{
+												width: "223px",
+												alignSelf: "center",
+											}}
+										/>
+									)}
+								/>
+							</Grid>
+							<Grid item sm={3}>
+								<TextField
+									sx={{ marginBottom: "10px" }}
+									label="Map URL"
+									value={newComp.mapurl}
+									onChange={(e) =>
+										setComp({ ...newComp, mapurl: e.target.value })
+									}
+								/>
+								<TextField
+									sx={{ marginBottom: "10px" }}
+									label="Schedule"
+									value={newComp.schedule}
+									onChange={(e) => {
+										setComp({ ...newComp, schedule: e.target.value });
+										setErrors((prev) => ({
+											...prev,
+											schedule: !!e.target.value,
+											submitted: false,
+										}));
+									}}
+									error={errors.submitted ? !errors.schedule : false}
+								/>
+								<TextField
+									label="Year"
+									value={newComp.year}
+									onChange={(e) => {
+										setComp({ ...newComp, year: e.target.value });
+										setErrors((prev) => ({
+											...prev,
+											year: !!e.target.value,
+											submitted: false,
+										}));
+									}}
+									error={errors.submitted ? !errors.year : false}
+								/>
+							</Grid>
+							<Grid item sm={3}>
+								<Autocomplete
+									options={[
+										"reg",
+										"pre",
+										"names",
+										"closed",
+										"masters",
+										"archive",
+									]}
+									onChange={(_, newValue) => {
+										setComp({ ...newComp, status: newValue });
+										setErrors((prev) => ({
+											...prev,
+											status: !!newValue,
+											submitted: false,
+										}));
+									}}
+									value={newComp.status}
+									freeSolo
+									sx={{
+										width: "210px",
+										marginBottom: "10px",
+									}}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											error={errors.submitted ? !errors.status : false}
+											label="Registration Status"
+											variant="outlined"
+											required
+										/>
+									)}
+								/>
+								<Autocomplete
+									options={options.level}
+									onChange={(_, newValue) => {
+										if (newValue !== null) {
+											setComp({
+												...newComp,
+												level: newValue,
+												grade: `G${newValue.value}`,
+											});
+											setErrors((prev) => ({
+												...prev,
+												level: true,
+												grade: true,
+												submitted: false,
+											}));
+										} else {
+											setComp({
+												...newComp,
+												level: "",
+												grade: "",
+											});
+											setErrors((prev) => ({
+												...prev,
+												level: false,
+												grade: false,
+												submitted: false,
+											}));
+										}
+									}}
+									value={
+										typeof newComp.level === "string" ? "" : newComp.level.label
+									}
+									freeSolo
+									sx={{
+										width: "210px",
+										marginBottom: "10px",
+									}}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											error={errors.submitted ? !errors.level : false}
+											label="Grade"
+											variant="outlined"
+											required
+										/>
+									)}
+								/>
+								<Autocomplete
+									options={options.locations}
+									onChange={(_, newValue) => {
+										if (newValue !== null) {
+											setComp({ ...newComp, site: newValue.value });
+											setErrors((prev) => ({
+												...prev,
+												site: true,
+												submitted: false,
+											}));
+										} else {
+											setErrors((prev) => ({
+												...prev,
+												site: false,
+												submitted: false,
+											}));
+										}
+									}}
+									value={newComp.site}
+									freeSolo
+									sx={{
+										width: "210px",
+									}}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											error={errors.submitted ? !errors.site : false}
+											label="Competition Location"
+											variant="outlined"
+											required
+										/>
+									)}
+								/>
+							</Grid>
+						</Grid>
+						<textarea
+							style={{
+								marginTop: "10px",
+								minHeight: "45px",
+								minWidth: "217px",
+								maxWidth: "93vw",
+							}}
+							placeholder="Add a note"
 							onChange={(e) => {
-								setComp({ ...newComp, schedule: e.target.value });
-								setErrors((prev) => ({
-									...prev,
-									schedule: !!e.target.value,
-									submitted: false,
-								}));
+								setComp({ ...newComp, note: e.target.value });
 							}}
-							error={errors.submitted ? !errors.schedule : false}
+							value={newComp.note}
 						/>
-						<TextField
-							label="Year"
-							value={newComp.year}
-							onChange={(e) => {
-								setComp({ ...newComp, year: e.target.value });
-								setErrors((prev) => ({
-									...prev,
-									year: !!e.target.value,
-									submitted: false,
-								}));
-							}}
-							error={errors.submitted ? !errors.year : false}
-						/>
-					</Grid>
-					<Grid item sm={3}>
-						<Autocomplete
-							options={["reg", "pre", "names", "closed", "masters", "archive"]}
-							onChange={(_, newValue) => {
-								setComp({ ...newComp, status: newValue });
-								setErrors((prev) => ({
-									...prev,
-									status: !!newValue,
-									submitted: false,
-								}));
-							}}
-							value={newComp.status}
-							freeSolo
-							sx={{
-								width: "210px",
-								marginBottom: "10px",
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									error={errors.submitted ? !errors.status : false}
-									label="Registration Status"
-									variant="outlined"
-									required
-								/>
-							)}
-						/>
-						<Autocomplete
-							options={options.level}
-							onChange={(_, newValue) => {
-								if (newValue !== null) {
-									setComp({
-										...newComp,
-										level: newValue,
-										grade: `G${newValue.value}`,
-									});
-									setErrors((prev) => ({
-										...prev,
-										level: true,
-										grade: true,
-										submitted: false,
-									}));
-								} else {
-									setComp({
-										...newComp,
-										level: "",
-										grade: "",
-									});
-									setErrors((prev) => ({
-										...prev,
-										level: false,
-										grade: false,
-										submitted: false,
-									}));
-								}
-							}}
-							value={
-								typeof newComp.level === "string" ? "" : newComp.level.label
-							}
-							freeSolo
-							sx={{
-								width: "210px",
-								marginBottom: "10px",
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									error={errors.submitted ? !errors.level : false}
-									label="Grade"
-									variant="outlined"
-									required
-								/>
-							)}
-						/>
-						<Autocomplete
-							options={options.locations}
-							onChange={(_, newValue) => {
-								if (newValue !== null) {
-									setComp({ ...newComp, site: newValue.value });
-									setErrors((prev) => ({
-										...prev,
-										site: true,
-										submitted: false,
-									}));
-								} else {
-									setErrors((prev) => ({
-										...prev,
-										site: false,
-										submitted: false,
-									}));
-								}
-							}}
-							value={newComp.site}
-							freeSolo
-							sx={{
-								width: "210px",
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									error={errors.submitted ? !errors.site : false}
-									label="Competition Location"
-									variant="outlined"
-									required
-								/>
-							)}
-						/>
-					</Grid>
-				</Grid>
-				<textarea
-					style={{ marginTop: "10px", minHeight: "45px", minWidth: "217px" }}
-					placeholder="Add a note"
-					onChange={(e) => {
-						setComp({ ...newComp, note: e.target.value });
-					}}
-					value={newComp.note}
-				/>
-			</div>
-		</div>
+					</div>
+				</div>
+			</LayerTwo>
+		</LayerOne>
 	);
 }

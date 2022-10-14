@@ -11,7 +11,7 @@ import "prismjs/themes/prism.css";
 import { db } from "../fire";
 import { doc, updateDoc } from "@firebase/firestore";
 
-import { Auto, Alerts } from "../styledComps";
+import { Auto, Alerts, LayerOne, LayerTwo } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ImportContent() {
@@ -99,64 +99,72 @@ export default function ImportContent() {
 	};
 
 	return (
-		<div style={{ margin: "10px" }}>
-			<Alerts
-				open={error.submitted}
-				handleClose={() =>
-					setError({
-						submitted: false,
-						success: false,
-						error: false,
-						noSelect: false,
-					})
-				}
-				type={error.success ? "success" : "error"}
-				message={
-					error.success
-						? "Successfully updated page."
-						: error.noSelect
-						? "Please select a page to update."
-						: error.error
-						? "Page failed to upload successfully. Please try again."
-						: null
-				}
-			/>
-			<h1>Import Page Content</h1>
-			<p style={{ color: "grey" }}>
-				The content of the available pages is written in HTML.
-			</p>
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				<Auto
-					options={pageOptions}
-					onChange={(event) => getPageContent(event.target.textContent)}
-					width={200}
-					text="Select Page"
-				/>
-				<Button
-					variant="outlined"
-					color="primary"
-					size="medium"
-					onClick={savePage}
-					style={{ marginLeft: "10px" }}>
-					Save Page
-				</Button>
-			</div>
-			<Editor
-				value={info}
-				tabSize={4}
-				placeholder="No page selected."
-				onValueChange={(info) => setInfo(info)}
-				highlight={(info) => highlight(info, languages.markup)}
-				padding={10}
-				style={{
-					fontFamily: '"Fira code", "Fira Mono", monospace',
-					fontSize: 12,
-					minHeight: "100px",
-					border: "1px solid black",
-					borderRadius: "5px",
-				}}
-			/>
-		</div>
+		<LayerOne>
+			<LayerTwo>
+				<div style={{ margin: "10px" }}>
+					<Alerts
+						open={error.submitted}
+						handleClose={() =>
+							setError({
+								submitted: false,
+								success: false,
+								error: false,
+								noSelect: false,
+							})
+						}
+						type={error.success ? "success" : "error"}
+						message={
+							error.success
+								? "Successfully updated page."
+								: error.noSelect
+								? "Please select a page to update."
+								: error.error
+								? "Page failed to upload successfully. Please try again."
+								: null
+						}
+					/>
+					<h1>Import Page Content</h1>
+					<p style={{ color: "grey" }}>
+						The content of the available pages is written in HTML.
+					</p>
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						<Auto
+							options={pageOptions}
+							onChange={(event) => getPageContent(event.target.textContent)}
+							width={200}
+							text="Select Page"
+						/>
+						<Button
+							variant="outlined"
+							color="primary"
+							size="medium"
+							onClick={savePage}
+							style={{ marginLeft: "10px" }}>
+							Save Page
+						</Button>
+					</div>
+					<Editor
+						value={info}
+						tabSize={4}
+						placeholder="No page selected."
+						onValueChange={(info) => setInfo(info)}
+						highlight={(info) => highlight(info, languages.markup)}
+						padding={10}
+						style={{
+							fontFamily: '"Fira code", "Fira Mono", monospace',
+							fontSize: 12,
+							minHeight: "100px",
+							border: "1px solid black",
+							borderRadius: "5px",
+						}}
+					/>
+				</div>
+			</LayerTwo>
+		</LayerOne>
 	);
 }

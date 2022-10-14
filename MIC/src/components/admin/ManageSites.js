@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField";
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-import { Drop, Alerts } from "../styledComps";
+import { Drop, Alerts, LayerOne, LayerTwo } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ManageSites() {
@@ -399,244 +399,256 @@ export default function ManageSites() {
 	};
 
 	return (
-		<div style={{ margin: "10px" }}>
-			<h1>Site Location Information</h1>
-			<Alerts
-				open={errors.failed || errors.submitted}
-				handleClose={() =>
-					setErrors((prev) => ({
-						...prev,
-						submitted: false,
-						get: false,
-						error: false,
-						failed: false,
-						success: false,
-						delete: false,
-					}))
-				}
-				type={errors.success || errors.delete ? "success" : "error"}
-				message={
-					errors.submitted
-						? errors.get
-							? "Failed to retrieve site information. Please try again."
-							: errors.error
-							? "Failed to update the database. Please try again."
-							: errors.success
-							? "Successfully added site to the database."
-							: errors.delete
-							? "Successfully deleted the site from the database."
-							: "test"
-						: errors.failed
-						? "Fields aren't appropriately filled out."
-						: "Unknown error occurred. Please try again."
-				}
-			/>
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				<Drop
-					options={options}
-					onChange={(event) => selectSite(event.target.textContent)}
-					text="Select Location to Edit"
-					disabled={newArt.clicked}
-					style={{ width: 200 }}
-					value={selected}
-				/>
-				{!newArt.picked && !newArt.clicked && !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, clicked: true }));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Create New Location
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({ ...prev, delete: true }));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Delete Location
-						</Button>
-					</>
-				) : !newArt.delete ? (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={saveSite}
-							style={{ marginLeft: "10px" }}>
-							Save Location
-						</Button>
-						{!newArt.picked ? (
-							<Button
-								variant="outlined"
-								color="primary"
-								size="medium"
-								onClick={() => {
-									setNewArt((prev) => ({
-										...prev,
-										clicked: false,
-										delete: false,
-									}));
-								}}
-								style={{ marginLeft: "10px" }}>
-								Undo Option
-							</Button>
-						) : null}
-					</>
-				) : (
-					<>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={deleteSite}
-							style={{ marginLeft: "10px" }}>
-							Delete Location
-						</Button>
-						<Button
-							variant="outlined"
-							color="primary"
-							size="medium"
-							onClick={() => {
-								setNewArt((prev) => ({
-									...prev,
-									picked: false,
-									clicked: false,
-									delete: false,
-								}));
-							}}
-							style={{ marginLeft: "10px" }}>
-							Undo Option
-						</Button>
-					</>
-				)}
-			</div>
-			<p style={{ color: "grey" }}>
-				The site name will be added to the list if it is a new location and is
-				visible, and will be removed if it is set to invisible/deleted.
-			</p>
-			<div
-				style={{ display: "flex", alginItems: "center", marginBottom: "10px" }}>
-				{newArt.clicked ? (
-					<TextField
-						value={info.key}
-						onChange={(event) => {
-							setInfo((prev) => ({ ...prev, key: event.target.value }));
-							event.target.value.length > 0
-								? setErrors((prev) => ({ ...prev, key: true }))
-								: setErrors((prev) => ({ ...prev, key: false }));
-						}}
-						helperText={`This will overwrite any site with the key "${
-							info.key === "" ? 0 : info.key
-						}". Key example: auburn.`}
-						label="Key"
-						variant="outlined"
-						style={{ marginRight: "10px" }}
-						error={errors.failed && !errors.key}
+		<LayerOne>
+			<LayerTwo>
+				<div style={{ margin: "10px" }}>
+					<h1>Site Location Information</h1>
+					<Alerts
+						open={errors.failed || errors.submitted}
+						handleClose={() =>
+							setErrors((prev) => ({
+								...prev,
+								submitted: false,
+								get: false,
+								error: false,
+								failed: false,
+								success: false,
+								delete: false,
+							}))
+						}
+						type={errors.success || errors.delete ? "success" : "error"}
+						message={
+							errors.submitted
+								? errors.get
+									? "Failed to retrieve site information. Please try again."
+									: errors.error
+									? "Failed to update the database. Please try again."
+									: errors.success
+									? "Successfully added site to the database."
+									: errors.delete
+									? "Successfully deleted the site from the database."
+									: "test"
+								: errors.failed
+								? "Fields aren't appropriately filled out."
+								: "Unknown error occurred. Please try again."
+						}
 					/>
-				) : null}
-				<TextField
-					value={info.city}
-					onChange={(event) => {
-						setInfo((prev) => ({ ...prev, city: event.target.value }));
-						event.target.value.length > 0
-							? setErrors((prev) => ({ ...prev, city: true }))
-							: setErrors((prev) => ({ ...prev, city: false }));
-					}}
-					label="City"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-					error={errors.failed && !errors.city}
-				/>
-				<TextField
-					value={info.mapUrl}
-					onChange={(event) => {
-						setInfo((prev) => ({ ...prev, mapUrl: event.target.value }));
-						event.target.value.length > 0
-							? setErrors((prev) => ({ ...prev, mapUrl: true }))
-							: setErrors((prev) => ({ ...prev, mapUrl: false }));
-					}}
-					label="Map URL"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-					error={errors.failed && !errors.mapUrl}
-				/>
-				<TextField
-					value={info.name}
-					onChange={(event) => {
-						setInfo((prev) => ({ ...prev, name: event.target.value }));
-						event.target.value.length > 0
-							? setErrors((prev) => ({ ...prev, name: true }))
-							: setErrors((prev) => ({ ...prev, name: false }));
-					}}
-					label="Name"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-					error={errors.failed && !errors.name}
-				/>
-				<TextField
-					value={info.phone}
-					onChange={(event) =>
-						setInfo((prev) => ({ ...prev, phone: event.target.value }))
-					}
-					label="Phone"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-				/>
-				<TextField
-					value={info.street}
-					onChange={(event) => {
-						setInfo((prev) => ({ ...prev, street: event.target.value }));
-						event.target.value.length > 0
-							? setErrors((prev) => ({ ...prev, street: true }))
-							: setErrors((prev) => ({ ...prev, street: false }));
-					}}
-					label="Street"
-					variant="outlined"
-					style={{ marginRight: "10px" }}
-					error={errors.failed && !errors.street}
-				/>
-				<Drop
-					options={["false", "true"]}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							show: event.target.textContent,
-						}));
-						event.target.textContent.length > 0
-							? setErrors((prev) => ({ ...prev, show: true }))
-							: setErrors((prev) => ({ ...prev, show: false }));
-					}}
-					text="Visibility"
-					value={info.show}
-					style={{ marginRight: "10px", width: 120 }}
-					error={errors.failed && !errors.show}
-				/>
-				<Drop
-					options={["west", "east", "central", "masters"]}
-					onChange={(event) => {
-						setInfo((prev) => ({
-							...prev,
-							region: event.target.textContent,
-						}));
-						event.target.textContent.length > 0
-							? setErrors((prev) => ({ ...prev, region: true }))
-							: setErrors((prev) => ({ ...prev, region: false }));
-					}}
-					text="Region"
-					value={info.region}
-					style={{ width: 120 }}
-					error={errors.failed && !errors.region}
-				/>
-			</div>
-		</div>
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						<Drop
+							options={options}
+							onChange={(event) => selectSite(event.target.textContent)}
+							text="Select Location to Edit"
+							disabled={newArt.clicked}
+							style={{ width: 200 }}
+							value={selected}
+						/>
+						{!newArt.picked && !newArt.clicked && !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, clicked: true }));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Create New Location
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({ ...prev, delete: true }));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Delete Location
+								</Button>
+							</>
+						) : !newArt.delete ? (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={saveSite}
+									style={{ marginLeft: "10px" }}>
+									Save Location
+								</Button>
+								{!newArt.picked ? (
+									<Button
+										variant="outlined"
+										color="primary"
+										size="medium"
+										onClick={() => {
+											setNewArt((prev) => ({
+												...prev,
+												clicked: false,
+												delete: false,
+											}));
+										}}
+										style={{ marginLeft: "10px" }}>
+										Undo Option
+									</Button>
+								) : null}
+							</>
+						) : (
+							<>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={deleteSite}
+									style={{ marginLeft: "10px" }}>
+									Delete Location
+								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										setNewArt((prev) => ({
+											...prev,
+											picked: false,
+											clicked: false,
+											delete: false,
+										}));
+									}}
+									style={{ marginLeft: "10px" }}>
+									Undo Option
+								</Button>
+							</>
+						)}
+					</div>
+					<p style={{ color: "grey" }}>
+						The site name will be added to the list if it is a new location and
+						is visible, and will be removed if it is set to invisible/deleted.
+					</p>
+					<div
+						style={{
+							display: "flex",
+							alginItems: "center",
+							marginBottom: "10px",
+						}}>
+						{newArt.clicked ? (
+							<TextField
+								value={info.key}
+								onChange={(event) => {
+									setInfo((prev) => ({ ...prev, key: event.target.value }));
+									event.target.value.length > 0
+										? setErrors((prev) => ({ ...prev, key: true }))
+										: setErrors((prev) => ({ ...prev, key: false }));
+								}}
+								helperText={`This will overwrite any site with the key "${
+									info.key === "" ? 0 : info.key
+								}". Key example: auburn.`}
+								label="Key"
+								variant="outlined"
+								style={{ marginRight: "10px" }}
+								error={errors.failed && !errors.key}
+							/>
+						) : null}
+						<TextField
+							value={info.city}
+							onChange={(event) => {
+								setInfo((prev) => ({ ...prev, city: event.target.value }));
+								event.target.value.length > 0
+									? setErrors((prev) => ({ ...prev, city: true }))
+									: setErrors((prev) => ({ ...prev, city: false }));
+							}}
+							label="City"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+							error={errors.failed && !errors.city}
+						/>
+						<TextField
+							value={info.mapUrl}
+							onChange={(event) => {
+								setInfo((prev) => ({ ...prev, mapUrl: event.target.value }));
+								event.target.value.length > 0
+									? setErrors((prev) => ({ ...prev, mapUrl: true }))
+									: setErrors((prev) => ({ ...prev, mapUrl: false }));
+							}}
+							label="Map URL"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+							error={errors.failed && !errors.mapUrl}
+						/>
+						<TextField
+							value={info.name}
+							onChange={(event) => {
+								setInfo((prev) => ({ ...prev, name: event.target.value }));
+								event.target.value.length > 0
+									? setErrors((prev) => ({ ...prev, name: true }))
+									: setErrors((prev) => ({ ...prev, name: false }));
+							}}
+							label="Name"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+							error={errors.failed && !errors.name}
+						/>
+						<TextField
+							value={info.phone}
+							onChange={(event) =>
+								setInfo((prev) => ({ ...prev, phone: event.target.value }))
+							}
+							label="Phone"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+						/>
+						<TextField
+							value={info.street}
+							onChange={(event) => {
+								setInfo((prev) => ({ ...prev, street: event.target.value }));
+								event.target.value.length > 0
+									? setErrors((prev) => ({ ...prev, street: true }))
+									: setErrors((prev) => ({ ...prev, street: false }));
+							}}
+							label="Street"
+							variant="outlined"
+							style={{ marginRight: "10px" }}
+							error={errors.failed && !errors.street}
+						/>
+						<Drop
+							options={["false", "true"]}
+							onChange={(event) => {
+								setInfo((prev) => ({
+									...prev,
+									show: event.target.textContent,
+								}));
+								event.target.textContent.length > 0
+									? setErrors((prev) => ({ ...prev, show: true }))
+									: setErrors((prev) => ({ ...prev, show: false }));
+							}}
+							text="Visibility"
+							value={info.show}
+							style={{ marginRight: "10px", width: 120 }}
+							error={errors.failed && !errors.show}
+						/>
+						<Drop
+							options={["west", "east", "central", "masters"]}
+							onChange={(event) => {
+								setInfo((prev) => ({
+									...prev,
+									region: event.target.textContent,
+								}));
+								event.target.textContent.length > 0
+									? setErrors((prev) => ({ ...prev, region: true }))
+									: setErrors((prev) => ({ ...prev, region: false }));
+							}}
+							text="Region"
+							value={info.region}
+							style={{ width: 120 }}
+							error={errors.failed && !errors.region}
+						/>
+					</div>
+				</div>
+			</LayerTwo>
+		</LayerOne>
 	);
 }
