@@ -10,10 +10,6 @@ import {
 	Image,
 } from "../styledComps.js";
 
-// Static Images for side of homepage
-// ? Should this be changed to easily allow updating the pictures? (Storage)
-import { math, lake, train, wp, donate } from "../assets.js";
-
 // Used to get the page contents if they are not already loaded
 import getWeb from "./getWeb";
 
@@ -123,15 +119,15 @@ export default function Home(props) {
 					target="_blank"
 					rel="noreferrer">
 					<img
-						src={donate}
+						src="/assets/btn_donate_LG.webp"
 						alt="PayPal"
 						style={{ width: "50%", borderRadius: "5px", marginBottom: "1%" }}
 					/>
 				</a>
-				<Image src={math} alt="math" />
-				<Image src={lake} alt="lake" />
-				<Image src={train} alt="train" />
-				<Image src={wp} alt="wp" />
+				<Image src="/assets/img/homepage/math1.jpg" alt="math" />
+				<Image src="/assets/img/sites/moseslake.jpg" alt="lake" />
+				<Image src="/assets/img/sites/mtrainier.jpg" alt="train" />
+				<Image src="/assets/img/homepage/WP_20140307_009.jpg" alt="wp" />
 			</ImageSet>
 		</LayerOne>
 	);

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import Editor from "react-simple-code-editor";
@@ -15,7 +14,7 @@ import "prismjs/themes/prism.css";
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
-import { Auto, Alerts, LayerOne, LayerTwo } from "../styledComps";
+import { Auto, Alerts, HtmlTooltip, LayerOne, LayerTwo } from "../styledComps";
 import getWeb from "../front/getWeb";
 
 export default function ManageFAQ() {
@@ -371,7 +370,7 @@ export default function ManageFAQ() {
 								</Button>
 							</>
 						)}
-						<Tooltip title={helpText}>
+						<HtmlTooltip title={helpText}>
 							<HelpOutlineIcon
 								sx={{
 									marginLeft: "10px",
@@ -381,7 +380,7 @@ export default function ManageFAQ() {
 									alignSelf: "center",
 								}}
 							/>
-						</Tooltip>
+						</HtmlTooltip>
 					</div>
 
 					<div

@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
+import Tooltip, {tooltipClasses} from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -17,9 +18,6 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { DataGrid } from "@mui/x-data-grid";
 
 import { Link } from "react-router-dom";
-
-// Background image for the navbar
-import image from "../assets/logo.5a82c15d88ad2d074447.png";
 
 const color = "#3f51b5";
 const profCol = "#" + ((Math.random() * 0xffffff) << 0).toString(16);
@@ -243,69 +241,12 @@ const Form = styled("form")(({ theme }) => ({
 	marginTop: theme.spacing(1),
 }));
 
-// Style for Google Form iframe
-const Frame = styled("iframe")({
-	width: "100%",
-	height: "100vh",
-	frameBorder: "0",
-	marginHeight: "0",
-	marginWidth: "0",
-});
-
 // Overall style for the navbar
 const FullNav = styled("div")({
 	position: "sticky",
 	top: "-1px",
 	zIndex: "5",
 });
-
-/**
- * Registration Google Form
- *
- * @param {string} location.state.key: The Google Form link with fields pre-filled
- */
-const GoogleForm = (props) => {
-	return (
-		<div>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					justifyContent: "center",
-					padding: "10px",
-				}}>
-				<Typography
-					sx={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						paddingRight: "10px",
-					}}>
-					After submitting, click here to navigate back to registration page:
-				</Typography>
-				<Linked to={"/team-register"}>
-					<Button variant="contained" style={{ background: color }}>
-						Back
-					</Button>
-				</Linked>
-			</div>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					justifyContent: "center",
-				}}>
-				<Frame
-					style={{ maxHeight: "80vh", width: "80%", borderRadius: "5px" }}
-					id="frame"
-					title="register"
-					src={props.location.state.key}>
-					Loading…
-				</Frame>
-			</div>
-		</div>
-	);
-};
 
 // Header for nav bar columns
 const Header = styled(Typography)({
@@ -320,6 +261,14 @@ const Header = styled(Typography)({
 		fontSize: "3.5vw",
 	},
 });
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+	<Tooltip {...props} classes={{ popper: className }} />
+)) (({ theme }) => ({
+	[`& .${tooltipClasses.tooltip}`]: {
+		fontSize: theme.typography.pxToRem(14)
+	},
+}));
 
 // Image on home
 const Image = styled("img")({
@@ -471,7 +420,7 @@ const NavButton = styled(Button)({
 
 // Container style for the open navbar options
 const NavOptions = styled("div")({
-	background: `url(${image}) right center/contain no-repeat #3f51b5`,
+	background: "url(/assets/img/logo.png) right center/contain no-repeat #3f51b5",
 	height: "100%",
 	overflowX: "hidden",
 	overflowY: "scroll",
@@ -698,8 +647,8 @@ export {
 	Drop,
 	Form,
 	FullNav,
-	GoogleForm,
 	Header,
+	HtmlTooltip,
 	Image,
 	ImageSet,
 	LayerOne,

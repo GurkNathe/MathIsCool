@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { LocalizationProvider } from "@mui/lab";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 // Different components for front-end website
 import Competitions from "./components/front/Competitions";
@@ -25,7 +25,8 @@ import Names from "./components/back/Names";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
 import SideBar from "./components/navigation/SideBar";
 import TeamRegister from "./components/back/TeamRegister";
-import { GoogleForm, NotFound } from "./components/styledComps";
+import { NotFound } from "./components/styledComps";
+import BadSubmit from "./components/back/BadSubmit";
 
 // Admin/Editor pages
 import AddAdmin from "./components/admin/AddAdmin";
@@ -39,6 +40,7 @@ import ManagePastTests from "./components/admin/ManagePastTests";
 import ManageSites from "./components/admin/ManageSites";
 import MarkMasters from "./components/admin/MarkMasters";
 import MastersTeams from "./components/custom/MastersTeams";
+import ViewNames from "./components/admin/ViewNames";
 
 // Test page for developers to mess around with
 import Test from "./components/admin/Test";
@@ -121,9 +123,9 @@ export default function App() {
 							component={TeamRegister}
 						/>
 						<ProtectedRoute
-							path="/team-register/confirm/"
+							path="/team-register/bad-submit/"
 							exact
-							component={GoogleForm}
+							component={BadSubmit}
 						/>
 						<ProtectedRoute path="/enter-names" exact component={Names} />
 						<AdminRoute
@@ -146,6 +148,11 @@ export default function App() {
 							path="/admin/manage-comps"
 							exact
 							component={ManageCompetitions}
+						/>
+						<AdminRoute
+							path="/admin/manage-comps/view-names"
+							exact
+							component={ViewNames}
 						/>
 						<AdminRoute
 							path="/admin/manage-home"

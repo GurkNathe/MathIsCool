@@ -210,17 +210,18 @@ export default function ProfilePage() {
 				)}
 				{userInfo.username !== null && userInfo.username !== undefined ? (
 					<>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								width: "30%",
-							}}>
+						<Grid 
+							container
+							sx={{
+								justifyContent: "center"
+							}}
+						>
 							<Grid
 								item
 								justify="space-between"
 								sx={{
 									display: "flex",
+									flexDirection: "column",
 									justifyContent: "center",
 									alignItems: "center",
 									marginBottom: "5px",
@@ -229,9 +230,27 @@ export default function ProfilePage() {
 									<Typography variant="h6">Username:</Typography>
 								</Grid>
 								<Grid item xs={6}>
+									<Typography variant="h6">Email:</Typography>
+								</Grid>
+								<Grid item xs={6}>
+									<Typography variant="h6">School: </Typography>
+								</Grid>
+							</Grid>
+							<Grid
+								item
+								justify="space-between"
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									justifyContent: "center",
+									alignItems: "center",
+									marginBottom: "5px",
+								}}>
+								<Grid item xs={6}>
 									<TextField
 										style={{
 											width: "15vw",
+											marginBottom: "5px"
 										}}
 										variant="outlined"
 										placeholder={userInfo.username}
@@ -250,23 +269,11 @@ export default function ProfilePage() {
 										}}
 									/>
 								</Grid>
-							</Grid>
-							<Grid
-								item
-								justify="space-between"
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									marginBottom: "5px",
-								}}>
-								<Grid item xs={6}>
-									<Typography variant="h6">Email:</Typography>
-								</Grid>
 								<Grid item xs={6}>
 									<TextField
 										style={{
 											width: "15vw",
+											marginBottom: "5px"
 										}}
 										variant="outlined"
 										placeholder={userInfo.email}
@@ -284,18 +291,6 @@ export default function ProfilePage() {
 											}
 										}}
 									/>
-								</Grid>
-							</Grid>
-							<Grid
-								item
-								justify="space-between"
-								sx={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-								}}>
-								<Grid item xs={6}>
-									<Typography variant="h6">School: </Typography>
 								</Grid>
 								<Grid item xs={6}>
 									<Drop
@@ -316,7 +311,7 @@ export default function ProfilePage() {
 									/>
 								</Grid>
 							</Grid>
-						</div>
+						</Grid>
 						{changed ? (
 							<div
 								style={{

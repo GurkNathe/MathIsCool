@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { LayerOne, LayerTwo, LayerThree, Map } from "../styledComps.js";
 
-import { map } from "../assets.js";
 import getPage from "./getPage";
 import getWeb from "./getWeb";
 
@@ -85,7 +84,7 @@ export default function Locations() {
 								) : null;
 							})}
 						</div>
-						<Map src={map} alt="map" />
+						<Map src="/assets/img/sites/MIC_Regions.png" alt="map" />
 					</div>
 				</LayerThree>
 			</LayerTwo>

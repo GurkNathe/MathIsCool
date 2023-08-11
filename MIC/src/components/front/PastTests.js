@@ -177,31 +177,33 @@ export default function PastTests() {
 							<Th>Test Description</Th>
 						</tr>
 					</thead>
-					<tbody>
 						{year.length !== 0 ? (
-							year.map((item, index) => {
-								return (
-									<tr key={index}>
-										<Td>{item.year}</Td>
-										<Td>
-											{item.data.map((data, index) => {
-												return (
-													<React.Fragment key={index}>
-														<Button onClick={() => getLink(data.url)}>
-															{data.desc}
-														</Button>
-														{index !== item.data.length - 1 ? " : " : null}
-													</React.Fragment>
-												);
-											})}
-										</Td>
-									</tr>
-								);
-							})
+							<tbody>
+							{
+								year.map((item, index) => {
+									return (
+										<tr key={index}>
+											<Td>{item.year}</Td>
+											<Td>
+												{item.data.map((data, index) => {
+													return (
+														<React.Fragment key={index}>
+															<Button onClick={() => getLink(data.url)}>
+																{data.desc}
+															</Button>
+															{index !== item.data.length - 1 ? " : " : null}
+														</React.Fragment>
+													);
+												})}
+											</Td>
+										</tr>
+									);
+								})
+							}
+							</tbody>	
 						) : (
 							<p>There is an issue loading the samples.</p>
 						)}
-					</tbody>
 				</table>
 			)}
 		</BasicPage>

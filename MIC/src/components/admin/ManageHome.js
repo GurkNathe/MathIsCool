@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
-import CodeEditor from "@uiw/react-textarea-code-editor";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-markup";
+import "prismjs/themes/prism.css";
 
 import { db, auth } from "../fire";
 import { doc, getDoc, updateDoc } from "@firebase/firestore";
@@ -25,7 +29,7 @@ export default function ManageHome() {
 	const [records, setRecords] = useState([]);
 
 	// Used to store the names of the aricles that can be selected
-	const [options, setOptions] = useState([]);
+	const [options, setOptions] = useState({ articles: [], pairs: [] });
 
 	// Used to tell what options for modifying articles have been selected
 	const [newArt, setNewArt] = useState({
@@ -50,22 +54,49 @@ export default function ManageHome() {
 		if (sessionStorage.getItem("news")) {
 			let homeRecs = JSON.parse(sessionStorage.getItem("news"))["records"];
 			setRecords(homeRecs);
-			let titles = [];
+
+			let pairs = [];
+			let articles = []
 			for (const record in homeRecs) {
-				titles.push(record);
+				pairs.push({ value: record, key: homeRecs[record].title });
+				articles.push(homeRecs[record].title)
 			}
-			setOptions(titles);
+
+			setOptions({
+				articles: articles,
+				pairs: pairs
+			});
 		} else {
 			getWeb("news").then((response) => {
 				setRecords(response.records);
-				let titles = [];
+				let pairs = [];
+				let articles = []
 				for (const record in response.records) {
-					titles.push(record);
+					pairs.push({ value: record, key: response.records[record].title });
+					articles.push(response.records[record].title)
 				}
-				setOptions(titles);
+
+				setOptions({
+					articles: articles,
+					pairs: pairs
+				});
 			});
 		}
 	}, []);
+
+	/**
+	 * Gets the competition ID based on its key in the rowInfo.pairs 
+	 * @param {string} key : key for the ID of the competition
+	 * @returns {string} : competition ID of selected competition
+	 */
+	const getID = (key) => {
+		for(let pair of options.pairs) {
+			if (pair.key === key) {
+				return pair.value;
+			}
+		}
+		return "";
+	}
 
 	/**
 	 * Handles the data filling upon selecting an article
@@ -74,13 +105,14 @@ export default function ManageHome() {
 	 */
 	const selectArticle = (e) => {
 		if (e) {
+			let key = getID(e);
 			setInfo((prev) => ({
 				...prev,
-				key: records[e].key,
-				article: records[e].article,
-				priority: Number(records[e].priority),
-				title: records[e].title,
-				visible: records[e].visible,
+				key: records[key].key,
+				article: records[key].article,
+				priority: Number(records[key].priority),
+				title: records[key].title,
+				visible: records[key].visible,
 			}));
 			setNewArt((prev) => ({
 				...prev,
@@ -131,7 +163,10 @@ export default function ManageHome() {
 						sessionStorage.setItem("news", JSON.stringify(data));
 						setRecords(data.records);
 						if (newArt.clicked) {
-							setOptions((prev) => [...prev, article.key]);
+							setOptions((prev) => ({
+								articles: [...prev.articles, article.title],
+								pairs: [...prev.pairs, { value: article.key, key: article.title }]
+							}));
 							setInfo({
 								key: "",
 								article: "",
@@ -170,7 +205,7 @@ export default function ManageHome() {
 
 	// Deletes the selected article
 	const deleteArticle = () => {
-		if (options.includes(info.key)) {
+		if (options.articles.includes(info.title)) {
 			const page = doc(db, "web", "news");
 			getDoc(page)
 				.then((doc) => {
@@ -183,7 +218,18 @@ export default function ManageHome() {
 						.then(() => {
 							// Update local information
 							sessionStorage.setItem("news", JSON.stringify(data));
-							setOptions(Object.keys(data.records));
+
+							let pairs = [];
+							let articles = []
+							for (const record in data.records) {
+								pairs.push({ value: record, key: data.records[record].title });
+								articles.push(data.records[record].title)
+							}
+
+							setOptions({
+								articles: articles,
+								pairs: pairs
+							});
 							setRecords(data.records);
 							setInfo({
 								key: "",
@@ -266,7 +312,7 @@ export default function ManageHome() {
 							marginBottom: "10px",
 						}}>
 						<Auto
-							options={options}
+							options={options.articles}
 							onChange={(event) => selectArticle(event.target.textContent)}
 							width={200}
 							text="Select Article to Edit"
@@ -393,23 +439,20 @@ export default function ManageHome() {
 						/>
 					</div>
 
-					<CodeEditor
+					<Editor
 						value={info.article}
-						language="html"
+						tabSize={4}
 						placeholder="No article selected."
-						onChange={(event) =>
-							setInfo((prev) => ({
+						onValueChange={(info) => setInfo((prev) => ({
 								...prev,
-								article: event.target.value,
-							}))
-						}
-						padding={15}
+								article: info,
+							}))}
+						highlight={(info) => highlight(info, languages.markup)}
+						padding={10}
 						style={{
-							minHeight: "100px",
+							fontFamily: '"Fira code", "Fira Mono", monospace',
 							fontSize: 12,
-							backgroundColor: "#f5f5f5",
-							fontFamily:
-								"ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+							minHeight: "100px",
 							border: "1px solid black",
 							borderRadius: "5px",
 						}}

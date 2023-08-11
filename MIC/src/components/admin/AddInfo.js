@@ -12,6 +12,7 @@ import { doc, getDoc, updateDoc } from "@firebase/firestore";
 
 import { Alerts, LayerOne, LayerTwo } from "../styledComps";
 
+// Upload School information from Excell file
 export default function AddInfo() {
 	// Uploaded file
 	const [file, setFile] = useState({
@@ -77,14 +78,21 @@ export default function AddInfo() {
 					const propertyNames = Object.getOwnPropertyNames(current);
 
 					const value = propertyNames.find((propertyName) =>
-						propertyName.toLowerCase().includes("id")
+						propertyName.toLowerCase().includes("value")
 					);
 					const label = propertyNames.find((propertyName) =>
-						propertyName.toLowerCase().includes("name")
+						propertyName.toLowerCase().includes("label")
 					);
 					const div = propertyNames.find((propertyName) =>
-						propertyName.toLowerCase().includes("division")
+						propertyName.toLowerCase().includes("div")
 					);
+
+					if (!value || !label || !div) {
+						setErrors((prev) => ({
+							...prev,
+							file: true
+						}));
+					}
 
 					data[school] = {
 						label: data[school][label],
@@ -120,7 +128,7 @@ export default function AddInfo() {
 
 	// Saves the uploaded school data to the database
 	const saveSchools = () => {
-		if (file.data) {
+		if (file.data && !errors.file) {
 			let options = download;
 			options.school = file.data;
 
@@ -157,9 +165,9 @@ export default function AddInfo() {
 						<h1>Add/Download School Info</h1>
 						<p style={{ color: "grey" }}>
 							For the uploaded file, make sure the excell file has the column
-							headings that contain "id", "name", and "division". Example:
-							"School ID", "School Name", "2021-22 Assigned Division". If this
-							formatting isn't kept, it will cause the website to malfunction.
+							headings that contain "div", "label", and "value". <strong>If this
+							formatting isn't kept, it will cause the website to malfunction. </strong> 
+							There is error checking, but make sure to double check headings before clicking submit.
 						</p>
 						<Alerts
 							open={errors.saved || errors.options || errors.file}

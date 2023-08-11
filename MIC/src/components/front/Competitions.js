@@ -289,8 +289,8 @@ export default function Competitions() {
 									{getDate(comp.compDate)}
 								</p>
 								<p>
-									{Object.keys(sites.records).map((item, index) => {
-										if (item === comp.site) {
+									{sites ? Object.keys(sites.records).map((item, index) => {
+										if (sites.records[item].name === comp.site) {
 											return (
 												<span key={index}>
 													{sites.records[item].name} (
@@ -310,7 +310,7 @@ export default function Competitions() {
 										} else {
 											return null;
 										}
-									})}
+									}) : null}
 								</p>
 								<p>
 									Contact: {comp.contact} (
@@ -337,15 +337,17 @@ export default function Competitions() {
 								}}>
 								<p style={{ fontSize: "20px" }}>Tentative Schedule of Events</p>
 								<table>
-									{getTimes(comp.schedule.split("\n")).map((item, index) => {
-										let events = getEvents(comp.schedule.split("\n"));
-										return (
-											<tr key={index}>
-												<td style={{ paddingRight: "20px" }}>{item}</td>
-												<td>{events[index]}</td>
-											</tr>
-										);
-									})}
+									<tbody>
+										{getTimes(comp.schedule.split("\n")).map((item, index) => {
+											let events = getEvents(comp.schedule.split("\n"));
+											return (
+												<tr key={index}>
+													<td style={{ paddingRight: "20px" }}>{item}</td>
+													<td>{events[index]}</td>
+												</tr>
+											);
+										})}
+									</tbody>
 								</table>
 							</div>
 						</div>

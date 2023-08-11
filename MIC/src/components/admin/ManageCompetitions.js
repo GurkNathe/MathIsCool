@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -6,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
 import { DataGrid } from "@mui/x-data-grid";
-import { DatePicker } from "@mui/lab";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import { Drop, Alerts, LayerOne, LayerTwo } from "../styledComps";
 
@@ -23,6 +24,8 @@ import { db, auth } from "../fire";
 import getOptions from "../getOptions";
 
 export default function ManageCompetitions() {
+	const history = useHistory();
+
 	// columns for the table
 	const columns = [
 		{
@@ -112,8 +115,10 @@ export default function ManageCompetitions() {
 					comp.date = new Date(comp.compDate);
 					comp.mapurl = comp.mapURL;
 				});
+				return comps;
+			} else {
+				return [];
 			}
-			return comps;
 		},
 		[options.level]
 	);
@@ -129,20 +134,20 @@ export default function ManageCompetitions() {
 		comps.forEach((doc) => {
 			tempIds.push(doc.compId);
 		});
+		
 		return tempIds;
 	};
 
 	// current copmetitions
 	const [rowState, setRow] = useState({
-		comp: formatComps(JSON.parse(sessionStorage.getItem("mastersComps"))),
+		comp: [],
 		loading: true,
 	});
 
 	// Selected competition info
 	const [rowInfo, setRowInfo] = useState({
-		comps: JSON.parse(sessionStorage.getItem("mastersComps"))
-			? getCompIds(JSON.parse(sessionStorage.getItem("mastersComps")))
-			: [],
+		comps: [],
+		pairs: [],
 		row: [],
 		comp: "",
 	});
@@ -236,21 +241,40 @@ export default function ManageCompetitions() {
 		if (options === null) {
 			getOptions(setOptions);
 		}
-		if (rowState.comp === null || rowState.comp === undefined) {
+
+		if (Array.isArray(rowState.comp) && rowState.comp.length === 0) {
 			getComps()
 				.then((result) => {
+					let formedComps = formatComps(result)
 					setRow((prev) => ({
 						...prev,
-						comp: formatComps(result),
+						comp: formedComps,
 						loading: false,
 					}));
 					setComp((prev) => ({
 						...prev,
 						id: result.length,
 					}));
+
+					let comps = getCompIds(result);
+					let pairs = comps.map(id => {
+						let comp = selectComp(id, formedComps);
+						return {
+							id: id,
+							key: `${comp.site}-${comp.grade}`
+						}
+					})
+
+					let newComps = pairs.map(pair => {
+						return pair.key;
+					})
+
+					sessionStorage.setItem("pairs", JSON.stringify(pairs));
+
 					setRowInfo((prev) => ({
 						...prev,
-						comps: getCompIds(result),
+						comps: newComps,
+						pairs: pairs,
 					}));
 				})
 				.catch((error) => console.error(error));
@@ -285,13 +309,28 @@ export default function ManageCompetitions() {
 	};
 
 	/**
+	 * Gets the competition ID based on its key in the rowInfo.pairs 
+	 * @param {string} key : key for the ID of the competition
+	 * @returns {string} : competition ID of selected competition
+	 */
+	const getID = (key) => {
+		for(let pair of rowInfo.pairs) {
+			if (pair.key === key) {
+				return pair.id;
+			}
+		}
+		return "";
+	}
+
+	/**
 	 * Used when selecting a competition to edit/delete
 	 *
 	 * @param {string} comp : ID of the competition selected
 	 */
 	const onSelect = (comp) => {
 		if (comp) {
-			const newComp = selectComp(comp, rowState.comp);
+			let id = getID(comp);
+			const newComp = selectComp(id, rowState.comp);
 			setRowInfo((prev) => ({
 				...prev,
 				row: [{ ...newComp, grade: newComp.grade.substr(1) }],
@@ -300,6 +339,8 @@ export default function ManageCompetitions() {
 			setComp((prev) => ({
 				...prev,
 				...newComp,
+				compDate: new Date(newComp.compDate),
+				regDate: new Date(newComp.regDate),
 			}));
 			setNewArt((prev) => ({
 				...prev,
@@ -451,7 +492,7 @@ export default function ManageCompetitions() {
 					.then(() => {
 						setErrors((prev) => ({
 							...prev,
-							extraInfo: "Updated competition with ID: " + newComp.compId + ".",
+							extraInfo: `Updated competition with name: ${newComp.site}-${newComp.grade}.`,
 							submitted: true,
 						}));
 
@@ -560,6 +601,13 @@ export default function ManageCompetitions() {
 		}
 	};
 
+	const viewNames = () => {
+		history.push({
+			pathname: "/admin/manage-comps/view-names",
+			state: { reg: newComp.registration, name: rowInfo.comp }
+		})
+	}
+
 	return (
 		<LayerOne>
 			<LayerTwo>
@@ -634,6 +682,16 @@ export default function ManageCompetitions() {
 									style={{ marginLeft: "10px" }}>
 									Save Article
 								</Button>
+								<Button
+									variant="outlined"
+									color="primary"
+									size="medium"
+									onClick={() => {
+										viewNames()
+									}}
+									style={{ marginLeft: "10px" }}>
+									View Names
+								</Button>
 								{!newArt.picked ? (
 									<Button
 										variant="outlined"
@@ -674,9 +732,9 @@ export default function ManageCompetitions() {
 						rows={rowInfo.row}
 					/>
 
-					<div style={{ marginTop: "10px" }}>
+					<div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
 						<Grid container>
-							<Grid item sm={3}>
+							<Grid item sm={2}>
 								<TextField
 									sx={{ marginBottom: "10px" }}
 									label="Contact"
@@ -706,9 +764,9 @@ export default function ManageCompetitions() {
 									error={errors.submitted ? !errors.email : false}
 								/>
 								<DatePicker
-									views={["day"]}
 									label="Competition Date"
-									value={newComp.compDate}
+									views={["month","day","year"]}
+									value={new Date(newComp.compDate)}
 									onChange={(newValue) => {
 										if (newValue !== null) {
 											setComp({ ...newComp, compDate: newValue });
@@ -725,22 +783,16 @@ export default function ManageCompetitions() {
 											}));
 										}
 									}}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											error={errors.submitted ? !errors.compDate : false}
-											helperText={
-												errors.compDate ? "Please fill out to continue." : null
-											}
-											sx={{
-												width: "223px",
-												alignSelf: "center",
-											}}
-										/>
-									)}
+									error={errors.submitted ? !errors.compDate : false}
+									slotProps={{
+										textField: {
+											helperText: errors.compDate ? "Please fill out to continue." : null,
+											error: errors.submitted ? !errors.compDate : false
+										}
+									}}
 								/>
 							</Grid>
-							<Grid item sm={3}>
+							<Grid item sm={2}>
 								<TextField
 									sx={{ marginBottom: "10px" }}
 									label="Max Teams per School"
@@ -776,9 +828,9 @@ export default function ManageCompetitions() {
 									error={errors.submitted ? !errors.maxTeams : false}
 								/>
 								<DatePicker
-									views={["day"]}
 									label="Registration Deadline"
-									value={newComp.regDate}
+									views={["month","day","year"]}
+									value={new Date(newComp.regDate)}
 									onChange={(newValue) => {
 										if (newValue !== null) {
 											setComp({ ...newComp, regDate: newValue });
@@ -795,45 +847,16 @@ export default function ManageCompetitions() {
 											}));
 										}
 									}}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											error={errors.submitted ? !errors.regDate : false}
-											required
-											helperText={
-												errors.regDate ? "Please fill out to continue." : null
-											}
-											sx={{
-												width: "223px",
-												alignSelf: "center",
-											}}
-										/>
-									)}
+									error={errors.submitted ? !errors.compDate : false}
+									slotProps={{
+										textField: {
+											helperText: errors.regDate ? "Please fill out to continue." : null,
+											error: errors.submitted ? !errors.regDate : false
+										}
+									}}
 								/>
 							</Grid>
-							<Grid item sm={3}>
-								<TextField
-									sx={{ marginBottom: "10px" }}
-									label="Map URL"
-									value={newComp.mapurl}
-									onChange={(e) =>
-										setComp({ ...newComp, mapurl: e.target.value })
-									}
-								/>
-								<TextField
-									sx={{ marginBottom: "10px" }}
-									label="Schedule"
-									value={newComp.schedule}
-									onChange={(e) => {
-										setComp({ ...newComp, schedule: e.target.value });
-										setErrors((prev) => ({
-											...prev,
-											schedule: !!e.target.value,
-											submitted: false,
-										}));
-									}}
-									error={errors.submitted ? !errors.schedule : false}
-								/>
+							<Grid item sm={2}>
 								<TextField
 									label="Year"
 									value={newComp.year}
@@ -847,8 +870,6 @@ export default function ManageCompetitions() {
 									}}
 									error={errors.submitted ? !errors.year : false}
 								/>
-							</Grid>
-							<Grid item sm={3}>
 								<Autocomplete
 									options={[
 										"reg",
@@ -883,7 +904,7 @@ export default function ManageCompetitions() {
 									)}
 								/>
 								<Autocomplete
-									options={options.level}
+									options={options ? options.level ? options.level : [] : []}
 									onChange={(_, newValue) => {
 										if (newValue !== null) {
 											setComp({
@@ -912,7 +933,8 @@ export default function ManageCompetitions() {
 										}
 									}}
 									value={
-										typeof newComp.level === "string" ? "" : newComp.level.label
+										// typeof newComp.level === "string" ? "" : newComp.level.label
+										newComp.level
 									}
 									freeSolo
 									sx={{
@@ -930,7 +952,7 @@ export default function ManageCompetitions() {
 									)}
 								/>
 								<Autocomplete
-									options={options.locations}
+									options={options ? options.locations ? options.locations : [] : []}
 									onChange={(_, newValue) => {
 										if (newValue !== null) {
 											setComp({ ...newComp, site: newValue.value });
@@ -963,20 +985,59 @@ export default function ManageCompetitions() {
 									)}
 								/>
 							</Grid>
+							
+							{/* <Grid item sm={3}>
+								<TextField
+									sx={{ marginBottom: "10px" }}
+									label="Map URL"
+									value={newComp.mapurl}
+									onChange={(e) =>
+										setComp({ ...newComp, mapurl: e.target.value })
+									}
+								/>
+							</Grid> */}
 						</Grid>
-						<textarea
-							style={{
-								marginTop: "10px",
-								minHeight: "45px",
-								minWidth: "217px",
-								maxWidth: "93vw",
-							}}
-							placeholder="Add a note"
-							onChange={(e) => {
-								setComp({ ...newComp, note: e.target.value });
-							}}
-							value={newComp.note}
-						/>
+						<div style={{
+								display: "flex",
+								flexDirection: "column"
+							}}>
+								<textarea
+									style={{ 
+										marginTop: "10px",
+										minHeight: "45px",
+										width: "250px",
+										minWidth: "250px",
+										maxWidth: "100%",
+										outline: errors.submitted && !errors.schedule ? "none !important" : null,
+										border: errors.submitted && !errors.schedule ? "1px solid red"  : null,
+										boxshadow: errors.submitted && !errors.schedule ? "0 0 10px #719ECE" : null
+									}}
+									placeholder="Schedule"
+									value={newComp.schedule}
+									onChange={(e) => {
+										setComp({ ...newComp, schedule: e.target.value });
+										setErrors((prev) => ({
+											...prev,
+											schedule: !!e.target.value,
+											submitted: false,
+										}));
+									}}
+								/>
+								<textarea
+									style={{
+										marginTop: "10px",
+										minHeight: "45px",
+										width: "250px",
+										minWidth: "250px",
+										maxWidth: "100%",
+									}}
+									placeholder="Add a note"
+									onChange={(e) => {
+										setComp({ ...newComp, note: e.target.value });
+									}}
+									value={newComp.note}
+								/>
+							</div>
 					</div>
 				</div>
 			</LayerTwo>

@@ -1,0 +1,19 @@
+Team Registration:
+Fix column formatting -> Would have to completely redo the info input, using a custom component
+Testing for inputs
+Popover form form to tell people not to change information there
+
+Home Page:
+Links in home page articles have to be added to server to work. Have to put links to files as: href="/<link>" e.g. href="/assest/doc/divisions.pdf" and not href="assest/doc/divisions.pdf"
+PayPal button
+
+Manage Competitions:
+I think the Map URL field can be removed
+
+Firebase:
+Firebase rules need to be changed so that any admin can write to the database
+
+Google Sheet:
+Sheet needs sign in every time to add a trigger/execute script
+
+Mark Masters not working reliably????

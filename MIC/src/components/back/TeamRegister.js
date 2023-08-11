@@ -8,8 +8,7 @@ import TextField from "@mui/material/TextField";
 import { collection, where, getDocs, getDoc, doc } from "@firebase/firestore";
 import { auth, db } from "../fire";
 
-import { TeamForm, Auto, BasicPage } from "../styledComps";
-import { divisions } from "../assets.js";
+import { Alerts, TeamForm, Auto, BasicPage } from "../styledComps";
 import getOptions from "../getOptions";
 
 export default function TeamRegister() {
@@ -141,6 +140,9 @@ export default function TeamRegister() {
 	// Used as a checking variable for history.location.state
 	const [loaded, setLoaded] = useState({ state: false, options: false });
 
+	// Tells whether the information was submitted properly
+	const [sent, setSent] = useState({ sent: false, error: false });
+
 	// Stores email and username of user
 	const user = {
 		email: sessionStorage.getItem("email"),
@@ -190,13 +192,32 @@ export default function TeamRegister() {
 		if (!error) {
 			const compId = setCompID(choice, comps);
 			if (compId !== undefined) {
-				// Navigates to the Google Form if there is no error
-				history.push({
-					pathname: `/team-register/confirm/`,
-					state: {
-						key: setURL(choice, compId),
-					},
-				});
+				// Check if a valid school was entered
+				let s = typeof(choice.school) === "object";
+
+				if (s) {
+					// Submits the Google Form
+					fetch(setURL(choice, compId), {
+						method: "POST"
+					})
+					.then(_ => {
+						setSent( { sent: true, error: false } );
+					})
+					.catch(_ => {
+						setSent( { sent: true, error: true } );
+					})
+				} else {
+					history.push({
+						pathname: `/team-register/bad-submit/`,
+						state: {
+							school: choice.school,
+							email: user.email,
+							name: user.name
+						},
+					});
+				}
+
+
 			} else {
 				setError(true);
 			}
@@ -264,21 +285,22 @@ export default function TeamRegister() {
 	 */
 	const setURL = (choice, compId) => {
 		const uid = auth.currentUser.uid;
-		return `https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/viewform?usp=pp_url&entry.1951055040=${
-			choice.coach
-		}&entry.74786596=${uid}&entry.62573940=${
-			choice.loc.value
-		}&entry.1929366142=${choice.lev.value}&entry.680121242=${
-			choice.team.value
-		}&entry.641937550=${choice.indiv.value}&entry.1389254068=${
-			choice.school.value +
-			" " +
-			choice.school.label +
-			" - " +
-			choice.school.div
-		}&entry.1720714498=${
-			user.email + (choice.email ? ", " + choice.email : "")
-		}&entry.1445326839=${compId}`;
+
+		let url = new URL(
+			"https://docs.google.com/forms/d/e/1FAIpQLSf8UTjphTqcOHwmrdGEG8Jsbjz4eVz7d6XVlgW7AlnM28vq_g/formResponse?usp=pp_url"
+		);
+
+		url.searchParams.append("entry.1951055040", choice.coach);
+		url.searchParams.append("entry.74786596", uid);
+		url.searchParams.append("entry.62573940", choice.loc.value);
+		url.searchParams.append("entry.1929366142", choice.lev.value);
+		url.searchParams.append("entry.680121242", choice.team.value);
+		url.searchParams.append("entry.641937550", choice.indiv.value);
+		url.searchParams.append("entry.1389254068", choice.school.value + " " + choice.school.label + " - " + choice.school.div);
+		url.searchParams.append("entry.1720714498", user.email + (choice.email ? ", " + choice.email : ""));
+		url.searchParams.append("entry.1445326839", compId);
+
+		return url.href;
 	};
 
 	/**
@@ -749,6 +771,16 @@ export default function TeamRegister() {
 
 	return (
 		<BasicPage>
+			<Alerts
+				open={sent.sent}
+				handleClose={() => setSent({ sent: false, error: false })}
+				type={!sent.error ? "success" : "error"}
+				message={
+					sent.error ? 
+						"An error occured upon submitting. If you do not receive an email confirming your registration, please submit again, or contact a website administrator." :
+						"Successfully registered for competition. You should receive a confirmation email shortly."
+				}
+			/>
 			<h1>Team Registration</h1>
 			<p>
 				<b>Rules for Individuals:</b> Any student may compete as an individual
@@ -880,7 +912,7 @@ export default function TeamRegister() {
 							variant="contained"
 							onClick={onSubmit}
 							style={{ background: "#3f51b5" }}>
-							Continue
+							Submit
 						</Button>
 					</Grid>
 				</Grid>
@@ -889,7 +921,7 @@ export default function TeamRegister() {
 				A school's division level is assigned based on past performance at Math
 				is Cool contests. For more details and a current list of schools and
 				assignments, see&nbsp;
-				<a href={divisions} target="_blank" rel="noreferrer">
+				<a href="/assets/docs/divisions.pdf" target="_blank" rel="noreferrer">
 					2018-19 Divisions
 				</a>
 				.

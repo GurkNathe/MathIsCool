@@ -52,6 +52,7 @@ export default function Names() {
 							}
 						}
 					}
+
 					const title = `Grade ${
 						grades.length > 2 ? grades.join(", ") : grades.join(" and ")
 					} Competition on ${doc.data().compDate}`;
@@ -66,6 +67,7 @@ export default function Names() {
 								teams: register[sign].numTeams,
 								indiv: register[sign].numIndividuals,
 								schoolID: register[sign].schoolID,
+								grade: register[sign].level
 							});
 						}
 					}
@@ -93,6 +95,7 @@ export default function Names() {
 									teams: vals[val].teams,
 									indivs: vals[val].indiv,
 									schoolID: vals[val].schoolID,
+									level: vals[val].grade
 								},
 							]);
 						}
@@ -135,12 +138,13 @@ export default function Names() {
 					{!loading && compData.length > 0 ? (
 						<div style={{ width: "80%", paddingTop: "20px" }}>
 							<Typography>
-								To enter information, double click on each section.
+								<strong>To enter information, double click on each section.</strong>
 							</Typography>
 							<Table
 								title={
 									compData[selected].title + " for " + schoolData[selected]
 								}
+								level={compData[selected].level}
 								teams={compData[selected].teams}
 								individuals={compData[selected].indivs}
 								compId={compData[selected].compId}

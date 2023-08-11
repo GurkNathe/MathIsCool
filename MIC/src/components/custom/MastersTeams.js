@@ -166,13 +166,6 @@ export default function MastersTeams(props) {
 			headerName: "Status",
 			description: "Status",
 			flex: 1,
-			editable: false,
-		},
-		{
-			field: "status",
-			headerName: "Status",
-			description: "Status",
-			flex: 1,
 			editable: true,
 			renderCell: (params) => (
 				<select
@@ -237,13 +230,14 @@ export default function MastersTeams(props) {
 			setRows(newRows);
 			setChecked(true);
 		}
+
 	}, [data, getSchoolName, masters, rows, props.location.state, checked]);
 
 	return (
 		<BasicPage>
 			{Object.keys(data.registration).length > 0 ? (
-				<>
-					<p>
+				<div>
+					<p> 
 						Competition at&nbsp;
 						{data.site.replace(/\w\S*/g, (w) =>
 							w.replace(/^\w/, (c) => c.toUpperCase())
@@ -253,14 +247,7 @@ export default function MastersTeams(props) {
 						{data.compDate}
 					</p>
 
-					<DataTable
-						pagination
-						columns={columns}
-						rows={rows}
-						disableDensitySelector
-						disableColumnSelector
-						disableColumnFilter
-					/>
+					<DataTable columns={columns} rows={rows}/>
 
 					<Grid container style={{ paddingTop: 5, paddingBottom: 5 }}>
 						<Grid item sm={3} width="100px">
@@ -273,7 +260,7 @@ export default function MastersTeams(props) {
 							</Button>
 						</Grid>
 					</Grid>
-				</>
+				</div>
 			) : (
 				<div
 					style={{
