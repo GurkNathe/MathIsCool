@@ -51,7 +51,7 @@ export default function ForgotPass() {
 					Enter Email Address
 				</Typography>
 				<TextField
-					error={!!error}
+					error={error}
 					variant="outlined"
 					margin="normal"
 					required

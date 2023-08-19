@@ -11,8 +11,7 @@ export default function BadSubmit() {
         const name = history.location.state.name;
         const school = history.location.state.school; 
 
-        const link = "mailto:ethan.c.krug@gmail.com"
-            + "?cc=mathcoachcms@gmail.com"
+        const link = "mailto:mathcoachcms@gmail.com"
             + "&subject=" + encodeURIComponent("Request To Add School")
             + "&body=" + encodeURIComponent(`${name} has requested ${school} be added as a valid option.`);
 

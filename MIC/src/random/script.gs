@@ -297,9 +297,9 @@ function parseSchool(schoolInfo) {
 function getFireStore(params) {
 	//Firestore config variables
 	const config = {
-		email: "webdev-f6352@appspot.gserviceaccount.com",
-		key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/zg2xV19agtej\npmzv+Hxy9OYF2ARoAaMV4sJd8uHCsqhXpgFdC+WZYbIgAF/WbdBqJtq4xHnUgIle\ni3Hxj3x6rNBrMIxukVw9zgwFdPkGBKzvVJSfIxhetkBSCSckaoAGBP4O0kWwrjbq\nJ8nFy0dOZK3oHFOXr8b5gpBj6n7GhCw9pkeOf3BsPE82d9lQLAsTPbrlbH1nl2QM\nOTGXfpUsVWk/Ks/LNKf7j/LbvM5QwgF8M1Pw0bjoF007wpsPAUG5EAhMrJopoipP\n4+RReOmjE3iunODhNRMNgg/TaBFGsy1VCnI7r1SlkA3OPuaMNDI04Vg4aEEO8Z+f\nlInMiRBpAgMBAAECggEAJSXuZvuKH0iaJTr1fGC/EbC24EjfSZmPkYySoomJCiF6\nE0e2mePU+yj9y87mwOwR4o1V7VU4V1zxvhr53ZQxwry3vRrxB/UlTV8b2u610GGV\ncOELy+qLLMTVnk3hg98QnpnW7t3w23BSeHVuUd22GMvNFthtpEJKIkcUWhWvqhjX\nUnx76HN96evctFB7q18HoF/O2tcKtuTZVEmJjzWlqcMJ3lEiZEuSUQkE8vJyvkry\n0pg1CEEbeDbC2wSaq/M3F5d2x9x6XNChHnPjteFkC6HJzC12AjIoJcrVP+ZON25e\ny6QrtcgfAX2tiittj9X7ZRtrRD567/0IztKKGzi01QKBgQDquwACBOTBSbDfprbT\nYKQe0ba1Z3s4THbKEGmQsBLcKQFu+M+3YuULqDjFloJZoj5wnlFP11uBehp7d1s7\nNwVivlj0RoTeR655eEYd7AzQwB07SbSg41wTheEMVWGuZPTJ2N5/F0jVkHU3t/Ap\n8PoN0hNPMSt8sX9RKxFeUi9sqwKBgQDRL1EXeUefWtHPwx6gP6BjLpm7uOrirzvy\nE8tQx31fb56HOdnr3dWJt8X7wdeTTYeEQBp0jN0aI2tsLrQFdP+pb4U77l8IHS/v\ni3Wi3R7vBB9VsrE57YH74VwEGkzaXar7WrZwwM+uEBwBZGapgFoA/P9cMLBeql6/\nPaWUMrcPOwKBgQCHCfPUNYqA5GscD6YobvWcQVvSeuj5l4vTbaO9uH3xKKoJdJzT\nTNKmZS3cBl2RQXSYh4wR2bxr/ZoUo7LZmyq/BvDX/2XbFvP6L8Zu2mj5Az0N6bY/\nxO0o0iGJXelnUe893EUMapHdQ1EcL/a7ukWxA8VWDtyMzPSI9rT0RWXBJwKBgCn1\nzdRhlYZXl2KPhyMp4ChE/r1zGFqkP+gNJGltuq5cG3aQmi//7YeUf3hCp9V6ZcaX\nfTcH0oodtLycmavGjkoUfqtI43MjN6xbUxt6M2xKbWapU3eFNt+pkuWXyPa8d0G4\nLoRriL0nqhZ1Z0p03pj4Jtj9Q0OZ9StzWDVj/uhlAoGAMUecHHwO4T/N7G6/0swy\nrEU2Z0DEz1cs+X0t6liJL9phcNokSLnuUzB67X2ID5N8DX3cwAUAXC+7TSFqTzNj\n6H+b26/4CnT2yhmISj7088UEwyA7tT8dXM+JKi1Nhv3C4hzpkdvHlJe9Ha9PAOJ0\nLG3LuTSWgDJGmmsjokl19PM=\n-----END PRIVATE KEY-----\n",
-		id: "webdev-f6352",
+		email: "email",
+		key: "key",
+		id: "id",
 	};
 
 	let firestore = FirestoreApp.getFirestore(

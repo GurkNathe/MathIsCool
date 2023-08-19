@@ -72,7 +72,9 @@ export default function SignIn() {
 						sessionStorage.setItem("username", userCredential.user.displayName);
 						sessionStorage.setItem(
 							"school",
-							JSON.parse(userCredential.user.photoURL).school
+							!!JSON.parse(userCredential.user.photoURL) ?
+							JSON.parse(userCredential.user.photoURL).school :
+							""
 						);
 
 						// Navigate to home page
@@ -89,10 +91,12 @@ export default function SignIn() {
 						window.location.reload();
 					})
 					.catch((error) => {
+						console.error(error);
 						setError(error);
 					});
 			})
 			.catch((error) => {
+				console.error(error);
 				setError(error);
 			});
 	};

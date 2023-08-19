@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteBase /oldsite/dev/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /oldsite/dev/index.html [L,QSA]
+
